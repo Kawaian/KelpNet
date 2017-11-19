@@ -4,17 +4,16 @@ using KelpNet.Common.Optimizers;
 
 namespace KelpNet.Common.Functions.Container
 {
-    //層を積み上げるこのライブラリのメインとなるクラス
-    //一回のForward、Backward、Updateで同時に実行される関数の集まり
+    // The main class of this library for stacking layers.
+    // A set of functions that are executed simultaneously in one Forward, Backward, Update.
     [Serializable]
     public class FunctionStack : Function
     {
         const string FUNCTION_NAME = "FunctionStack";
 
-        //すべての層がココにFunctionクラスとして保管される
+        // All layers are stored here
         public Function[] Functions { get; private set; }
 
-        //コンストラクタ
         public FunctionStack(Function[] functions, string name = FUNCTION_NAME, string[] inputNames = null, string[] outputNames = null) : base(name, inputNames, outputNames)
         {
             this.Functions = functions;
@@ -31,7 +30,7 @@ namespace KelpNet.Common.Functions.Container
             this.Add(functions);
         }
 
-        //頻繁に使用することを想定していないため効率の悪い実装になっている
+        // Since it is not supposed to be used frequently, it is an inefficient implementation
         public void Add(params Function[] function)
         {
             if (function != null && function.Length > 0)
@@ -59,7 +58,7 @@ namespace KelpNet.Common.Functions.Container
         {
             List<Function> functionList = new List<Function>(Functions);
 
-            //層を圧縮
+            // Compress layer
             for (int i = 0; i < functionList.Count - 1; i++)
             {
                 if (functionList[i] is CompressibleFunction)
@@ -75,7 +74,7 @@ namespace KelpNet.Common.Functions.Container
             this.Functions = functionList.ToArray();
         }
 
-        //Forward
+        // Forward
         public override NdArray[] Forward(params NdArray[] xs)
         {
             NdArray[] ys = xs;
@@ -88,13 +87,13 @@ namespace KelpNet.Common.Functions.Container
             return ys;
         }
 
-        //Backward
+        // Backward
         public override void Backward(params NdArray[] ys)
         {
             NdArray.Backward(ys[0]);
         }
 
-        //重みの更新処理
+        // Weight update process
         public override void Update()
         {
             foreach (var function in Functions)
@@ -103,7 +102,7 @@ namespace KelpNet.Common.Functions.Container
             }
         }
 
-        //ある処理実行後に特定のデータを初期値に戻す処理
+        // A process of returning specific data to the initial value after a certain process is executed
         public override void ResetState()
         {
             foreach (Function function in this.Functions)
@@ -112,7 +111,7 @@ namespace KelpNet.Common.Functions.Container
             }
         }
 
-        //予想を実行する
+        // Execute forecast
         public override NdArray[] Predict(params NdArray[] xs)
         {
             NdArray[] ys = xs;
