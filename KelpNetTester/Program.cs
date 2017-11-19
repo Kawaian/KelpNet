@@ -5,74 +5,75 @@ using KelpNetTester.Tests;
 
 namespace KelpNetTester
 {
-    //実行したいテストのコメントを外して下さい
+    // Uncomment the test you want to run
     class Program
     {
         [STAThread]
         static void Main(string[] args)
         {
-            //全て.Net Framework上で実行したい場合はこちらをコメントアウト
+            // Comment out here if you want to run on .Net Framework
             Weaver.Initialize(ComputeDeviceTypes.Gpu);
-            //Weaver.Initialize(ComputeDeviceTypes.Cpu, 1); //複数デバイスがある場合は添字が必要
+            //Weaver.Initialize (ComputeDeviceTypes.Cpu, 1); 
+            // Subscript required if there are multiple devices
 
-            //MLPによるXORの学習
-            //Test1.Run();
+            // learning XOR with MLP
+            // Test1.Run ();
 
-            //MLPによるXORの学習【回帰版】
-            //Test2.Run();
+            // Learning XOR with MLP 【Regression version】
+            // Test2.Run ();
 
-            //MLPによるSin関数の学習
-            //Test3.Run();
+            // Learning of Sin function by MLP
+            Test3.Run ();
 
-            //MLPによるMNIST（手書き文字）の学習
-            //Test4.Run();
+            // Learning of MNIST(handwritten character) by MLP
+            // Test4.Run ();
 
-            //エクセルCNNの再現
-            //Test5.Run();
+            // Reproduction of Excel CNN
+            // Test5.Run ();
 
-            //5層CNNによるMNISTの学習
-            //Test6.Run();
+            // Learning of MNIST with 5 - layer CNN
+            // Test6.Run ();
 
-            //BatchNormを使った15層MLPによるMNISTの学習
-            //Test7.Run();
+            // Learning of MNIST by 15 layer MLP using BatchNorm
+            // Test7.Run ();
 
-            //LSTMによるSin関数の学習
-            //Test8.Run();
+            // Learning of Sin function by LSTM
+            // Test8.Run ();
 
-            //SimpleなRNNによるRNNLM
-            //Test9.Run();
+            // RNNLM with a simple RNN
+            // Test9.Run ();
 
-            //LSTMによるRNNLM
-            //Test10.Run();
+            // RNNLM by LSTM
+            // Test10.Run ();
 
-            //Decoupled Neural Interfaces using Synthetic GradientsによるMNISTの学習
-            //Test11.Run();
+            // MNIST learning by Decoupled Neural Interfaces using Synthetic Gradients
+            // Test11.Run ();
 
-            //Test11のDNIをcDNIとした
-            //Test12.Run();
+            // Set DNI of Test 11 as cDNI
+            // Test12.Run ();
 
-            //Deconvolution2Dのテスト(Winform)
-            //new Test13WinForm().ShowDialog();
+            // Test of Deconvolution 2D (Winform)
+            // new Test 13 WinForm (). ShowDialog ();
 
-            //Test6を連結して実行
-            //Test14.Run();
+            // Connect Test 6 and execute
+            // Test14.Run ();
 
-            //CaffeモデルのVGG16を読み込んで画像分類をさせるテスト
-            //Test15.Run();
+            // Test that reads VGG 16 of Caffe model and makes image classification
+            // Test15.Run ();
 
-            //ChainerモデルのTest5と同じ内容を読み込んで実行
-            //Test16.Run();
+            // Load the same contents as Test 5 of Chainer model and execute it
+            // Test16.Run ();
 
-            //CaffeモデルのRESNETを読み込んで画像分類をさせるテスト
-            //Test17.Run(Test17.ResnetModel.ResNet50);  //任意のResnetモデルを選択してください
+            // Test to load image classification by loading RESNET of Caffe model
+            // Test17.Run (Test17.ResnetModel.ResNet50); // Please choose an arbitrary Resnet model
 
-            //Linearの分割実行
-            //TestX.Run();
+            // split execution of Linear
+            // TestX.Run ();
 
-            //ベンチマーク
-            SingleBenchmark.Run();
+            //benchmark
+            //SingleBenchmark.Run();
 
-            Console.WriteLine("Test Done...");
+            Console.WriteLine("Test Done ...");
             Console.Read();
         }
     }

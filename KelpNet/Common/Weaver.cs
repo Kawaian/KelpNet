@@ -22,7 +22,7 @@ namespace KelpNet.Common
         All = 0xFFFFFFFF
     }
 
-    //GPU関連の処理を担うマネージャー
+    //GPU Manager responsible for related processes
     public class Weaver
     {
         public const string USE_DOUBLE_HEADER_STRING =
@@ -55,7 +55,7 @@ typedef REAL Real;
             if (!KernelSources.ContainsKey(functionName))
             {
                 byte[] binary = (byte[])Resources.ResourceManager.GetObject(functionName);
-                if (binary == null) throw new Exception("リソースファイルの取得に失敗しました\nリソース名:" + functionName);
+                if (binary == null) throw new Exception("Resource file acquisition failed \n Resource name:" + functionName);
 
                 using (StreamReader reader = new StreamReader(new MemoryStream(binary)))
                 {
@@ -100,10 +100,10 @@ typedef REAL Real;
         {
             string realType = Marshal.SizeOf(typeof(Real)) == Marshal.SizeOf(typeof(double)) ? "double" : "float";
 
-            //浮動小数点の精度設定用
+            // for precision setting of floating point
             source = REAL_HEADER_STRING + source;
 
-            //倍精度時に追加
+            // Add at double precision
             if (realType == "double")
             {
                 source = USE_DOUBLE_HEADER_STRING + source;
