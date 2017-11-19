@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using KelpNet.Common;
 using KelpNet.Common.Functions.Type;
 using KelpNet.Common.Tools;
@@ -29,7 +29,7 @@ namespace KelpNet.Functions.Connections
             }
             else
             {
-                //単純に代入しないのはサイズのチェックを兼ねるため
+                //Do not simply substitute to check the size
                 this.Weight.Data = Real.GetArray(initialW);
             }
 

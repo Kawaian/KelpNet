@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace KelpNet.Common.Functions.Type
 {
@@ -26,7 +26,7 @@ namespace KelpNet.Common.Functions.Type
             PrevInputs.RemoveAt(PrevInputs.Count - 1);
 
 #if DEBUG
-            if (xs == null || xs.Length != 1) throw new Exception("引数が正しくありません");
+            if (xs == null || xs.Length != 1) throw new Exception("Invalid argument");
 #endif
             BackwardCountUp();
 
@@ -39,7 +39,7 @@ namespace KelpNet.Common.Functions.Type
             return new[] { Predict(xs[0]) };
         }
 
-        // For overriding for functions with Predict specific methods
+        //For overriding for functions with Predict specific methods
         public virtual NdArray Predict(NdArray input)
         {
             return SingleInputForward(input);

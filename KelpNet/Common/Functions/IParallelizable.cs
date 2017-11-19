@@ -1,4 +1,4 @@
-﻿namespace KelpNet.Common.Functions
+namespace KelpNet.Common.Functions
 {
     public interface IParallelizable
     {

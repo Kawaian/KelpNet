@@ -1,16 +1,16 @@
-﻿using System;
+using System;
 using KelpNet.Common;
 using KelpNet.Functions.Connections;
 using KelpNet.Optimizers;
 
 namespace KelpNetTester.Tests
 {
-    //Linearの分割テスト
+    //Linear split test
     class TestX
     {
         public static void Run()
         {
-            //Weightを分割の前と後で揃える
+            //Align Weight before and after splitting
             Real[,] testWeightValues = {
                             {-0.02690255, 0.08830735, -0.02041466, -0.0431439, -0.07749002},
                             {-0.06963444, -0.03971611, 0.0597842, 0.08824182, -0.06649109},
@@ -64,10 +64,10 @@ namespace KelpNetTester.Tests
             Linear l3 = new Linear(5, 5, initialW: testJaggWeightValues[2], name: "l3");
             Linear l4 = new Linear(5, 5, initialW: testJaggWeightValues[3], name: "l4");
 
-            //FunctionにOptimizerを設定
+            //Set Optimizer for Function
             l0.SetOptimizer(new SGD());
 
-            //OptimiserにFunctionを登録
+            //Register Function in Optimizer
             SGD sgd = new SGD();
             l1.SetOptimizer(sgd);
             l2.SetOptimizer(sgd);
@@ -75,7 +75,7 @@ namespace KelpNetTester.Tests
             l4.SetOptimizer(sgd);
 
 
-            //入力は同値だがGradが加算されてしまうため分ける
+            //Input is equivalent, but Grad is added and it is divided
             Real[] testValue = { 0.01618112, -0.08296648, -0.05545357, 0.00389254, -0.05727582 };
             NdArray testInputValuesA = new NdArray(testValue);
             NdArray testInputValuesB = new NdArray(testValue);
@@ -102,7 +102,7 @@ namespace KelpNetTester.Tests
 
             Console.WriteLine();
 
-            //適当なGrad値をでっち上げる
+            //Create an appropriate Grad value
             l0Result[0].Grad = new Real[]
                                     {
                                         -2.42022760e-02, 5.02482988e-04, 2.52015481e-04, 8.08797951e-04, -7.19293347e-03,
@@ -117,7 +117,7 @@ namespace KelpNetTester.Tests
             l4Result[0].Grad = new Real[] {-4.70047118e-04, 3.61101292e-02, -7.12957408e-04, -3.63163825e-04, -1.12809543e-03};
             
 
-            //Backwardを実行
+            //Run Backward
             l0.Backward(l0Result);
 
             l1.Backward(l1Result);
@@ -131,8 +131,8 @@ namespace KelpNetTester.Tests
             Console.WriteLine("\nl1-l4 sum back");
             Console.WriteLine(testInputValuesB.ToString("Grad"));
 
-            l0.Update();  //書式が変則的だがl0はSGDを内包しているため
-            sgd.Update(); //こちらはOptimizerに関数を登録して使用している
+            l0.Update();  //Although the format is irregular, since 10 contains SGD
+            sgd.Update(); //Here I use a function registered in Optimizer
 
             Console.WriteLine("\nl0 Weight");
             Console.WriteLine(l0.Weight);

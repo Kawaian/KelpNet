@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using KelpNet.Common;
 using KelpNet.Common.Functions.Container;
@@ -12,27 +12,27 @@ using KelpNet.Optimizers;
 
 namespace KelpNetTester.Tests
 {
-    //5層CNNによるMNIST（手書き文字）の学習 の連結宣言版
+    //Concatenation declaration version of learning of MNIST (handwritten character) by 5-layer CNN
     class Test14
     {
-        //ミニバッチの数
+        //Number of mini batches
         const int BATCH_DATA_COUNT = 20;
 
-        //一世代あたりの訓練回数
-        const int TRAIN_DATA_COUNT = 3000; // = 60000 / 20
+        //Number of exercises per generation
+        const int TRAIN_DATA_COUNT = 3000; //= 60000/20
 
-        //性能評価時のデータ数
+        //Number of data at performance evaluation
         const int TEACH_DATA_COUNT = 200;
 
         public static void Run()
         {
             Stopwatch sw = new Stopwatch();
 
-            //MNISTのデータを用意する
+            //Prepare MNIST data
             Console.WriteLine("MNIST Data Loading...");
             MnistData mnistData = new MnistData();
 
-            //ネットワークの構成を FunctionStack に書き連ねる
+            //Writing the network configuration in FunctionStack
             FunctionStack nn = new FunctionStack(
                 new Convolution2D(1, 32, 5, pad: 2, name: "l1 Conv2D", activation: new ReLU(name: "l1 ReLU"), gpuEnable: true),
                 new MaxPooling(2, 2, name: "l1 MaxPooling", gpuEnable: true),
@@ -43,51 +43,51 @@ namespace KelpNetTester.Tests
                 new Linear(1024, 10, name: "l4 Linear", gpuEnable: true)
             );
 
-            //optimizerを宣言
+            //Declare optimizer
             nn.SetOptimizer(new Adam());
 
             Console.WriteLine("Training Start...");
 
-            //三世代学習
+            //Three generations learning
             for (int epoch = 1; epoch < 3; epoch++)
             {
                 Console.WriteLine("epoch " + epoch);
 
-                //全体での誤差を集計
+                //Total error in the whole
                 Real totalLoss = 0;
                 long totalLossCount = 0;
 
-                //何回バッチを実行するか
+                //How many times to run the batch
                 for (int i = 1; i < TRAIN_DATA_COUNT + 1; i++)
                 {
                     sw.Restart();
 
                     Console.WriteLine("\nbatch count " + i + "/" + TRAIN_DATA_COUNT);
 
-                    //訓練データからランダムにデータを取得
+                    //Get data randomly from training data
                     MnistDataSet datasetX = mnistData.GetRandomXSet(BATCH_DATA_COUNT);
 
-                    //バッチ学習を並列実行する
+                    //Execute batch learning in parallel
                     Real sumLoss = Trainer.Train(nn, datasetX.Data, datasetX.Label, new SoftmaxCrossEntropy());
                     totalLoss += sumLoss;
                     totalLossCount++;
 
-                    //結果出力
+                    //Result output
                     Console.WriteLine("total loss " + totalLoss / totalLossCount);
                     Console.WriteLine("local loss " + sumLoss);
 
                     sw.Stop();
                     Console.WriteLine("time" + sw.Elapsed.TotalMilliseconds);
 
-                    //20回バッチを動かしたら精度をテストする
+                    //Test the accuracy if you move the batch 20 times
                     if (i % 20 == 0)
                     {
                         Console.WriteLine("\nTesting...");
 
-                        //テストデータからランダムにデータを取得
+                        //Get data randomly from test data
                         MnistDataSet datasetY = mnistData.GetRandomYSet(TEACH_DATA_COUNT);
 
-                        //テストを実行
+                        //Run test
                         Real accuracy = Trainer.Accuracy(nn, datasetY.Data, datasetY.Label);
                         Console.WriteLine("accuracy " + accuracy);
                     }

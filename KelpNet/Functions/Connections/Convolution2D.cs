@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using Cloo;
@@ -132,7 +132,7 @@ namespace KelpNet.Functions.Connections
 
                 for (int och = 0; och < this.OutputCount; och++)
                 {
-                    //Wインデックス用
+                    //For W index
                     int outChOffset = och * this.InputCount * this._kHeight * this._kWidth;
 
                     for (int oy = 0; oy < outputHeight * this._strideY; oy += this._strideY)
@@ -147,10 +147,10 @@ namespace KelpNet.Functions.Connections
 
                             for (int ich = 0; ich < this.InputCount; ich++)
                             {
-                                //Wインデックス用
+                                //For W index
                                 int inChOffset = ich * this._kHeight * this._kWidth;
 
-                                //inputインデックス用
+                                //For input index
                                 int inputOffset = ich * input.Shape[1] * input.Shape[2];
 
                                 for (int ky = kyStartIndex; ky < kyLimit; ky++)
@@ -319,18 +319,18 @@ namespace KelpNet.Functions.Connections
             {
                 for (int och = 0; och < y.Shape[0]; och++)
                 {
-                    //gWインデックス用
+                    //For gW index
                     int outChOffset = och * this.InputCount * this._kHeight * this._kWidth;
 
                     for (int oy = 0; oy < y.Shape[1] * this._strideY; oy += this._strideY)
                     {
-                        //計算省略のためにジャンプ
+                        //Jump for skipping calculation
                         int kyStartIndex = this._padY - oy < 0 ? 0 : this._padY - oy;
                         int kyLimit = this._kHeight < x.Shape[1] - oy + this._padY ? this._kHeight : x.Shape[1] - oy + this._padY;
 
                         for (int ox = 0; ox < y.Shape[2] * this._strideX; ox += this._strideX)
                         {
-                            //計算省略のためにジャンプ
+                            //Jump for skipping calculation
                             int kxStartIndex = this._padX - ox < 0 ? 0 : this._padX - ox;
                             int kxLimit = this._kWidth < x.Shape[2] - ox + this._padX ? this._kWidth : x.Shape[2] - ox + this._padX;
 
@@ -340,20 +340,20 @@ namespace KelpNet.Functions.Connections
 
                             for (int ich = 0; ich < x.Shape[0]; ich++)
                             {
-                                //gWインデックス用
+                                //For gW index
                                 int inChOffset = ich * this._kHeight * this._kWidth;
 
-                                //inputインデックス用
+                                //For input index
                                 int inputOffset = ich * x.Shape[1] * x.Shape[2] + batchCounter * x.Length;
 
                                 for (int ky = kyStartIndex; ky < kyLimit; ky++)
                                 {
                                     for (int kx = kxStartIndex; kx < kxLimit; kx++)
                                     {
-                                        //WとgWのshapeは等しい
+                                        //W and gW have the same shape
                                         int wIndex = outChOffset + inChOffset + ky * this._kWidth + kx;
 
-                                        //xとgxのshapeは等しい
+                                        //The shapes of x and gx are equal
                                         int inputIndex = inputOffset + (ky + oy - this._padY) * x.Shape[2] + kx + ox - this._padX;
 
                                         this.Weight.Grad[wIndex] += x.Data[inputIndex] * gyData;
@@ -374,7 +374,7 @@ namespace KelpNet.Functions.Connections
             Real[] activatedgy = this.Activator != null ? GetActivatedgy(y) : y.Grad;
             if (!NoBias) CalcBiasGrad(activatedgy, y.Shape, y.BatchCount);
 
-            //gyは共通で使用
+            //gy is commonly used
             using (ComputeBuffer<Real> gpugY = new ComputeBuffer<Real>(Weaver.Context, ComputeMemoryFlags.ReadOnly | ComputeMemoryFlags.CopyHostPointer, activatedgy))
             {
                 using (ComputeBuffer<Real> gpugW = new ComputeBuffer<Real>(Weaver.Context, ComputeMemoryFlags.ReadWrite | ComputeMemoryFlags.CopyHostPointer, this.Weight.Grad))

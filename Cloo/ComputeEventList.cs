@@ -1,31 +1,31 @@
-﻿#region License
+#region License
 
 /*
 
-Copyright (c) 2009 - 2013 Fatjon Sakiqi
+  Copyright (c) 2009 - 2013 Fatjon Sakiqi
 
-Permission is hereby granted, free of charge, to any person
-obtaining a copy of this software and associated documentation
-files (the "Software"), to deal in the Software without
-restriction, including without limitation the rights to use,
-copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the
-Software is furnished to do so, subject to the following
-conditions:
+  Permission is hereby granted, free of charge, to any person
+  obtaining a copy of this software and associated documentation
+  files (the "Software"), to deal in the Software without
+  restriction, including without limitation the rights to use,
+  copy, modify, merge, publish, distribute, sublicense, and / or sell
+  copies of the Software, and to permit persons to whom the
+  Software is furnished to do so, subject to the following
+  conditions:
 
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
+  The above copyright notice and this permission notice shall be
+  included in all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-OTHER DEALINGS IN THE SOFTWARE.
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+  OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+  IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+  HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+  OTHER DEALINGS IN THE SOFTWARE.
 
-*/
+  */
 
 #endregion
 
@@ -37,10 +37,10 @@ namespace Cloo
     using System.Diagnostics;
     using Cloo.Bindings;
 
-    /// <summary>
-    /// Represents a list of OpenCL generated or user created events.
-    /// </summary>
-    /// <seealso cref="ComputeCommandQueue"/>
+    ///<summary>
+    ///Represents a list of OpenCL generated or user created events.
+    ///</summary>
+    ///<seealso cref = "ComputeCommandQueue"/>
     public class ComputeEventList : IList<ComputeEventBase>
     {
         #region Fields
@@ -52,18 +52,18 @@ namespace Cloo
 
         #region Constructors
 
-        /// <summary>
-        /// Creates an empty <see cref="ComputeEventList"/>.
-        /// </summary>
+        ///<summary>
+        ///Creates an empty <see cref = "ComputeEventList"/>.
+        ///</summary>
         public ComputeEventList()
         {
             events = new List<ComputeEventBase>();
         }
 
-        /// <summary>
-        /// Creates a new <see cref="ComputeEventList"/> from an existing list of <see cref="ComputeEventBase"/>s.
-        /// </summary>
-        /// <param name="events"> A list of <see cref="ComputeEventBase"/>s. </param>
+        ///<summary>
+        ///Creates a new <see cref = "ComputeEventList"/> from an existing list of <see cref = "ComputeEventBase"/> s.
+        ///</summary>
+        ///<param name = "events"> A list of <see cref = "ComputeEventBase"/> s. </param>
         public ComputeEventList(IList<ComputeEventBase> events)
         {
             events = new Collection<ComputeEventBase>(events);
@@ -73,20 +73,20 @@ namespace Cloo
 
         #region Properties
 
-        /// <summary>
-        /// Gets the last <see cref="ComputeEventBase"/> on the list.
-        /// </summary>
-        /// <value> The last <see cref="ComputeEventBase"/> on the list. </value>
+        ///<summary>
+        ///Gets the last <see cref = "ComputeEventBase"/> on the list.
+        ///</summary>
+        ///<value> The last <see cref = "ComputeEventBase"/> on the list. </value>
         public ComputeEventBase Last { get { return events[events.Count - 1]; } }
 
         #endregion
 
         #region Public methods
 
-        /// <summary>
-        /// Waits on the host thread for the specified events to complete.
-        /// </summary>
-        /// <param name="events"> The events to be waited for completition. </param>
+        ///<summary>
+        ///Waits on the host thread for the specified events to complete.
+        ///</summary>
+        ///<param name = "events"> The events to be waited for completition. </param>
         public static void Wait(ICollection<ComputeEventBase> events)
         {
             int eventWaitListSize;
@@ -95,9 +95,9 @@ namespace Cloo
             ComputeException.ThrowOnError(error);
         }
 
-        /// <summary>
-        /// Waits on the host thread for the <see cref="ComputeEventBase"/>s in the <see cref="ComputeEventList"/> to complete.
-        /// </summary>
+        ///<summary>
+        ///Waits on the host thread for the <see cref = "ComputeEventBase"/> s in the <see cref = "ComputeEventList"/> to complete.
+        ///</summary>
         public void Wait()
         {
             ComputeEventList.Wait(events);
@@ -107,40 +107,40 @@ namespace Cloo
 
         #region IList<ComputeEventBase> Members
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="item"></param>
-        /// <returns></returns>
+        ///<summary>
+        ///,
+        ///</summary>
+        ///<param name = "item"> </param>
+        ///<returns> </returns>
         public int IndexOf(ComputeEventBase item)
         {
             return events.IndexOf(item);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="index"></param>
-        /// <param name="item"></param>
+        ///<summary>
+        ///,
+        ///</summary>
+        ///<param name = "index"> </param>
+        ///<param name = "item"> </param>
         public void Insert(int index, ComputeEventBase item)
         {
             events.Insert(index, item);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="index"></param>
+        ///<summary>
+        ///,
+        ///</summary>
+        ///<param name = "index"> </param>
         public void RemoveAt(int index)
         {
             events.RemoveAt(index);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="index"></param>
-        /// <returns></returns>
+        ///<summary>
+        ///,
+        ///</summary>
+        ///<param name = "index"> </param>
+        ///<returns> </returns>
         public ComputeEventBase this[int index]
         {
             get
@@ -157,64 +157,64 @@ namespace Cloo
 
         #region ICollection<ComputeEventBase> Members
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="item"></param>
+        ///<summary>
+        ///,
+        ///</summary>
+        ///<param name = "item"> </param>
         public void Add(ComputeEventBase item)
         {
             events.Add(item);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
+        ///<summary>
+        ///,
+        ///</summary>
         public void Clear()
         {
             events.Clear();
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="item"></param>
-        /// <returns></returns>
+        ///<summary>
+        ///,
+        ///</summary>
+        ///<param name = "item"> </param>
+        ///<returns> </returns>
         public bool Contains(ComputeEventBase item)
         {
             return events.Contains(item);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="array"></param>
-        /// <param name="arrayIndex"></param>
+        ///<summary>
+        ///,
+        ///</summary>
+        ///<param name = "array"> </param>
+        ///<param name = "arrayIndex"> </param>
         public void CopyTo(ComputeEventBase[] array, int arrayIndex)
         {
             events.CopyTo(array, arrayIndex);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
+        ///<summary>
+        ///,
+        ///</summary>
         public int Count
         {
             get { return events.Count; }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
+        ///<summary>
+        ///,
+        ///</summary>
         public bool IsReadOnly
         {
             get { return false; }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="item"></param>
-        /// <returns></returns>
+        ///<summary>
+        ///,
+        ///</summary>
+        ///<param name = "item"> </param>
+        ///<returns> </returns>
         public bool Remove(ComputeEventBase item)
         {
             return events.Remove(item);
@@ -224,10 +224,10 @@ namespace Cloo
 
         #region IEnumerable<ComputeEventBase> Members
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
+        ///<summary>
+        ///,
+        ///</summary>
+        ///<returns> </returns>
         public IEnumerator<ComputeEventBase> GetEnumerator()
         {
             return ((IEnumerable<ComputeEventBase>)events).GetEnumerator();

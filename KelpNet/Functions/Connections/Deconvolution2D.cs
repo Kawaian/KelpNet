@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using Cloo;
@@ -299,11 +299,11 @@ namespace KelpNet.Functions.Connections
 
         protected override void NeedPreviousBackwardCpu(NdArray y, NdArray x)
         {
-            //Real[] gx = new Real[x.Data.Length];
+            //Real [] gx = new Real [x.Data.Length];
             Real[] activatedgy = this.Activator != null ? GetActivatedgy(y) : y.Grad;
             if (!NoBias) CalcBiasGrad(activatedgy, y.Shape, y.BatchCount);
 
-            //本来のロジック
+            //Original logic
             for (int batchCount = 0; batchCount < y.BatchCount; batchCount++)
             {
                 for (int och = 0; och < OutputCount; och++)
@@ -353,7 +353,7 @@ namespace KelpNet.Functions.Connections
             Real[] activatedgy = this.Activator != null ? GetActivatedgy(y) : y.Grad;
             if (!NoBias) CalcBiasGrad(activatedgy, y.Shape, y.BatchCount);
 
-            //gyは共通で使用
+            //gy is commonly used
             using (ComputeBuffer<Real> gpugY = new ComputeBuffer<Real>(Weaver.Context, ComputeMemoryFlags.ReadOnly | ComputeMemoryFlags.CopyHostPointer, activatedgy))
             {
                 using (ComputeBuffer<Real> gpugW = new ComputeBuffer<Real>(Weaver.Context, ComputeMemoryFlags.ReadWrite | ComputeMemoryFlags.CopyHostPointer, this.Weight.Grad))

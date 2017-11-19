@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using KelpNet.Common;
 using KelpNet.Common.Functions;
 

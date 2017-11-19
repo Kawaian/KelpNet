@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using ChainerModelLoader;
 using KelpNet.Common;
 using KelpNet.Common.Functions.Container;
@@ -17,11 +17,11 @@ namespace KelpNetTester.Tests
 
         public static void Run()
         {
-            //読み込みたいネットワークの構成を FunctionStack に書き連ね、各 Function のパラメータを合わせる
-            //ここで必ず name を Chainer の変数名に合わせておくこと
+            //Write the configuration of the network you want to read into FunctionStack and adjust the parameters of each function
+            //Make sure to match name to the variable name of Chainer
 
             FunctionStack nn = new FunctionStack(
-                new Convolution2D(1, 2, 3, name: "conv1", gpuEnable: true),//必要であればGPUフラグも忘れずに
+                new Convolution2D(1, 2, 3, name: "conv1", gpuEnable: true),//Do not forget the GPU flag if necessary
                 new ReLU(),
                 new MaxPooling(2, 2),
                 new Convolution2D(2, 2, 2, name: "conv2", gpuEnable: true),
@@ -32,34 +32,34 @@ namespace KelpNetTester.Tests
                 new Linear(2, 2, name: "fl4")
             );
 
-            /* Chainerでの宣言
-            class NN(chainer.Chain):
-                def __init__(self):
-                    super(NN, self).__init__(
-                        conv1 = L.Convolution2D(1,2,3),
-                        conv2 = L.Convolution2D(2,2,2),
-                        fl3 = L.Linear(8,2),
-                        fl4 = L.Linear(2,2)
-                    )
+            /* Declaration in Chainer
+              class NN (chainer.Chain):
+                  def __init __ (self):
+                      super (NN, self).__ init __ (
+                          conv 1 = L. Convolution 2 D (1, 2, 3),
+                          conv 2 = L. Convolution 2 D (2, 2, 2),
+                          fl3 = L. Linear (8, 2),
+                          fl4 = L. Linear (2, 2)
+                      )
 
-                def __call__(self, x):
-                    h_conv1 = F.relu(self.conv1(x))
-                    h_pool1 = F.max_pooling_2d(h_conv1, 2)
-                    h_conv2 = F.relu(self.conv2(h_pool1))
-                    h_pool2 = F.max_pooling_2d(h_conv2, 2)
-                    h_fc1 = F.relu(self.fl3(h_pool2))
-                    y = self.fl4(h_fc1)
-                    return y
-            */
+                  def __call __ (self, x):
+                      h_conv 1 = F.relu (self.conv 1 (x))
+                      h_pool 1 = F.max_pooling - 2 d (h_conv 1, 2)
+                      h_conv 2 = F.relu (self.conv 2 (h_pool 1))
+                      h_pool 2 = F.max_pooling - 2 d (h_conv 2, 2)
+                      h_fc1 = F.relu (self.fl3 (h_pool2))
+                      y = self.fl 4 (h_fc 1)
+                      return y
+              */
 
 
-            //パラメータを読み込み
+            //Read parameters
             ChainerModelDataLoader.ModelLoad(MODEL_FILE_PATH, nn);
 
-            //あとは通常通り使用する
+            //Use it as usual
             nn.SetOptimizer(new SGD());
 
-            //入力データ
+            //Input data
             NdArray x = new NdArray(new Real[,,]{{
                 { 0.0, 0.0, 0.0, 0.0, 0.0, 0.2, 0.9, 0.2, 0.0, 0.0, 0.0, 0.0},
                 { 0.0, 0.0, 0.0, 0.0, 0.2, 0.8, 0.9, 0.1, 0.0, 0.0, 0.0, 0.0},
@@ -75,24 +75,24 @@ namespace KelpNetTester.Tests
                 { 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}
             }});
 
-            //教師信号
+            //Teacher signal
             Real[] t = { 0.0, 1.0 };
 
-            //訓練を実施
+            //Training conducted
             Trainer.Train(nn, x, t, new MeanSquaredError(), false);
 
-            //結果表示用に退避
+            //Evacuate for results display
             Convolution2D l2 = (Convolution2D)nn.Functions[0];
 
 
-            //Updateを実行するとgradが消費されてしまうため値を先に出力
+            //When updating is executed grad will be consumed, so output the value first
             Console.WriteLine("gw1");
             Console.WriteLine(l2.Weight.ToString("Grad"));
 
             Console.WriteLine("gb1");
             Console.WriteLine(l2.Bias.ToString("Grad"));
 
-            //更新
+            //update
             nn.Update();
 
             Console.WriteLine("w1");

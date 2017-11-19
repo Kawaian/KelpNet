@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Cloo;
@@ -73,7 +73,7 @@ namespace KelpNet.Common.Functions
             return GpuEnable;
         }
 
-        //後からActivationを追加する用
+        //For later adding Activation
         public void SetActivation(CompressibleActivation activation)
         {
             this.Activator = activation;
@@ -86,7 +86,7 @@ namespace KelpNet.Common.Functions
                 }
             }
 
-            //Kernelの再構築が必要
+            //Kernel rebuild is necessary
             if (this.GpuEnable)
             {
                 CreateKernel();

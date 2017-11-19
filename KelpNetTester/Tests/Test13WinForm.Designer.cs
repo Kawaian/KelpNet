@@ -1,16 +1,16 @@
-﻿namespace KelpNetTester.Tests
+namespace KelpNetTester.Tests
 {
     partial class Test13WinForm
     {
-        /// <summary>
-        /// 必要なデザイナー変数です。
-        /// </summary>
+        ///<summary>
+        ///It is a necessary designer variable.
+        ///</summary>
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary>
-        /// 使用中のリソースをすべてクリーンアップします。
-        /// </summary>
-        /// <param name="disposing">マネージ リソースを破棄する場合は true を指定し、その他の場合は false を指定します。</param>
+        ///<summary>
+        ///Clean up all resources in use.
+        ///</summary>
+        ///<param name = "disposing"> Specify true to destroy the managed resource, false otherwise.   </param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && (this.components != null))
@@ -22,24 +22,24 @@
 
         #region Windows フォーム デザイナーで生成されたコード
 
-        /// <summary>
-        /// デザイナー サポートに必要なメソッドです。このメソッドの内容を
-        /// コード エディターで変更しないでください。
-        /// </summary>
+        ///<summary>
+        ///It is a method necessary for designer support.   The contents of this method
+        ///Please do not change with code editor.
+        ///</summary>
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
-            // 
-            // timer1
-            // 
+            //,
+            //timer1
+            //,
             this.timer1.Enabled = true;
             this.timer1.Interval = 300;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
-            // 
-            // Test13
-            // 
+            //,
+            //Test 13
+            //,
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;

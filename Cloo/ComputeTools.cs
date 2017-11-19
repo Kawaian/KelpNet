@@ -1,31 +1,31 @@
-﻿#region License
+#region License
 
 /*
 
-Copyright (c) 2009 - 2013 Fatjon Sakiqi
+  Copyright (c) 2009 - 2013 Fatjon Sakiqi
 
-Permission is hereby granted, free of charge, to any person
-obtaining a copy of this software and associated documentation
-files (the "Software"), to deal in the Software without
-restriction, including without limitation the rights to use,
-copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the
-Software is furnished to do so, subject to the following
-conditions:
+  Permission is hereby granted, free of charge, to any person
+  obtaining a copy of this software and associated documentation
+  files (the "Software"), to deal in the Software without
+  restriction, including without limitation the rights to use,
+  copy, modify, merge, publish, distribute, sublicense, and / or sell
+  copies of the Software, and to permit persons to whom the
+  Software is furnished to do so, subject to the following
+  conditions:
 
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
+  The above copyright notice and this permission notice shall be
+  included in all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-OTHER DEALINGS IN THE SOFTWARE.
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+  OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+  IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+  HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+  OTHER DEALINGS IN THE SOFTWARE.
 
-*/
+  */
 
 #endregion
 
@@ -36,43 +36,43 @@ namespace Cloo
     using System.Globalization;
     using Cloo.Bindings;
 
-    /// <summary>
-    /// Contains various helper methods.
-    /// </summary>
+    ///<summary>
+    ///Contains various helper methods.
+    ///</summary>
     public class ComputeTools
     {
         #region Public methods
 
         /*
-        /// <summary>
-        /// Attempts to convert a PixelFormat to a <see cref="ComputeImageFormat"/>.
-        /// </summary>
-        /// <param name="format"> The format to convert. </param>
-        /// <returns> A <see cref="ComputeImageFormat"/> that matches the specified argument. </returns>
-        /// <remarks> Note that only <c>Alpha</c>, <c>Format16bppRgb555</c>, <c>Format16bppRgb565</c> and <c>Format32bppArgb</c> input values are currently supported. </remarks>        
-        public static ComputeImageFormat ConvertImageFormat(PixelFormat format)
-        {
-            switch(format)
-            {
-                case PixelFormat.Alpha:
-                    return new ComputeImageFormat(ComputeImageChannelOrder.A, ComputeImageChannelType.UnsignedInt8);
-                case PixelFormat.Format16bppRgb555:
-                    return new ComputeImageFormat(ComputeImageChannelOrder.Rgb, ComputeImageChannelType.UNormShort555);
-                case PixelFormat.Format16bppRgb565:
-                    return new ComputeImageFormat(ComputeImageChannelOrder.Rgb, ComputeImageChannelType.UNormShort565);
-                case PixelFormat.Format32bppArgb:
-                    return new ComputeImageFormat(ComputeImageChannelOrder.Argb, ComputeImageChannelType.UnsignedInt8);
-                default: throw new ArgumentException("Pixel format not supported.");
-            }
-        }
-        */
+          ///<summary>
+          /// Attempts to convert a PixelFormat to a <see cref = "ComputeImageFormat"/>
+          ///</summary>
+          /// <param name = "format">> The format to convert. </param>
+          /// <returns> A <see cref = "ComputeImageFormat"/> that matches the specified argument. </returns>
+          /// <remarks> Note that only <c> Alpha </c>, <c> Format 16 bppRgb 555 </c>, <c> Format 16 bppRgb 565 </c> and <c> Format32 bppArgb </c> input values ​​are currently supported.   </remarks>
+          public static ComputeImageFormat ConvertImageFormat (PixelFormat format)
+          {
+              switch (format)
+              {
+                  case PixelFormat.Alpha:
+                      return new ComputeImageFormat (ComputeImageChannelOrder.A, ComputeImageChannelType.UnsignedInt8);
+                  case PixelFormat.Format 16 bppRgb 555:
+                      return new ComputeImageFormat (ComputeImageChannelOrder.Rgb, ComputeImageChannelType.UNormShort 555);
+                  case PixelFormat.Format 16 bppRgb 565:
+                      return new ComputeImageFormat (ComputeImageChannelOrder.Rgb, ComputeImageChannelType.UNormShort 565);
+                  case PixelFormat.Format32bppArgb:
+                      return new ComputeImageFormat (ComputeImageChannelOrder.Argb, ComputeImageChannelType.UnsignedInt8);
+                  default: throw new ArgumentException ("Pixel format not supported.");
+              }
+          }
+          */
 
-        /// <summary>
-        /// Parses an OpenCL version string.
-        /// </summary>
-        /// <param name="versionString"> The version string to parse. Must be in the format: <c>Additional substrings[space][major_version].[minor_version][space]Additional substrings</c>. </param>
-        /// <param name="substringIndex"> The index of the substring that specifies the OpenCL version. </param>
-        /// <returns> A <c>Version</c> instance containing the major and minor version from <paramref name="versionString"/>. </returns>
+        ///<summary>
+        ///Parses an OpenCL version string.
+        ///</summary>
+        ///<c> Additional substrings [space] [major_version]. [minor_version] [space] Additional substrings. </c>. </param> <param name = "versionString"> The version string to parse.
+        ///<param name = "substringIndex"> The index of the substring that specifies the OpenCL version. </param>
+        ///<returns> A <c> Version </c> instance containing the major and minor version from <paramref name = "versionString"/>. </returns>
         public static Version ParseVersionString(String versionString, int substringIndex)
         {
             string[] verstring = versionString.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);

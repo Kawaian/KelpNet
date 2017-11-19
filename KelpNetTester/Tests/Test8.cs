@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using KelpNet.Common;
 using KelpNet.Common.Functions.Container;
@@ -8,8 +8,8 @@ using KelpNet.Optimizers;
 
 namespace KelpNetTester.Tests
 {
-    //LSTMによるSin関数の学習（t の値から t+1 の値を予測する）
-    //参考： http://seiya-kumada.blogspot.jp/2016/07/lstm-chainer.html
+    //Learning of Sin function by LSTM (predicts t + 1 value from t value)
+    //Reference: http: seiya-kumada.blogspot.jp/2016/07/lstm-chainer.html
     class Test8
     {
         const int STEPS_PER_CYCLE = 50;
@@ -27,17 +27,17 @@ namespace KelpNetTester.Tests
             DataMaker dataMaker = new DataMaker(STEPS_PER_CYCLE, NUMBER_OF_CYCLES);
             NdArray trainData = dataMaker.Make();
 
-            //ネットワークの構成は FunctionStack に書き連ねる
+            //Network configuration is written in FunctionStack
             FunctionStack model = new FunctionStack(
                 new Linear(1, 5, name: "Linear l1"),
                 new LSTM(5, 5, name: "LSTM l2"),
                 new Linear(5, 1, name: "Linear l3")
             );
 
-            //optimizerを宣言
+            //Declare optimizer
             model.SetOptimizer(new Adam());
 
-            //訓練ループ
+            //Training loop
             Console.WriteLine("Training...");
             for (int epoch = 0; epoch < TRAINING_EPOCHS; epoch++)
             {
@@ -64,7 +64,7 @@ namespace KelpNetTester.Tests
 
         static Real ComputeLoss(FunctionStack model, NdArray[] sequences)
         {
-            //全体での誤差を集計
+            //Total error in the whole
             Real totalLoss = 0;
             NdArray x = new NdArray(new[] { 1 }, MINI_BATCH_SIZE);
             NdArray t = new NdArray(new[] { 1 }, MINI_BATCH_SIZE);

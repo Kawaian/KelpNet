@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace KelpNet.Common.Functions.Type
 {
@@ -28,7 +28,7 @@ namespace KelpNet.Common.Functions.Type
             PrevInputs.RemoveAt(PrevInputs.Count - 1);
 
 #if DEBUG
-            if (xs == null || xs.Length != 2) throw new Exception("引数が正しくありません");
+            if (xs == null || xs.Length != 2) throw new Exception("Invalid argument");
 #endif
             BackwardCountUp();
 

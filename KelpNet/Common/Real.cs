@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Runtime.InteropServices;
 using RealType = System.Double;
 //using RealType = System.Single;
@@ -46,21 +46,21 @@ namespace KelpNet.Common
             Type arrayType = data.GetType().GetElementType();
             Real[] resultData = new Real[data.Length];
 
-            //型の不一致をここで吸収
+            //Absorption of type mismatch here
             if (arrayType != typeof(RealType) && arrayType != typeof(Real))
             {
-                //一次元の長さの配列を用意
+                //Prepare one-dimensional length array
                 Array array = Array.CreateInstance(arrayType, data.Length);
-                //一次元化して
+                //Make it one-dimensional
                 Buffer.BlockCopy(data, 0, array, 0, Marshal.SizeOf(arrayType) * resultData.Length);
 
                 data = new RealType[array.Length];
 
-                //型変換しつつコピー
+                //Copy while converting type
                 Array.Copy(array, data, array.Length);
             }
 
-            //データを叩き込む
+            //Strike data
             int size = Marshal.SizeOf(typeof(RealType)) * data.Length;
             GCHandle gchObj = GCHandle.Alloc(data, GCHandleType.Pinned);
             GCHandle gchBytes = GCHandle.Alloc(resultData, GCHandleType.Pinned);

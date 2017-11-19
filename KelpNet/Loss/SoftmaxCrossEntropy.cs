@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using KelpNet.Common;
 using KelpNet.Common.Loss;
 
@@ -11,7 +11,7 @@ namespace KelpNet.Loss
             Real resultLoss = 0;
 
 #if DEBUG
-            if (input.Length != teachSignal.Length) throw new Exception("入力と教師信号のサイズが異なります");
+            if (input.Length != teachSignal.Length) throw new Exception("Size of input and teacher signal is different");
 #endif
 
             for (int k = 0; k < input.Length; k++)

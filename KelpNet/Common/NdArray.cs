@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -19,24 +19,24 @@ namespace KelpNet.Common
         [NonSerialized]
         public Real[] Grad;
 
-        //このNdArrayの各次元のサイズ
+        //Size of each dimension of this NdArray
         public int[] Shape { private set; get; }
 
-        //Shapeから算出されるLengthで、DataのLengthとは異なる
+        //Length calculated from Shape is different from Length of Data
         public int Length { private set; get; }
 
-        //関数によって使用された回数をカウントしBackward動作のタイミングを図る
+        //Count the number of times used by the function to try the timing of the backward operation
         [NonSerialized]
         public int UseCount = 0;
 
-        //自身が関数から生成された場合、その関数をここに保存する
+        //If it is generated from a function, save that function here
         [NonSerialized]
         public Function ParentFunc;
 
-        //各関数内でまとめて実行されるバッチの数を示し、Loss関数内の割引で使用される
+        //Indicates the number of batches executed together in each function and used in the discount in the Loss function
         public int BatchCount;
 
-        //Updateを行わずに実行されたBackwardの回数をカウントし、Optimizer実行時に使用する
+        //Count the number of Backwards executed without updating and use it when executing Optimizer
         [NonSerialized]
         public int TrainCount;
 
@@ -92,7 +92,7 @@ namespace KelpNet.Common
             this.ParentFunc = parentFunc;
         }
 
-        //アレイ配列をバッチとして登録する
+        //Register array array as batch
         public static NdArray FromArrays(Array[] arrays, Function parentFunc = null)
         {
             int[] resultShape = new int[arrays[0].Rank];
@@ -123,7 +123,7 @@ namespace KelpNet.Common
             return new NdArray(baseArray.Shape.ToArray(), baseArray.BatchCount);
         }
 
-        //インデクサはあまり早くないので頻繁にアクセスする場合は使用をオススメしません。デバッグ用途向けと割り切ってください。
+        //Because the indexer is not so early, I do not recommend using it when accessing frequently.   Please divide it for debugging purpose.
         public Real this[int batchcount, params int[] indices]
         {
             get
@@ -142,7 +142,7 @@ namespace KelpNet.Common
             int val = 0;
             int dimension = Length;
 
-            //-1指定を算出
+            //Calculate -1 designation
             if (shape.Contains(-1))
             {
                 int minusIndex = -1;
@@ -159,14 +159,14 @@ namespace KelpNet.Common
                         }
                         else
                         {
-                            throw new Exception("要素の指定が間違っています");
+                            throw new Exception("The specification of the element is wrong");
                         }
                     }
                     else
                     {
                         if (minusIndex != -1)
                         {
-                            throw new Exception("-1が二つ以上指定されています");
+                            throw new Exception("Two or more -1 are specified");
                         }
 
                         minusIndex = i;
@@ -176,13 +176,13 @@ namespace KelpNet.Common
                 shape[minusIndex] = dimension;
             }
 #if DEBUG
-            else if (Length != ShapeToArrayLength(shape)) throw new Exception("指定されたShapeのサイズが現在のData.Lengthと等しくありません");
+            else if (Length != ShapeToArrayLength(shape)) throw new Exception("The size of the specified Shape is not equal to the current Data.Length");
 #endif
 
             Shape = shape.ToArray();
         }
 
-        //バッチでまとまっているアレイをバラバラにして排出する
+        //Dispatch the unified array in batch and discharge
         public NdArray[] DivideArrays()
         {
             NdArray[] result = new NdArray[BatchCount];
@@ -195,7 +195,7 @@ namespace KelpNet.Common
             return result;
         }
 
-        //バッチ番号に対応するアレイを排出する
+        //Eject the array corresponding to the batch number
         public NdArray GetSingleArray(int i)
         {
             Real[] data = new Real[this.Length];
@@ -253,7 +253,7 @@ namespace KelpNet.Common
             TrainCount++;
         }
 
-        //傾きの補正
+        //Correction of slope
         public bool Reduce()
         {
             if (this.TrainCount > 0)
@@ -269,12 +269,12 @@ namespace KelpNet.Common
             return false;
         }
 
-        //傾きの初期化
+        //Initialization of slope
         public void ClearGrad()
         {
             this.Grad = new Real[this.Data.Length];
 
-            //カウンタをリセット
+            //Reset counter
             this.TrainCount = 0;
         }
 
@@ -312,9 +312,9 @@ namespace KelpNet.Common
         {
             StringBuilder sb = new StringBuilder();
 
-            int intMaxLength = 0; //整数部の最大値
-            int realMaxLength = 0; //小数点以下の最大値
-            bool isExponential = false; //指数表現にするか
+            int intMaxLength = 0; //Maximum value of integer part
+            int realMaxLength = 0; //Maximum value after the decimal point
+            bool isExponential = false; //Will it be exponential representation?
 
             foreach (Real data in datas)
             {
@@ -337,10 +337,10 @@ namespace KelpNet.Common
                 }
             }
 
-            //配列の約数を取得
+            //Get divisor of array
             int[] commonDivisorList = new int[this.Shape.Length];
 
-            //一個目は手動取得
+            //First manual acquisition
             commonDivisorList[0] = this.Shape[this.Shape.Length - 1];
 
             for (int i = 1; i < this.Shape.Length; i++)
@@ -356,7 +356,7 @@ namespace KelpNet.Common
             for (int batch = 0; batch < this.BatchCount; batch++)
             {
                 int indexOffset = batch * Length;
-                //先頭の括弧
+                //Leading parenthesis
                 for (int i = 0; i < this.Shape.Length; i++)
                 {
                     sb.Append("[");
@@ -375,7 +375,7 @@ namespace KelpNet.Common
                         divStr = ((Real)datas[indexOffset + i]).ToString().Split('.');
                     }
 
-                    //最大文字数でインデントを揃える
+                    //Align indentation with maximum number of characters
                     for (int j = 0; j < intMaxLength - divStr[0].Length; j++)
                     {
                         sb.Append(" ");
@@ -401,7 +401,7 @@ namespace KelpNet.Common
                         }
                     }
 
-                    //約数を調査してピッタリなら括弧を出力
+                    //If it is perfect after investigating divisors, it outputs parentheses
                     if (i != Length - 1)
                     {
                         foreach (int commonDivisor in commonDivisorList)
@@ -417,7 +417,7 @@ namespace KelpNet.Common
 
                         if ((i + 1) % commonDivisorList[0] == 0)
                         {
-                            //閉じ括弧分だけ改行を追加
+                            //Add line feed by closing parenthesis
                             for (int j = 0; j < closer; j++)
                             {
                                 sb.Append("\n");
@@ -426,7 +426,7 @@ namespace KelpNet.Common
 
                             if (BatchCount > 1) sb.Append(" ");
 
-                            //括弧前のインデント
+                            //Indentation before bracket
                             foreach (int commonDivisor in commonDivisorList)
                             {
                                 if ((i + 1) % commonDivisor != 0)
@@ -446,7 +446,7 @@ namespace KelpNet.Common
                     }
                 }
 
-                //後端の括弧
+                //Parenthesis at the back end
                 for (int i = 0; i < this.Shape.Length; i++)
                 {
                     sb.Append("]");
@@ -545,7 +545,7 @@ namespace KelpNet.Common
             return new NdArray(new[] { (Real)a });
         }
 
-        //コピーを作成するメソッド
+        //Method to create copy
         public NdArray Clone()
         {
             return new NdArray
@@ -567,12 +567,12 @@ namespace KelpNet.Common
 #if DEBUG
             if (axis.Length != axis.Distinct().ToArray().Length)
             {
-                throw new Exception("指定された要素が重複しています");
+                throw new Exception("The specified element is duplicated");
             }
 
             if (axis.Length != 0 && a.Shape.Length < axis.Max())
             {
-                throw new Exception("指定された要素が範囲を超えています");
+                throw new Exception("The specified element is out of range");
             }
 #endif
             if (axis.Length == 0)
@@ -643,8 +643,8 @@ namespace KelpNet.Common
 
         public static NdArray[] Split(NdArray array, int[] indices, int axis = 1)
         {
-            int[] shapeOffets = new int[indices.Length + 1];        //入力されたindicesの先頭0を追加した配列
-            int[] resultAxisShapes = new int[indices.Length + 1];   //分割後の指定軸のShape
+            int[] shapeOffets = new int[indices.Length + 1];        //An array in which the leading 0 of the input indices is added
+            int[] resultAxisShapes = new int[indices.Length + 1];   //Shape of specified axis after division
 
             for (int i = 0; i < indices.Length; i++)
             {
@@ -691,13 +691,13 @@ namespace KelpNet.Common
             {
                 if (i != axis && a.Shape[i] != b.Shape[i])
                 {
-                    throw new Exception("配列の大きさがマッチしていません");
+                    throw new Exception("The size of the array is not matched");
                 }
             }
 
             if (a.BatchCount != b.BatchCount)
             {
-                throw new Exception("バッチの大きさがマッチしていません");
+                throw new Exception("Batch size is not matched");
             }
 #endif
 
@@ -733,7 +733,7 @@ namespace KelpNet.Common
 
         internal int[] GetDimensionsIndex(int index)
         {
-            //バッチ分を補正
+            //Correct batch
             int batchCount = index / this.Length;
             index -= this.Length * batchCount;
 

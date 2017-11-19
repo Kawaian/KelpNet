@@ -1,4 +1,4 @@
-﻿using TestDataManager;
+using TestDataManager;
 
 namespace MNISTLoader
 {

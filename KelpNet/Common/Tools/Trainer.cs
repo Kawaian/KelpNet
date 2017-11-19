@@ -1,30 +1,30 @@
-﻿using System;
+using System;
 using KelpNet.Common.Functions.Container;
 using KelpNet.Common.Loss;
 
 namespace KelpNet.Common.Tools
 {
-    //ネットワークの訓練を実行するクラス
-    //主にArray->NdArrayの型変換を担う
+    //Class to perform network training
+    //Mainly responsible for type conversion of Array-> NdArray
     public class Trainer
     {
-        //バッチで学習処理を行う
+        //Perform learning process in batch
         public static Real Train(FunctionStack functionStack, Array[] input, Array[] teach, LossFunction lossFunction, bool isUpdate = true)
         {
             return Train(functionStack, NdArray.FromArrays(input), NdArray.FromArrays(teach), lossFunction, isUpdate);
         }
 
-        //バッチで学習処理を行う
+        //Perform learning process in batch
         public static Real Train(FunctionStack functionStack, NdArray input, NdArray teach, LossFunction lossFunction, bool isUpdate = true)
         {
-            //結果の誤差保存用
+            //For preserving error of result
             NdArray[] result = functionStack.Forward(input);
             Real sumLoss = lossFunction.Evaluate(result, teach);
 
-            //Backwardのバッチを実行
+            //Run Backward's batch
             functionStack.Backward(result);
 
-            //更新
+            //update
             if (isUpdate)
             {
                 functionStack.Update();
@@ -33,7 +33,7 @@ namespace KelpNet.Common.Tools
             return sumLoss;
         }
 
-        //精度測定
+        //Accuracy measurement
         public static double Accuracy(FunctionStack functionStack, Array[] x, Array[] y)
         {
             return Accuracy(functionStack, NdArray.FromArrays(x), NdArray.FromArrays(y));

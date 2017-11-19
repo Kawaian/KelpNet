@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -18,7 +18,7 @@ using TestDataManager;
 
 namespace KelpNetTester.Tests
 {
-    //ResNetを読み込んで実行する
+    //Load ResNet and execute
     class Test17
     {
         private const string DOWNLOAD_URL_MEAN = "https://onedrive.live.com/download?cid=4006CBB8476FF777&resid=4006CBB8476FF777%2117894&authkey=%21AAFW2%2DFVoxeVRck";
@@ -45,7 +45,7 @@ namespace KelpNetTester.Tests
 
         public static void Run(ResnetModel modelType)
         {
-            OpenFileDialog ofd = new OpenFileDialog { Filter = "画像ファイル(*.jpg;*.png;*.gif;*.bmp)|*.jpg;*.png;*.gif;*.bmp|すべてのファイル(*.*)|*.*" };
+            OpenFileDialog ofd = new OpenFileDialog { Filter = ". Image file (*. Jpg; *. Png; *. Gif; *. Bmp) | *. Jpg; *. Png; *. Gif; *. Bmp | all files (*. *) | *. *" };
 
             if (ofd.ShowDialog() == DialogResult.OK)
             {
@@ -60,7 +60,7 @@ namespace KelpNetTester.Tests
                 FunctionDictionary nn = CaffemodelDataLoader.LoadNetWork(modelFilePath);
                 string[] classList = File.ReadAllLines(CLASS_LIST_PATH);
 
-                //GPUを初期化
+                //Initialize GPU
                 foreach (FunctionStack resNetFunctionBlock in nn.FunctionBlocks)
                 {
                     SwitchGPU(resNetFunctionBlock);
@@ -70,7 +70,7 @@ namespace KelpNetTester.Tests
 
                 do
                 {
-                    //ネットワークへ入力する前に解像度を 224px x 224px x 3ch にしておく
+                    //Before inputting to the network, set the resolution to 224px x 224px x 3ch
                     Bitmap baseImage = new Bitmap(ofd.FileName);
                     Bitmap resultImage = new Bitmap(224, 224, PixelFormat.Format24bppRgb);
                     Graphics g = Graphics.FromImage(resultImage);
@@ -89,7 +89,7 @@ namespace KelpNetTester.Tests
 
                     Console.WriteLine("Result Time : " +
                                       (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") +
-                                      "μｓ");
+                                      "μs");
 
                     int maxIndex = Array.IndexOf(result.Data, result.Data.Max());
                     Console.WriteLine("[" + result.Data[maxIndex] + "] : " + classList[maxIndex]);
@@ -116,7 +116,7 @@ namespace KelpNetTester.Tests
                 }
             }
 
-            //ブロック単位で層の圧縮を実行
+            //Perform layer compression on a block-by-block basis
             functionStack.Compress();
         }
     }

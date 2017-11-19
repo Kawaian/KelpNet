@@ -1,4 +1,4 @@
-﻿using KelpNet.Common;
+using KelpNet.Common;
 
 namespace KelpNetTester.Benchmarker
 {

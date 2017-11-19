@@ -1,31 +1,31 @@
-﻿#region License
+#region License
 
 /*
 
-Copyright (c) 2009 - 2013 Fatjon Sakiqi
+  Copyright (c) 2009 - 2013 Fatjon Sakiqi
 
-Permission is hereby granted, free of charge, to any person
-obtaining a copy of this software and associated documentation
-files (the "Software"), to deal in the Software without
-restriction, including without limitation the rights to use,
-copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the
-Software is furnished to do so, subject to the following
-conditions:
+  Permission is hereby granted, free of charge, to any person
+  obtaining a copy of this software and associated documentation
+  files (the "Software"), to deal in the Software without
+  restriction, including without limitation the rights to use,
+  copy, modify, merge, publish, distribute, sublicense, and / or sell
+  copies of the Software, and to permit persons to whom the
+  Software is furnished to do so, subject to the following
+  conditions:
 
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
+  The above copyright notice and this permission notice shall be
+  included in all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-OTHER DEALINGS IN THE SOFTWARE.
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+  OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+  IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+  HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+  OTHER DEALINGS IN THE SOFTWARE.
 
-*/
+  */
 
 #endregion
 
@@ -37,13 +37,13 @@ namespace Cloo
     using System.Threading;
     using Cloo.Bindings;
 
-    /// <summary>
-    /// Represents an OpenCL event.
-    /// </summary>
-    /// <remarks> An event encapsulates the status of an operation such as a command. It can be used to synchronize operations in a context. </remarks>
-    /// <seealso cref="ComputeUserEvent"/>
-    /// <seealso cref="ComputeCommandQueue"/>
-    /// <seealso cref="ComputeContext"/>
+    ///<summary>
+    ///Represents an OpenCL event.
+    ///</summary>
+    ///<remarks> An event encapsulates the event of a command. It can be used to synchronize operations in a context. </remarks>
+    ///<seealso cref = "ComputeUserEvent"/>
+    ///<seealso cref = "ComputeCommandQueue"/>
+    ///<seealso cref = "ComputeContext"/>
     public class ComputeEvent : ComputeEventBase
     {
         #region Fields
@@ -55,10 +55,10 @@ namespace Cloo
 
         #region Properties
 
-        /// <summary>
-        /// Gets the <see cref="ComputeCommandQueue"/> associated with the <see cref="ComputeEvent"/>.
-        /// </summary>
-        /// <value> The <see cref="ComputeCommandQueue"/> associated with the <see cref="ComputeEvent"/>. </value>
+        ///<summary>
+        ///Gets the <see cref = "ComputeCommandQueue"/> associated with the <see cref = "ComputeEvent"/>.
+        ///</summary>
+        ///<value> The <see cref = "ComputeCommandQueue"/> associated with the <see cref = "ComputeEvent"/>. </value>
         public ComputeCommandQueue CommandQueue { get; private set; }
 
         #endregion
@@ -96,11 +96,11 @@ namespace Cloo
 
         #region Protected methods
 
-        /// <summary>
-        /// Releases the associated OpenCL object.
-        /// </summary>
-        /// <param name="manual"> Specifies the operation mode of this method. </param>
-        /// <remarks> <paramref name="manual"/> must be <c>true</c> if this method is invoked directly by the application. </remarks>
+        ///<summary>
+        ///Releases the associated OpenCL object.
+        ///</summary>
+        ///<param name = "manual"> Specifies the operation mode of this method. </param>
+        ///<remarks> <paramref name = "manual"/> must be <c> true </c> if this method is invoked directly by the application. </remarks>
         protected override void Dispose(bool manual)
         {
             FreeGCHandle();

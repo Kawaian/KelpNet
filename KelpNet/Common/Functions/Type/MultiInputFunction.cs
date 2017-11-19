@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace KelpNet.Common.Functions.Type
 {

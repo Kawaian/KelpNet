@@ -1,4 +1,4 @@
-﻿namespace CIFARLoader
+namespace CIFARLoader
 {
     internal static class Extensions
     {

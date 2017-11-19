@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using KelpNet.Common;
 using KelpNet.Common.Functions.Type;
 
@@ -29,7 +29,7 @@ namespace KelpNet.Functions.Arrays
 
             for (int i = 1; i < xs.Length; i++)
             {
-                //BackwardのSplitで使用しないため最後のshapeを保存しないロジックになっている
+                //It is logic that does not save the last shape because it is not used by Backward's Split
                 sections[i - 1] = sizeOffset;
                 sizeOffset += xs[i].Shape[Axis];
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using KelpNet.Common;
 using KelpNet.Common.Functions.Type;
 
@@ -68,7 +68,7 @@ namespace KelpNet.Functions.Normalization
                 }
             }
 
-            //前後nチャンネルで場所の平均を取る
+            //Take the average of places with n channels before and after
             for (int i = 0; i < sumPart.Length; i++)
             {
                 this.unitScale[i] = this.k + this.alpha * sumPart[i];

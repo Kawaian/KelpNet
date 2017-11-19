@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using KelpNet.Common;
 using KelpNet.Common.Functions;
@@ -13,7 +13,7 @@ using VocabularyMaker;
 namespace KelpNetTester.Tests
 {
     //Reproduce Chainer's RNN sample
-    //https://github.com/pfnet/chainer/tree/master/examples/ptb
+    //https: github.com/pfnet/chainer/tree/master/examples/ptb
     class Test10
     {
         const int N_EPOCH = 39;

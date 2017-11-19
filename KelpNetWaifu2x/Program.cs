@@ -1,13 +1,13 @@
-﻿using System;
+using System;
 using System.Windows.Forms;
 
 namespace KelpNetWaifu2x
 {
     static class Program
     {
-        /// <summary>
-        /// アプリケーションのメイン エントリ ポイントです。
-        /// </summary>
+        ///<summary>
+        ///It is the main entry point of the application.
+        ///</summary>
         [STAThread]
         static void Main()
         {

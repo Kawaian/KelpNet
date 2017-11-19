@@ -1,4 +1,4 @@
-﻿using KelpNet.Common;
+using KelpNet.Common;
 using KelpNet.Common.Functions.Type;
 
 namespace KelpNet.Functions.Mathmetrics.BasicMath
@@ -29,8 +29,8 @@ namespace KelpNet.Functions.Mathmetrics.BasicMath
         {
             for (int i = 0; i < y.Grad.Length; i++)
             {
-                a.Grad[i] += y.Grad[i]; // * 1.0f
-                b.Grad[i] += y.Grad[i]; // * 1.0f
+                a.Grad[i] += y.Grad[i]; //* 1.0 f
+                b.Grad[i] += y.Grad[i]; //* 1.0 f
             }
         }
     }
@@ -62,7 +62,7 @@ namespace KelpNet.Functions.Mathmetrics.BasicMath
         {
             for (int i = 0; i < y.Grad.Length; i++)
             {
-                a.Grad[i] += y.Grad[i]; // * 1.0f
+                a.Grad[i] += y.Grad[i]; //* 1.0 f
             }
         }
     }

@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Linq;
 using KelpNet.Common;
 using KelpNet.Common.Functions.Type;
 
 namespace KelpNet.Functions.Normalization
 {
-    //Chainerより移植　finetuningは未実装
+    //Porting from Chainer finetuning is not implemented yet
     [Serializable]
     public class BatchNormalization : SingleInputFunction
     {
@@ -49,7 +49,7 @@ namespace KelpNet.Functions.Normalization
 
             this.Parameters = new NdArray[this.IsTrain ? 2 : 4];
 
-            //学習対象のParameterを登録
+            //Register the parameter to be learned
             this.Parameters[0] = this.Gamma;
             this.Parameters[1] = this.Beta;
 
@@ -80,10 +80,10 @@ namespace KelpNet.Functions.Normalization
 
         private NdArray ForwardCpu(NdArray x)
         {
-            //計算用パラメータの取得
+            //Acquisition of calculation parameters
             if (this.IsTrain)
             {
-                //メンバのMeanとVarianceを設定する
+                //Set Mean and Variance of members
                 this.Variance = new Real[this.ChannelSize];
                 for (int i = 0; i < this.Variance.Length; i++)
                 {
@@ -128,7 +128,7 @@ namespace KelpNet.Functions.Normalization
                 this.Std[i] = Math.Sqrt(this.Variance[i]);
             }
 
-            //結果を計算
+            //Calculate result
             this.Xhat = new Real[x.Data.Length];
 
             Real[] y = new Real[x.Data.Length];
@@ -152,20 +152,20 @@ namespace KelpNet.Functions.Normalization
                 }
             }
 
-            //パラメータを更新
+            //Update parameters
             if (this.IsTrain)
             {
                 int m = x.BatchCount;
-                Real adjust = m / Math.Max(m - 1.0, 1.0); // unbiased estimation
+                Real adjust = m / Math.Max(m - 1.0, 1.0); //unbiased estimation
 
                 for (int i = 0; i < this.AvgMean.Data.Length; i++)
                 {
                     this.AvgMean.Data[i] *= this.Decay;
-                    this.Mean[i] *= 1 - this.Decay; // reuse buffer as a temporary
+                    this.Mean[i] *= 1 - this.Decay; //reuse buffer as a temporary
                     this.AvgMean.Data[i] += this.Mean[i];
 
                     this.AvgVar.Data[i] *= this.Decay;
-                    this.Variance[i] *= (1 - this.Decay) * adjust; // reuse buffer as a temporary
+                    this.Variance[i] *= (1 - this.Decay) * adjust; //reuse buffer as a temporary
                     this.AvgVar.Data[i] += this.Variance[i];
                 }
             }
@@ -189,7 +189,7 @@ namespace KelpNet.Functions.Normalization
 
             if (this.IsTrain)
             {
-                // 学習あり
+                //With learning
                 int m = y.BatchCount;
 
                 for (int i = 0; i < this.ChannelSize; i++)
@@ -206,7 +206,7 @@ namespace KelpNet.Functions.Normalization
             }
             else
             {
-                // 学習なし
+                //No learning
                 for (int i = 0; i < this.ChannelSize; i++)
                 {
                     Real gs = this.Gamma.Data[i] / this.Std[i];
@@ -227,12 +227,12 @@ namespace KelpNet.Functions.Normalization
 
             if (this.IsTrain)
             {
-                //Predictはトレーニングしない
+                //Predict does not train
                 this.IsTrain = false;
 
                 result = this.Forward(input);
 
-                //フラグをリセット
+                //Reset Flag
                 this.IsTrain = true;
             }
             else

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -15,8 +15,8 @@ using KelpNet.Functions.Connections;
 
 namespace KelpNetWaifu2x
 {
-    /* モデルファイルを https://github.com/nagadomi/waifu2x/tree/master/models/upconv_7/art よりダウンロードしてください*/
-    /* サンプルは scale2.0x_model.json にて動作を確認しています*/
+    /* Please download the model file from https://github.com/nagadomi/waifu2x/tree/master/models/upconv_7/art */
+    /* The sample is confirmed to operate on scale 2.0 x _ model json */
 
     public partial class FormMain : Form
     {
@@ -26,7 +26,7 @@ namespace KelpNetWaifu2x
         {
             InitializeComponent();
 
-            //GPUを初期化
+            //Initialize GPU
             Weaver.Initialize(ComputeDeviceTypes.Gpu);
         }
 
@@ -34,7 +34,7 @@ namespace KelpNetWaifu2x
         {
             OpenFileDialog ofd = new OpenFileDialog
             {
-                Filter = "Jsonファイル(*.json)|*.json|すべてのファイル(*.*)|*.*",
+                Filter = "Json file (*. Json) | *. Json | all files (*. *) | *. *",
             };
 
             if (ofd.ShowDialog() == DialogResult.OK)
@@ -45,7 +45,7 @@ namespace KelpNetWaifu2x
 
                 List<Function> functionList = new List<Function>();
 
-                //Microsoft.CSharp.RuntimeBinder.RuntimeBinderExceptionは無視して下さい
+                //Please ignore Microsoft.CSharp.RuntimeBinder.RuntimeBinderException
                 foreach (var data in json)
                 {
                     Real[,,,] weightData = new Real[(int)data["nOutputPlane"], (int)data["nInputPlane"], (int)data["kW"], (int)data["kH"]];
@@ -64,7 +64,7 @@ namespace KelpNetWaifu2x
                         }
                     }
 
-                    //padを行い入力と出力画像のサイズを合わせる
+                    //Make a pad and adjust the size of the input and the output image
                     functionList.Add(new Convolution2D((int)data["nInputPlane"], (int)data["nOutputPlane"], (int)data["kW"], pad: (int)data["kW"] / 2, initialW: weightData, initialb: (Real[])data["bias"],name: "Convolution2D l" + layerCounter++, gpuEnable: true));
                     functionList.Add(new LeakyReLU(0.1, name: "LeakyReLU l" + layerCounter++));
                 }
@@ -72,7 +72,7 @@ namespace KelpNetWaifu2x
                 nn = new FunctionStack(functionList.ToArray());
                 nn.Compress();
 
-                MessageBox.Show("読み込み完了");
+                MessageBox.Show("Read complete");
             }
         }
 
@@ -81,7 +81,7 @@ namespace KelpNetWaifu2x
         {
             OpenFileDialog ofd = new OpenFileDialog
             {
-                Filter = "画像ファイル(*.jpg;*.png)|*.jpg;*.png|すべてのファイル(*.*)|*.*"
+                Filter = "Image file (*. Jpg; *. Png) | *. Jpg; *. Png | All files (*. *) | *. *"
             };
 
             if (ofd.ShowDialog() == DialogResult.OK)
@@ -95,7 +95,7 @@ namespace KelpNetWaifu2x
         {
             SaveFileDialog sfd = new SaveFileDialog
             {
-                Filter = "pngファイル(*.png)|*.png|すべてのファイル(*.*)|*.*",
+                Filter = "png file (*. png) | *. png | all files (*. *) | *. *",
                 FileName = "result.png"
             };
 
@@ -103,14 +103,14 @@ namespace KelpNetWaifu2x
             {
                 Task.Factory.StartNew(() =>
                 {
-                    //ネットワークへ入力する前に予め拡大しておく必要がある
+                    //It is necessary to enlarge in advance before entering the network
                     Bitmap resultImage = new Bitmap(this._baseImage.Width * 2, this._baseImage.Height * 2, PixelFormat.Format24bppRgb);
                     Graphics g = Graphics.FromImage(resultImage);
 
-                    //補間にニアレストネイバーを使用
+                    //Use nearest neighbor for interpolation
                     g.InterpolationMode = InterpolationMode.NearestNeighbor;
 
-                    //画像を拡大して描画する
+                    //Draw an image enlarged
                     g.DrawImage(this._baseImage, 0, 0, this._baseImage.Width * 2, this._baseImage.Height * 2);
                     g.Dispose();
 
@@ -122,10 +122,10 @@ namespace KelpNetWaifu2x
                 }
                     ).ContinueWith(_ =>
                     {
-                        MessageBox.Show("変換完了");
+                        MessageBox.Show("Conversion complete");
                     });
 
-                MessageBox.Show("変換処理は開始されました。\n『変換完了』のメッセージが表示されるまで、しばらくお待ち下さい\n※非常に時間がかかります（64x64の画像で三分ほど）");
+                MessageBox.Show("Conversion processing has been started. \\ N Please wait for a while until" Conversion completed "message is displayed \\ n * It will take a very long time (about three minutes with 64 x 64 images)");
             }
         }
     }

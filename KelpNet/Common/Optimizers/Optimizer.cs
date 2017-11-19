@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace KelpNet.Common.Optimizers
 {
-    //Optimizerの素となるクラスでパラメータを持つ
+    //Having parameters in the prime class of Optimizer
     [Serializable]
     public abstract class Optimizer
     {
@@ -18,7 +18,7 @@ namespace KelpNet.Common.Optimizers
 
             for (int i = 0; i < this.OptimizerParameters.Count; i++)
             {
-                //傾きの割引を実行して更新があったかチェックをする
+                //Perform discount of slope and check whether there was update
                 if (this.OptimizerParameters[i].FunctionParameter.Reduce())
                 {
                     this.OptimizerParameters[i].UpdateFunctionParameters();
@@ -36,7 +36,7 @@ namespace KelpNet.Common.Optimizers
         }
     }
 
-    //このクラスはFunctionParameterと1:1で作成される
+    //This class is created with FunctionParameter 1: 1
     [Serializable]
     public abstract class OptimizerParameter
     {

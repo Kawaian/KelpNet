@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using KelpNet.Common.Functions.Type;
@@ -11,13 +11,13 @@ namespace KelpNet.Common.Functions.Container
     {
         const string FUNCTION_NAME = "FunctionDictionary";
 
-        // Managed with FunctionRecord, input/output key added to the function.
+        //Managed with Function Record, input / output key added added the function.
         public Dictionary<string, FunctionStack> FunctionBlockDictionary = new Dictionary<string, FunctionStack>();
 
-        // Dictionary holding names of division functions
+        //Dictionary holding names of division functions
         public Dictionary<string, FunctionStack> SplitedFunctionDictionary = new Dictionary<string, FunctionStack>();
 
-        // Dictionary execution order list
+        //Dictionary execution order list
         public List<FunctionStack> FunctionBlocks = new List<FunctionStack>();
 
         private readonly bool _compress = false;
@@ -29,19 +29,19 @@ namespace KelpNet.Common.Functions.Container
 
         public void Add(Function function)
         {
-            if (_compress && // Summarize each branch or not
-                (function is SingleInputFunction || function is MultiOutputFunction)) // Gather only on function
+            if (_compress && //Summarize each branch or not
+                (function is SingleInputFunction || function is MultiOutputFunction)) //Gather only on function
             {
-                // Check if it was registered in the dict
+                //Check if it was registered in the dict
                 if (this.FunctionBlockDictionary.ContainsKey(function.InputNames[0]))
                 {
-                    // If the block has already been registered, it is concatenated to the block
+                    //If the block is already registered, it is concatenated to the block
                     this.FunctionBlockDictionary[function.InputNames[0]].Add(function);
 
-                    // Overwrite output name
+                    //Overwrite output name
                     this.FunctionBlockDictionary[function.InputNames[0]].OutputNames = function.OutputNames.ToArray();
 
-                    // If it is a divided function update the output name of the source
+                    //If it is divided function update the output name of the source
                     if (SplitedFunctionDictionary.ContainsKey(function.InputNames[0]))
                     {
                         FunctionStack spliteFunction = SplitedFunctionDictionary[function.InputNames[0]];
@@ -60,22 +60,22 @@ namespace KelpNet.Common.Functions.Container
                         }
                     }
 
-                    if (!(function is MultiOutputFunction) && // If the output branches, do not register and cut the link
-                      !this.FunctionBlockDictionary.ContainsKey(function.OutputNames[0])) // Do not register if already registered
+                    if (!(function is MultiOutputFunction) && //If the output branches, do not register and cut the link
+                      !this.FunctionBlockDictionary.ContainsKey(function.OutputNames[0])) //Do not register if already registered
                     {
-                        // Add link to dictionary
+                        //Add link to dictionary
                         this.FunctionBlockDictionary.Add(function.OutputNames[0], this.FunctionBlockDictionary[function.InputNames[0]]);
                     }
-                    else if (function is SplitFunction) // SplitFunction
+                    else if (function is SplitFunction) //SplitFunction
                     {
                         var splitFunctions = ((SplitFunction)function).SplitedFunctions;
 
                         for (int i = 0; i < splitFunctions.Length; i++)
                         {
-                            // Add internal FunctionStack to link dictionary
+                            //Add internal FunctionStack to link dictionary
                             FunctionBlockDictionary.Add(function.OutputNames[i], splitFunctions[i]);
 
-                            // Add to SplitFunction's list
+                            //Add to SplitFunction's list
                             SplitedFunctionDictionary.Add(function.OutputNames[i], this.FunctionBlockDictionary[function.InputNames[0]]);
                         }
                     }
@@ -84,23 +84,23 @@ namespace KelpNet.Common.Functions.Container
                 }
             }
 
-            // Processing for uncompressed, or MultiInput, DualInput below
+            //Processing for uncompressed, or MultiInput, DualInput below
 
-            // Check if block is registered in the dictionary
+            //Check if block is registered in the dictionary
             if (this.FunctionBlockDictionary.ContainsKey(function.OutputNames[0]))
             {
-                // If the block has already been dictionary registered, it is concatenated to the block
+                //If the block has already been dictionary registered, it is concatenated to the block
                 this.FunctionBlockDictionary[function.OutputNames[0]].Add(function);
             }
             else
             {
-                // If it wasn't registered create a new block
+                //If it was not registered create a new block
                 FunctionStack functionRecord = new FunctionStack(function, function.Name, function.InputNames, function.OutputNames);
 
-                // Register in order of execution
+                //Register in order of execution
                 this.FunctionBlocks.Add(functionRecord);
 
-                //  Add link to dictionary
+                //Add link to dictionary
                 this.FunctionBlockDictionary.Add(function.Name, functionRecord);
             }
         }
@@ -110,31 +110,31 @@ namespace KelpNet.Common.Functions.Container
         {
             NdArray[] result = xs;
 
-            // Dictionary of output data
+            //Dictionary of output data
             Dictionary<string, NdArray> outPuts = new Dictionary<string, NdArray>();
 
-            // Register the first data in the dictionary
+            //Register the first data in the dictionary
             for (int i = 0; i < FunctionBlocks[0].InputNames.Length; i++)
             {
                 outPuts.Add(FunctionBlocks[0].InputNames[i], xs[i]);
             }
 
-            // Run in order of registration
+            //Run in order of registration
             for (int i = 0; i < FunctionBlocks.Count; i++)
             {
                 string[] inputBlockNames = FunctionBlocks[i].InputNames;
                 List<NdArray> inputData = new List<NdArray>();
 
-                // Collect the input data
+                //Collect the input data
                 for (int j = 0; j < inputBlockNames.Length; j++)
                 {
                     inputData.Add(outPuts[inputBlockNames[j]]);
                 }
 
-                // Execute function
+                //Execute function
                 result = FunctionBlocks[i].Forward(inputData.ToArray());
 
-                // Register the outputted data in the dictionary
+                //Register the outputted data in the dictionary
                 for (int j = 0; j < result.Length; j++)
                 {
                     outPuts.Add(FunctionBlocks[i].OutputNames[j], result[j]);
@@ -150,7 +150,7 @@ namespace KelpNet.Common.Functions.Container
             NdArray.Backward(ys[0]);
         }
 
-        // Weight update process
+        //Weight update process
         public override void Update()
         {
             foreach (var functionBlock in FunctionBlocks)
@@ -159,7 +159,7 @@ namespace KelpNet.Common.Functions.Container
             }
         }
 
-        // Return specific data to the initial value after a certain process is executed
+        //Return specific data to the initial value after a certain process is executed
         public override void ResetState()
         {
             foreach (var functionBlock in FunctionBlocks)
@@ -168,15 +168,15 @@ namespace KelpNet.Common.Functions.Container
             }
         }
 
-        // Execute forecast
+        //Execute forecast
         public override NdArray[] Predict(params NdArray[] xs)
         {
             NdArray[] result = xs;
 
-            // Dictionary of output data
+            //Dictionary of output data
             Dictionary<string, NdArray> outPuts = new Dictionary<string, NdArray>();
 
-            // Register the output data in the dictionary
+            //Register the output data in the dictionary
             for (int j = 0; j < FunctionBlocks[0].InputNames.Length; j++)
             {
                 outPuts.Add(FunctionBlocks[0].InputNames[j], xs[j]);
@@ -187,16 +187,16 @@ namespace KelpNet.Common.Functions.Container
                 string[] inputBlockNames = FunctionBlocks[i].InputNames;
                 List<NdArray> inputData = new List<NdArray>();
 
-                // Collect input data
+                //Collect input data
                 for (int j = 0; j < inputBlockNames.Length; j++)
                 {
                     inputData.Add(outPuts[inputBlockNames[j]]);
                 }
 
-                // Execute function
+                //Execute function
                 result = FunctionBlocks[i].Predict(inputData.ToArray());
 
-                // Register the output data in the dictionary
+                //Register the output data in the dictionary
                 for (int j = 0; j < result.Length; j++)
                 {
                     outPuts.Add(FunctionBlocks[i].OutputNames[j], result[j]);

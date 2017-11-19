@@ -1,17 +1,17 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using KelpNet.Common.Optimizers;
 
 namespace KelpNet.Common.Functions.Container
 {
-    // The main class of this library for stacking layers.
-    // A set of functions that are executed simultaneously in one Forward, Backward, Update.
+    //The main class of this library for stacking layers.
+    //A set of functions that are executed simultaneously in one Forward, Backward, Update.
     [Serializable]
     public class FunctionStack : Function
     {
         const string FUNCTION_NAME = "FunctionStack";
 
-        // All layers are stored here
+        //All layers are stored here
         public Function[] Functions { get; private set; }
 
         public FunctionStack(Function[] functions, string name = FUNCTION_NAME, string[] inputNames = null, string[] outputNames = null) : base(name, inputNames, outputNames)
@@ -30,7 +30,7 @@ namespace KelpNet.Common.Functions.Container
             this.Add(functions);
         }
 
-        // Since it is not supposed to be used frequently, it is an inefficient implementation
+        //Since it is an inefficient implementation
         public void Add(params Function[] function)
         {
             if (function != null && function.Length > 0)
@@ -58,7 +58,7 @@ namespace KelpNet.Common.Functions.Container
         {
             List<Function> functionList = new List<Function>(Functions);
 
-            // Compress layer
+            //Compress layer
             for (int i = 0; i < functionList.Count - 1; i++)
             {
                 if (functionList[i] is CompressibleFunction)
@@ -74,7 +74,7 @@ namespace KelpNet.Common.Functions.Container
             this.Functions = functionList.ToArray();
         }
 
-        // Forward
+        //Forward
         public override NdArray[] Forward(params NdArray[] xs)
         {
             NdArray[] ys = xs;
@@ -87,13 +87,13 @@ namespace KelpNet.Common.Functions.Container
             return ys;
         }
 
-        // Backward
+        //Backward
         public override void Backward(params NdArray[] ys)
         {
             NdArray.Backward(ys[0]);
         }
 
-        // Weight update process
+        //Weight update process
         public override void Update()
         {
             foreach (var function in Functions)
@@ -102,7 +102,7 @@ namespace KelpNet.Common.Functions.Container
             }
         }
 
-        // A process of returning specific data to the initial value after a certain process is executed
+        //A process of returning specific data to the initial value after a certain process is executed
         public override void ResetState()
         {
             foreach (Function function in this.Functions)
@@ -111,7 +111,7 @@ namespace KelpNet.Common.Functions.Container
             }
         }
 
-        // Execute forecast
+        //Execute forecast
         public override NdArray[] Predict(params NdArray[] xs)
         {
             NdArray[] ys = xs;

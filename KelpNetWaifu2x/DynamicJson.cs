@@ -1,12 +1,12 @@
-﻿/*--------------------------------------------------------------------------
-* DynamicJson
-* ver 1.2.0.0 (May. 21th, 2010)
-*
-* created and maintained by neuecc <ils@neue.cc>
-* licensed under Microsoft Public License(Ms-PL)
-* http://neue.cc/
-* https://github.com/neuecc/DynamicJson
-*--------------------------------------------------------------------------*/
+/* ------------------------------------------------------   --------------------------
+  * DynamicJson
+  * ver 1.2.0.0 (May. 21 th, 2010)
+  *
+  * created and maintained by neuecc <ils@neue.cc>
+  * licensed under Microsoft Public License (Ms-PL)
+  * http://neue.cc/
+  * https://github.com/neuecc/DynamicJson
+  * -------------------------------------------------------------------   ------------------------- */
 
 using System;
 using System.Collections;
@@ -30,15 +30,15 @@ namespace KelpNetWaifu2x
             @string, number, boolean, @object, array, @null
         }
 
-        // public static methods
+        //public static methods
 
-        /// <summary>from JsonSring to DynamicJson</summary>
+        ///<summary> from JsonSring to DynamicJson </summary>
         public static dynamic Parse(string json)
         {
             return Parse(json, Encoding.Unicode);
         }
 
-        /// <summary>from JsonSring to DynamicJson</summary>
+        ///<summary> from JsonSring to DynamicJson </summary>
         public static dynamic Parse(string json, Encoding encoding)
         {
             using (var reader = JsonReaderWriterFactory.CreateJsonReader(encoding.GetBytes(json), XmlDictionaryReaderQuotas.Max))
@@ -47,7 +47,7 @@ namespace KelpNetWaifu2x
             }
         }
 
-        /// <summary>from JsonSringStream to DynamicJson</summary>
+        ///<summary> from JsonSringStream to DynamicJson </summary>
         public static dynamic Parse(Stream stream)
         {
             using (var reader = JsonReaderWriterFactory.CreateJsonReader(stream, XmlDictionaryReaderQuotas.Max))
@@ -56,7 +56,7 @@ namespace KelpNetWaifu2x
             }
         }
 
-        /// <summary>from JsonSringStream to DynamicJson</summary>
+        ///<summary> from JsonSringStream to DynamicJson </summary>
         public static dynamic Parse(Stream stream, Encoding encoding)
         {
             using (var reader = JsonReaderWriterFactory.CreateJsonReader(stream, encoding, XmlDictionaryReaderQuotas.Max, _ => { }))
@@ -65,13 +65,13 @@ namespace KelpNetWaifu2x
             }
         }
 
-        /// <summary>create JsonSring from primitive or IEnumerable or Object({public property name:property value})</summary>
+        ///<summary> create JsonS from from primitive or IEnumerable or Object ({public property name: property value}) </summary>
         public static string Serialize(object obj)
         {
             return CreateJsonString(new XStreamingElement("root", CreateTypeAttr(GetJsonType(obj)), CreateJsonNode(obj)));
         }
 
-        // private static methods
+        //private static methods
 
         private static dynamic ToValue(XElement element)
         {
@@ -176,12 +176,12 @@ namespace KelpNetWaifu2x
             }
         }
 
-        // dynamic structure represents JavaScript Object/Array
+        //dynamic structure represents JavaScript Object / Array
 
         readonly XElement xml;
         readonly JsonType jsonType;
 
-        /// <summary>create blank JSObject</summary>
+        ///<summary> create blank JSObject </summary>
         public DynamicJson()
         {
             xml = new XElement("root", CreateTypeAttr(JsonType.@object));
@@ -200,19 +200,19 @@ namespace KelpNetWaifu2x
 
         public bool IsArray { get { return jsonType == JsonType.array; } }
 
-        /// <summary>has property or not</summary>
+        ///<summary> has property or not </summary>
         public bool IsDefined(string name)
         {
             return IsObject && (xml.Element(name) != null);
         }
 
-        /// <summary>has property or not</summary>
+        ///<summary> has property or not </summary>
         public bool IsDefined(int index)
         {
             return IsArray && (xml.Elements().ElementAtOrDefault(index) != null);
         }
 
-        /// <summary>delete property</summary>
+        ///<summary> delete property </summary>
         public bool Delete(string name)
         {
             var elem = xml.Element(name);
@@ -224,7 +224,7 @@ namespace KelpNetWaifu2x
             else return false;
         }
 
-        /// <summary>delete property</summary>
+        ///<summary> delete property </summary>
         public bool Delete(int index)
         {
             var elem = xml.Elements().ElementAtOrDefault(index);
@@ -236,7 +236,7 @@ namespace KelpNetWaifu2x
             else return false;
         }
 
-        /// <summary>mapping to Array or Class by Public PropertyName</summary>
+        ///<summary> mapping to Array or Class by Public PropertyName </summary>
         public T Deserialize<T>()
         {
             return (T)Deserialize(typeof(T));
@@ -275,7 +275,7 @@ namespace KelpNetWaifu2x
 
         private object DeserializeArray(Type targetType)
         {
-            if (targetType.IsArray) // Foo[]
+            if (targetType.IsArray) //Foo []
             {
                 var elemType = targetType.GetElementType();
                 dynamic array = Array.CreateInstance(elemType, xml.Elements().Count());
@@ -286,7 +286,7 @@ namespace KelpNetWaifu2x
                 }
                 return array;
             }
-            else // List<Foo>
+            else //List <Foo>
             {
                 var elemType = targetType.GetGenericArguments()[0];
                 dynamic list = Activator.CreateInstance(targetType);
@@ -298,7 +298,7 @@ namespace KelpNetWaifu2x
             }
         }
 
-        // Delete
+        //Delete
         public override bool TryInvoke(InvokeBinder binder, object[] args, out object result)
         {
             result = (IsArray)
@@ -307,7 +307,7 @@ namespace KelpNetWaifu2x
             return true;
         }
 
-        // IsDefined, if has args then TryGetMember
+        //IsDefined, if has args then TryGetMember
         public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
         {
             if (args.Length > 0)
@@ -320,7 +320,7 @@ namespace KelpNetWaifu2x
             return true;
         }
 
-        // Deserialize or foreach(IEnumerable)
+        //Deserialize or foreach (IEnumerable)
         public override bool TryConvert(ConvertBinder binder, out object result)
         {
             if (binder.Type == typeof(IEnumerable) || binder.Type == typeof(object[]))
@@ -418,10 +418,10 @@ namespace KelpNetWaifu2x
                 : xml.Elements().Select(x => x.Name.LocalName);
         }
 
-        /// <summary>Serialize to JsonString</summary>
+        ///<summary> Serialize to JsonString </summary>
         public override string ToString()
         {
-            // <foo type="null"></foo> is can't serialize. replace to <foo type="null" />
+            //<foo type = "null"> </foo> is can not serialize. replace to <foo type = "null"/>
             foreach (var elem in xml.Descendants().Where(x => x.Attribute("type").Value == "null"))
             {
                 elem.RemoveNodes();

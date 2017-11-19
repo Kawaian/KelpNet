@@ -1,40 +1,40 @@
-﻿using System.IO;
+using System.IO;
 using System.IO.Compression;
 using System.Text;
 
 namespace MNISTLoader
 {
-    /// <summary>
-    /// MNIST のラベルファイルをロードするためのクラス.
-    /// http://yann.lecun.com/exdb/mnist/
-    /// </summary>
+    ///<summary>
+    ///Class for loading MNIST's label file.
+    ///http://yann.lecun.com/exdb/mnist/
+    ///</summary>
     class MnistLabelLoader
     {
-        /// <summary>
-        /// 0x0000 から始まるマジックナンバー.
-        /// 0x00000801 (2049) が入る.
-        /// </summary>
+        ///<summary>
+        ///Magic number starting from 0x0000.
+        ///0x00000801 (2049) is entered.
+        ///</summary>
         public int magicNumber;
 
-        /// <summary>
-        /// ラベルの数.
-        /// </summary>
+        ///<summary>
+        ///Number of labels.
+        ///</summary>
         public int numberOfItems;
 
-        /// <summary>
-        /// ラベルの配列.
-        /// </summary>
+        ///<summary>
+        ///Array of labels.
+        ///</summary>
         public byte[] labelList;
 
-        /// <summary>
-        /// MNIST のラベルファイルをロードする.
-        /// 失敗した時は null を返す.
-        /// </summary>
-        /// <param name="path">ラベルファイルのパス.</param>
-        /// <returns></returns>
+        ///<summary>
+        ///Load the MNIST label file.
+        ///If it fails, it returns null.
+        ///</summary>
+        ///<param name = "path"> Label file path </param>
+        ///<returns> </returns>
         public static MnistLabelLoader Load(string path)
         {
-            // ファイルが存在しない
+            //File does not exist
             if (File.Exists(path) == false)
             {
                 return null;
@@ -44,7 +44,7 @@ namespace MNISTLoader
             using (FileStream inStream = new FileStream(path, FileMode.Open, FileAccess.Read))
             using (GZipStream decompStream = new GZipStream(inStream, CompressionMode.Decompress))
             {
-                // バイト配列を分解する
+                //Decompose byte array
                 BinaryReaderBE reader = new BinaryReaderBE(decompStream);
 
                 loader.magicNumber = reader.ReadInt32();
@@ -57,10 +57,10 @@ namespace MNISTLoader
             return loader;
         }
 
-        /// <summary>
-        /// デバッグ用.
-        /// </summary>
-        /// <returns></returns>
+        ///<summary>
+        ///For debugging purposes.
+        ///</summary>
+        ///<returns> </returns>
         public override string ToString()
         {
             StringBuilder stringBuilder = new StringBuilder();

@@ -1,14 +1,14 @@
-﻿using System;
+using System;
 
 namespace KelpNet.Common
 {
-    //乱数の素
-    //C#ではRandomを複数同時にインスタンスすると似たような値しか吐かないため
-    //一箇所でまとめて管理しておく必要がある
+    //Random numbers
+    //In C #, when multiple instances of Random are simultaneously instantiated, only similar values ​​are emitted
+    //It is necessary to manage it collectively in one place
     public class Mother
     {
 #if DEBUG
-        //デバッグ時はシードを固定
+        //Fix seed when debugging
         public static Random Dice = new Random(128);
 #else
         public static Random Dice = new Random();
@@ -18,7 +18,7 @@ namespace KelpNet.Common
         public static double Mu = 0;
         public static double Sigma = 1;
 
-        // 平均mu, 標準偏差sigmaの正規分布乱数を得る。Box-Muller法による。
+        //Obtain normal distributed random numbers with mean mu and standard deviation sigma.   According to the Box-Muller method.
         public static double RandomNormal()
         {
             if (!Flip)

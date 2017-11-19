@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using KelpNet.Common;
 using KelpNet.Common.Functions.Container;
@@ -11,8 +11,8 @@ using VocabularyMaker;
 
 namespace KelpNetTester.Tests
 {
-    //SimpleなRNNによるRNNLM
-    //『Chainerによる実践深層学習』より（ISBN 978-4-274-21934-4）
+    //RNNLM with Simple RNN
+    //From "Practical depth learning by Chainer" (ISBN 978-4-274-21934-4)
     class Test9
     {
         const int TRAINING_EPOCHS = 5;
@@ -73,7 +73,7 @@ namespace KelpNetTester.Tests
                             //l1 EmbedID
                             NdArray l1 = model.Functions[0].Forward(s[i])[0];
 
-                            //l2 Linear
+                            //l 2 Linear
                             NdArray l2 = model.Functions[1].Forward(h)[0];
 
                             //Add
@@ -160,7 +160,7 @@ namespace KelpNetTester.Tests
                 //l1 Linear
                 NdArray xK = model.Functions[0].Forward(s[i])[0];
 
-                //l2 Linear
+                //l 2 Linear
                 NdArray l2 = model.Functions[1].Forward(h)[0];
                 for (int j = 0; j < xK.Data.Length; j++)
                 {
@@ -170,7 +170,7 @@ namespace KelpNetTester.Tests
                 //l2 Tanh
                 h = model.Functions[2].Forward(xK)[0];
 
-                //l3 Softmax(l3 Linear)
+                //l 3 Softmax (l3 Linear)
                 NdArray yv = model.Functions[4].Forward(model.Functions[3].Forward(h))[0];
                 Real pi = yv.Data[s[i - 1]];
                 sum -= Math.Log(pi, 2);

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -171,7 +171,7 @@ namespace KelpNet.Functions.Noise
         }
 
 
-        //Predict時に何もしない
+        //I do not do anything when Predict
         public override NdArray Predict(NdArray input)
         {
             return input;

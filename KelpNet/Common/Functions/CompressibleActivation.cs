@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Cloo;
@@ -19,10 +19,10 @@ namespace KelpNet.Common.Functions
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public ComputeKernel BackwardKernel;
 
-        //GPU向けのActivate関数の文字列
+        //Character string of Activate function for GPU
         public string ActivateFunctionString;
 
-        //.Netで使用するActivateの仮想関数
+        //Activate virtual function used in.Net
         internal abstract Real ForwardActivate(Real x);
         internal abstract Real BackwardActivate(Real gy, Real y);
 

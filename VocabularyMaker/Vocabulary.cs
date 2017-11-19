@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -27,7 +27,7 @@ namespace VocabularyMaker
 
                 string[] replace = strText.Replace("\r\n", "\n").Replace("\n", "<EOS>").Trim().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
-                // Add to the dictionary except for Daburi
+                //Add to the dictionary except for Daburi
                 this.Data.AddRange(replace);
 
                 this.Data = new List<string>(this.Data.Distinct());

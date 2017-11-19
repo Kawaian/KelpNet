@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -18,7 +18,7 @@ namespace CaffemodelLoader
 {
     public class CaffemodelDataLoader
     {
-        //binaryprotoを読み込む
+        //Load binaryproto
         public static NdArray ReadBinary(string path)
         {
             using (FileStream stream = new FileStream(path, FileMode.Open))
@@ -51,7 +51,7 @@ namespace CaffemodelLoader
             }
         }
 
-        //分岐ありモデル用関数
+        //Functions for branched models
         public static FunctionDictionary LoadNetWork(string path)
         {
             FunctionDictionary functionDictionary = new FunctionDictionary();
@@ -84,7 +84,7 @@ namespace CaffemodelLoader
             return functionDictionary;
         }
 
-        //分岐なしモデル用関数
+        //Function for branching-none model
         public static List<Function> ModelLoad(string path)
         {
             List<Function> result = new List<Function>();
@@ -217,13 +217,13 @@ namespace CaffemodelLoader
 
         static Function SetupScale(ScaleParameter param, List<BlobProto> blobs, List<string> bottoms, string name, string[] inputNames, string[] outputNames)
         {
-            //Caffe及びChainerは暗黙的に1次元目をBacthとして利用しているため補正を行う
+            //Caffe and Chainer implicitly use the first dimension as Bacth and therefore make correction
             int axis = param.Axis - 1;
             bool biasTerm = param.BiasTerm;
 
             if (bottoms.Count == 1)
             {
-                //Scaleを作成
+                //Create Scale
                 int[] wShape = new int[blobs[0].Shape.Dims.Length];
 
                 for (int i = 0; i < wShape.Length; i++)
@@ -235,7 +235,7 @@ namespace CaffemodelLoader
             }
             else
             {
-                //Biasを作成
+                //Create Bias
                 int[] shape = new int[blobs[0].Shape.Dims.Length];
 
                 for (int i = 0; i < shape.Length; i++)
@@ -256,7 +256,7 @@ namespace CaffemodelLoader
                 slicePoints[i] = (int)param.SlicePoints[i];
             }
 
-            //Caffe及びChainerは暗黙的に1次元目をBacthとして利用しているため補正を行う
+            //Caffe and Chainer implicitly use the first dimension as Bacth and therefore make correction
             return new SplitAxis(slicePoints, param.Axis - 1, name, inputNames, outputNames);
         }
 
@@ -370,7 +370,7 @@ namespace CaffemodelLoader
                 axis = (int)param.ConcatDim;
             }
 
-            //Caffe及びChainerは暗黙的に1次元目をBacthとして利用しているため補正を行う
+            //Caffe and Chainer implicitly use the first dimension as Bacth and therefore make correction
             return new Concat(axis - 1, name, inputNames, outputNames);
         }
 

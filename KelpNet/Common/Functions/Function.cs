@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using KelpNet.Common.Optimizers;
@@ -6,7 +6,7 @@ using KelpNet.Common.Tools;
 
 namespace KelpNet.Common.Functions
 {
-    //FunctionStackに積み上げるFunctionの基底クラス
+    //Base class of Function stacked in FunctionStack
     [Serializable]
     public abstract class Function
     {
@@ -26,7 +26,7 @@ namespace KelpNet.Common.Functions
         public string[] InputNames;
         public string[] OutputNames;
 
-        //コンストラクタ
+        //constructor
         protected Function(string name, string[] inputNames = null, string[] outputNames = null)
         {
             this.Name = name;
@@ -52,7 +52,7 @@ namespace KelpNet.Common.Functions
             }
         }
 
-        //パラメータを更新する時に呼ぶ関数
+        //Function to call when updating parameters
         protected void BackwardCountUp()
         {
             foreach (NdArray parameter in this.Parameters)
@@ -61,7 +61,7 @@ namespace KelpNet.Common.Functions
             }
         }
 
-        //評価関数
+        //Evaluation function
         public virtual NdArray[] Predict(params NdArray[] input)
         {
             return this.Forward(input);
@@ -75,18 +75,18 @@ namespace KelpNet.Common.Functions
             }
         }
 
-        //ある処理実行後に特定のデータを初期値に戻す処理
+        //A process of returning specific data to the initial value after a certain process is executed
         public virtual void ResetState()
         {
         }
 
-        //名前を返す
+        //Return name
         public override string ToString()
         {
             return this.Name;
         }
 
-        //コピーを作成するメソッド
+        //Method to create copy
         public Function Clone()
         {
             return DeepCopyHelper.DeepCopy(this);

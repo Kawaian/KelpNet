@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using KelpNet.Common;
 using KelpNet.Common.Functions;
@@ -6,7 +6,7 @@ using KelpNet.Common.Functions;
 namespace KelpNet.Functions.Noise
 {
     [Serializable]
-    public class StochasticDepth : Function //SplitFunctionと置き換えるように使用する
+    public class StochasticDepth : Function //Use it to replace SplitFunction
     {
         const string FUNCTION_NAME = "StochasticDepth";
 
@@ -14,8 +14,8 @@ namespace KelpNet.Functions.Noise
 
         private readonly List<bool> _skipList = new List<bool>();
 
-        private readonly Function _function; //確率でスキップされる
-        private readonly Function _resBlock; //必ず実行される
+        private readonly Function _function; //Skipped by probability
+        private readonly Function _resBlock; //Always executed
 
         private bool IsSkip()
         {

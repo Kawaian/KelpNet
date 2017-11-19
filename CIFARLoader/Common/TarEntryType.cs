@@ -1,4 +1,4 @@
-﻿namespace CIFARLoader.Common
+namespace CIFARLoader.Common
 {
     public enum TarEntryType : byte
     {
@@ -11,8 +11,8 @@
         Directory = 53,
         Fifo = 54,
         File_Contiguous = 55,
-        GnuLongLink = (byte)'K',    // "././@LongLink"
-        GnuLongName = (byte)'L',    // "././@LongLink"
+        GnuLongLink = (byte)'K',    //"././@LongLink"
+        GnuLongName = (byte)'L',    //"././@LongLink"
         GnuSparseFile = (byte)'S',
         GnuVolumeHeader = (byte)'V'
     }

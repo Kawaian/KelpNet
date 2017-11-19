@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using KelpNet.Common;
@@ -26,7 +26,7 @@ namespace KelpNet.Functions.Arrays
 
             if (val.Shape.Length > this.Shape.Length)
             {
-                //入力の方が大きい
+                //The input is larger
                 resultShape = val.Shape.ToArray();
                 int offset = val.Shape.Length - this.Shape.Length;
 
@@ -39,14 +39,14 @@ namespace KelpNet.Functions.Arrays
 #if DEBUG
                     else if (this.Shape[i - offset] != 1 && resultShape[i] != this.Shape[i - offset])
                     {
-                        throw new Exception("変換不可能な組み合わせです");
+                        throw new Exception("It is an incompatible combination");
                     }
 #endif
                 }
             }
             else
             {
-                //指定の方が大きい
+                //Designation is larger
                 resultShape = this.Shape.ToArray();
                 int offset = this.Shape.Length - val.Shape.Length;
 
@@ -59,7 +59,7 @@ namespace KelpNet.Functions.Arrays
 #if DEBUG
                     else if (val.Shape[i - offset] != 1 && resultShape[i] != val.Shape[i - offset])
                     {
-                        throw new Exception("変換不可能な組み合わせです");
+                        throw new Exception("It is an incompatible combination");
                     }
 #endif
                 }

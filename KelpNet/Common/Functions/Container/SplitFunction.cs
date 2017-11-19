@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using KelpNet.Common.Functions.Type;
 
 namespace KelpNet.Common.Functions.Container

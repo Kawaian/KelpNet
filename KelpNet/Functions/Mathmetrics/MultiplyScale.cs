@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using KelpNet.Common;
@@ -27,11 +27,11 @@ namespace KelpNet.Functions.Mathmetrics
             {
                 if (biasTerm)
                 {
-                    throw new Exception("Biasのみでの使用はAddBiasを使用してください");
+                    throw new Exception("Please use AddBias for use only with Bias");
                 }
                 else
                 {
-                    throw new Exception("パラメータの設定が正しくありません");
+                    throw new Exception("Parameter setting is incorrect");
                 }
             }
 #endif

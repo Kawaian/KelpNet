@@ -1,35 +1,35 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Runtime.InteropServices;
 
-// アセンブリに関する一般情報は以下の属性セットをとおして制御されます。
-// アセンブリに関連付けられている情報を変更するには、
-// これらの属性値を変更してください。
+//General information about assemblies is controlled through the following set of attributes:
+//To change the information associated with an assembly,
+//Please change these attribute values.
 [assembly: AssemblyTitle("KelpNet")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("KelpNet")]
-[assembly: AssemblyCopyright("Copyright ©  2016")]
+[assembly: AssemblyCopyright("Copyright © 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
-// ComVisible を false に設定すると、その型はこのアセンブリ内で COM コンポーネントから 
-// 参照不可能になります。COM からこのアセンブリ内の型にアクセスする場合は、
-// その型の ComVisible 属性を true に設定してください。
+//If ComVisible is set to false, its type will be changed from COM component
+//It becomes impossible to refer.   When accessing a type in this assembly from COM,
+//Set the ComVisible attribute of that type to true.
 [assembly: ComVisible(false)]
 
-// このプロジェクトが COM に公開される場合、次の GUID が typelib の ID になります
+//When this project is published to COM, the next GUID is the ID of typelib
 [assembly: Guid("750bb541-bf90-471d-a93f-54230b6fb07d")]
 
-// アセンブリのバージョン情報は次の 4 つの値で構成されています:
-//
-//      メジャー バージョン
-//      マイナー バージョン
-//      ビルド番号
-//      Revision
-//
-// すべての値を指定するか、下のように '*' を使ってビルドおよびリビジョン番号を 
-// 既定値にすることができます:
-// [assembly: AssemblyVersion("1.0.*")]
+//The assembly version information consists of the following four values:
+//,
+//Major Version
+//Minor version
+//Build number
+//Revision
+//,
+//Specify all the values, or use '*' as shown below to set the build and revision number
+//It can be the default value:
+//[assembly: AssemblyVersion ("1.0. *")]
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]

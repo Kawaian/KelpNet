@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.Windows.Forms;
 using KelpNet.Common;
@@ -23,7 +23,7 @@ namespace KelpNetTester.Tests
 
             ClientSize = new Size(128 * 4, 128 * 4);
 
-            //目標とするフィルタを作成（実践であればココは不明な値となる）
+            //Create a target filter (If it is practical, here is an unknown value)
             this.decon_core = new Deconvolution2D(1, 1, 15, 1, 7, gpuEnable: true)
             {
                 Weight = { Data = MakeOneCore() }
@@ -31,13 +31,13 @@ namespace KelpNetTester.Tests
 
             this.model = new Deconvolution2D(1, 1, 15, 1, 7, gpuEnable: true);
 
-            this.optimizer = new SGD(learningRate: 0.01); //大きいと発散する
+            this.optimizer = new SGD(learningRate: 0.01); //When it is big, it diverges.
             this.model.SetOptimizer(this.optimizer);
         }
 
         static NdArray getRandomImage(int N = 1, int img_w = 128, int img_h = 128)
         {
-            // ランダムに0.1％の点を作る
+            //Randomly make 0.1% points
             Real[] img_p = new Real[N * img_w * img_h];
 
             for (int i = 0; i < img_p.Length; i++)
@@ -49,7 +49,7 @@ namespace KelpNetTester.Tests
             return new NdArray(img_p, new[] { N, img_h, img_w }, 1);
         }
 
-        //１つの球状の模様を作成（ガウスですが）
+        //Create one spherical pattern (Gauss)
         static Real[] MakeOneCore()
         {
             int max_xy = 15;
@@ -72,19 +72,19 @@ namespace KelpNetTester.Tests
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            //移植元では同じ教育画像で教育しているが、より実践に近い学習に変更
+            //At the transplant source, we are educating with the same educational image, but changing to learning closer to practice
             if (this.counter < 11)
             {
-                //ランダムに点が打たれた画像を生成
+                //Generate random dotted images
                 NdArray img_p = getRandomImage();
 
-                //目標とするフィルタで学習用の画像を出力
+                //Output a learning image with a target filter
                 NdArray[] img_core = this.decon_core.Forward(img_p);
 
-                //未学習のフィルタで画像を出力
+                //Output an image with an unlearned filter
                 NdArray[] img_y = this.model.Forward(img_p);
 
-                //img_yを暗黙的にNdArrayとして使用
+                //Implicitly use img_y as NdArray
                 this.BackgroundImage = NdArrayConverter.NdArray2Image(img_y[0].GetSingleArray(0));
 
                 Real loss = this.meanSquaredError.Evaluate(img_y, img_core);

@@ -1,10 +1,10 @@
-﻿using System.IO;
+using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
 namespace KelpNet.Common.Tools
 {
-    //コチラを参考にしています
-    //http://d.hatena.ne.jp/tekk/20100131/1264913887
+    //I am referring to here
+    //http: d.hatena.ne.jp/tekk/20100131/1264913887
 
     public static class DeepCopyHelper
     {

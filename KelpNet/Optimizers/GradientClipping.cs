@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using KelpNet.Common;
 using KelpNet.Common.Functions;
 using KelpNet.Common.Optimizers;
 
 namespace KelpNet.Optimizers
 {
-    //与えられたthresholdで頭打ちではなく、全パラメータのL2Normからレートを取り補正を行う
+    //Do not cease at the given threshold, correct the rate from the L2 parameter of all parameters
     [Serializable]
     public class GradientClipping : Optimizer
     {

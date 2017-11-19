@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Net;
 
@@ -20,17 +20,17 @@ namespace TestDataManager
                 return fileName;
             }
 
-            //ファイルのチェックとダウンロード
+            //File checking and downloading
             if (!File.Exists(savedPath))
             {
-                Console.WriteLine(fileName + "をダウンロードします");
+                Console.WriteLine(fileName + "I download it");
 
                 if (!Directory.Exists(TmpFolderPath))
                 {
                     Directory.CreateDirectory(TmpFolderPath);
                 }
 
-                //非同期ダウンロードを開始する
+                //Start asynchronous download
                 downloadClient.DownloadFileTaskAsync(new Uri(url), savedPath).Wait();
             }
 

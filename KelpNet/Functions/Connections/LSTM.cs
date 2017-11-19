@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using KelpNet.Common;
 using KelpNet.Common.Functions.Type;
@@ -54,7 +54,7 @@ namespace KelpNet.Functions.Connections
             functionParameters.AddRange(this.upward2.Parameters);
             functionParameters.AddRange(this.upward3.Parameters);
 
-            //lateralはBiasは無し
+            //lateral has no Bias
             this.lateral0 = new Linear(outSize, outSize, noBias: true, initialW: initialLateralW, name: "lateral0", gpuEnable: gpuEnable);
             this.lateral1 = new Linear(outSize, outSize, noBias: true, initialW: initialLateralW, name: "lateral1", gpuEnable: gpuEnable);
             this.lateral2 = new Linear(outSize, outSize, noBias: true, initialW: initialLateralW, name: "lateral2", gpuEnable: gpuEnable);
@@ -83,7 +83,7 @@ namespace KelpNet.Functions.Connections
 
             if (this.hParam == null)
             {
-                //値がなければ初期化
+                //Initialize if there is no value
                 this.aParam = new List<Real[]>();
                 this.iParam = new List<Real[]>();
                 this.fParam = new List<Real[]>();
@@ -96,7 +96,7 @@ namespace KelpNet.Functions.Connections
                 Real[] laterals1 = this.lateral1.Forward(hParam)[0].Data;
                 Real[] laterals2 = this.lateral2.Forward(hParam)[0].Data;
                 Real[] laterals3 = this.lateral3.Forward(hParam)[0].Data;
-                hParam.UseCount -= 4; //回数を補正 RFI
+                hParam.UseCount -= 4; //Number corrected RFI
 
                 for (int i = 0; i < outputDataSize; i++)
                 {
@@ -122,7 +122,7 @@ namespace KelpNet.Functions.Connections
 
             for (int b = 0; b < x.BatchCount; b++)
             {
-                //再配置
+                //Relocation
                 for (int j = 0; j < this.OutputCount; j++)
                 {
                     int index = j * 4;
@@ -139,7 +139,7 @@ namespace KelpNet.Functions.Connections
                 }
             }
 
-            //Backward用
+            //For Backward
             this.cParam.Add(cResult);
             this.aParam.Add(la);
             this.iParam.Add(li);
@@ -154,7 +154,7 @@ namespace KelpNet.Functions.Connections
         {
             if (gcPrev == null)
             {
-                //値がなければ初期化
+                //Initialize if there is no value
                 this.gxPrev0 = new NdArray(new[] { OutputCount }, y.BatchCount);
                 this.gxPrev1 = new NdArray(new[] { OutputCount }, y.BatchCount);
                 this.gxPrev2 = new NdArray(new[] { OutputCount }, y.BatchCount);
@@ -208,10 +208,10 @@ namespace KelpNet.Functions.Connections
 
                 Real[] resultParam = new Real[this.OutputCount * 4];
 
-                //配置換え
+                //Rearrangement
                 for (int j = 0; j < this.OutputCount * 4; j++)
                 {
-                    //暗黙的に切り捨て
+                    //Implicit truncation
                     int index = j / this.OutputCount;
                     resultParam[j % this.OutputCount + index * OutputCount] = gParam[j / 4 + j % 4 * InputCount];
                 }

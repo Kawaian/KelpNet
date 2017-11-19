@@ -1,4 +1,4 @@
-﻿using KelpNet.Common;
+using KelpNet.Common;
 using KelpNet.Common.Functions.Type;
 
 namespace KelpNet.Functions.Mathmetrics.BasicMath
@@ -35,7 +35,7 @@ namespace KelpNet.Functions.Mathmetrics.BasicMath
         }
     }
 
-    //右辺が定数
+    //The right side is a constant
     public class SubConst : DualInputFunction
     {
         private const string FUNCTION_NAME = "SubConst";
@@ -68,7 +68,7 @@ namespace KelpNet.Functions.Mathmetrics.BasicMath
         }
     }
 
-    //左辺が定数
+    //The left side is a constant
     public class ConstSub : DualInputFunction
     {
         private const string FUNCTION_NAME = "ConstSub";

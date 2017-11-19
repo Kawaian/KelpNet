@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using KelpNet.Common;
 using KelpNet.Common.Functions.Container;
 using KelpNet.Common.Tools;
@@ -9,16 +9,16 @@ using KelpNet.Optimizers;
 
 namespace KelpNetTester.Tests
 {
-    //MLPによるSin関数の学習
+    //Learning of Sin function by MLP
 
-    //学習対象の周期を増やしたり、サンプリング数(N)を増やすとスコアが悪化するので、
-    //課題として挑戦してみると良いかもしれない
+    //Increasing the number of cycles to be learned or increasing the number of samples (N)
+    //It may be better to try as a challenge
     class Test3
     {
-        //学習回数
+        //Learning frequency
         const int EPOCH = 1000;
 
-        //一周期の分割数
+        //Number of divisions per period
         const int N = 50;
 
         public static void Run()
@@ -28,31 +28,31 @@ namespace KelpNetTester.Tests
 
             for (int i = 0; i < N; i++)
             {
-                //Sin波を一周期分用意
+                //Prepare Sin wave for one cycle
                 Real radian = -Math.PI + Math.PI * 2.0 * i / (N - 1);
                 trainData[i] = new[] { radian };
                 trainLabel[i] = new Real[] { Math.Sin(radian) };
             }
 
-            //ネットワークの構成を FunctionStack に書き連ねる
+            //Writing the network configuration in FunctionStack
             FunctionStack nn = new FunctionStack(
                 new Linear(1, 4, name: "l1 Linear"),
                 new Tanh(name: "l1 Tanh"),
                 new Linear(4, 1, name: "l2 Linear")
             );
 
-            //optimizerの宣言
+            //Declaration of optimizer
             nn.SetOptimizer(new SGD());
 
-            //訓練ループ
+            //Training loop
             for (int i = 0; i < EPOCH; i++)
             {
-                //誤差集計用
+                //For error aggregation
                 Real loss = 0;
 
                 for (int j = 0; j < N; j++)
                 {
-                    //ネットワークは訓練を実行すると戻り値に誤差が返ってくる
+                    //When training is executed in the network, an error is returned to the return value
                     loss += Trainer.Train(nn, trainData[j], trainLabel[j], new MeanSquaredError());
                 }
 
@@ -63,7 +63,7 @@ namespace KelpNetTester.Tests
                 }
             }
 
-            //訓練結果を表示
+            //Show training results
             Console.WriteLine("Test Start...");
 
             foreach (Real[] val in trainData)

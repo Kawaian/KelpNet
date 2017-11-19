@@ -1,36 +1,36 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-// アセンブリに関する一般情報は以下の属性セットをとおして制御されます。
-// アセンブリに関連付けられている情報を変更するには、
-// これらの属性値を変更してください。
+//General information about assemblies is controlled through the following set of attributes:
+//To change the information associated with an assembly,
+//Please change these attribute values.
 [assembly: AssemblyTitle("TestDataManager")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("TestDataManager")]
-[assembly: AssemblyCopyright("Copyright ©  2017")]
+[assembly: AssemblyCopyright("Copyright © 2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
-// ComVisible を false に設定すると、このアセンブリ内の型は COM コンポーネントから
-// 参照できなくなります。COM からこのアセンブリ内の型にアクセスする必要がある場合は、
-// その型の ComVisible 属性を true に設定してください。
+//If ComVisible is set to false, the type in this assembly will be from a COM component
+//You can not refer to it.   If you need to access a type in this assembly from COM,
+//Set the ComVisible attribute of that type to true.
 [assembly: ComVisible(false)]
 
-// このプロジェクトが COM に公開される場合、次の GUID が typelib の ID になります
+//When this project is published to COM, the next GUID is the ID of typelib
 [assembly: Guid("6d41064e-38db-4a3d-9336-bec27ed9f2db")]
 
-// アセンブリのバージョン情報は次の 4 つの値で構成されています:
-//
-//      メジャー バージョン
-//      マイナー バージョン
-//      ビルド番号
-//      Revision
-//
-// すべての値を指定するか、次を使用してビルド番号とリビジョン番号を既定に設定できます
-// 以下のように '*' を使用します:
-// [assembly: AssemblyVersion("1.0.*")]
+//The assembly version information consists of the following four values:
+//,
+//Major Version
+//Minor version
+//Build number
+//Revision
+//,
+//You can specify all the values ​​or you can use the following to set the build number and revision number to default
+//Use '*' as follows:
+//[assembly: AssemblyVersion ("1.0. *")]
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]

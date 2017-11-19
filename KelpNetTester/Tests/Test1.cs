@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using KelpNet.Common;
 using KelpNet.Common.Functions.Container;
@@ -10,9 +10,9 @@ using KelpNet.Optimizers;
 
 namespace KelpNetTester.Tests
 {
-    /// <summary>
-    /// Learning XOR by MLP
-    /// </summary>
+    ///<summary>
+    ///Learning XOR by MLP
+    ///</summary>
     class Test1
     {
         public static void Run()

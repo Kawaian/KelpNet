@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,9 +9,9 @@ using KelpNet.Properties;
 
 namespace KelpNet.Common
 {
-    /// <summary>
-    /// The types of devices.
-    /// </summary>
+    ///<summary>
+    ///The types of devices.
+    ///</summary>
     [Flags]
     public enum ComputeDeviceTypes : long
     {
@@ -27,20 +27,20 @@ namespace KelpNet.Common
     {
         public const string USE_DOUBLE_HEADER_STRING =
 @"
-#if __OPENCL__VERSION__ <= __CL_VERSION_1_1
-#if defined(cl_khr_fp64)
-#pragma OPENCL EXTENSION cl_khr_fp64 : enable
-#elif defined(cl_amd_fp64)
-#pragma OPENCL EXTENSION cl_amd_fp64 : enable
-#endif
-#endif
-";
+  #if __OPENCL__VERSION__ <= __CL_VERSION_ 1 _ 1
+  #if defined (cl_khr_fp64)
+  # pragma OPENCL EXTENSION cl_khr_fp 64: enable
+  # elif defined (cl_amd_fp 64)
+  # pragma OPENCL EXTENSION cl_amd_fp 64: enable
+  # endif
+  # endif
+  ";
 
         public const string REAL_HEADER_STRING =
 @"
-//! REAL is provided by compiler option
-typedef REAL Real;
-";
+  //! REAL is provided by compiler option
+  typedef REAL Real;
+  ";
 
         public static ComputeContext Context;
         private static ComputeDevice[] Devices;
@@ -100,10 +100,10 @@ typedef REAL Real;
         {
             string realType = Marshal.SizeOf(typeof(Real)) == Marshal.SizeOf(typeof(double)) ? "double" : "float";
 
-            // for precision setting of floating point
+            //for precision setting of floating point
             source = REAL_HEADER_STRING + source;
 
-            // Add at double precision
+            //Add at double precision
             if (realType == "double")
             {
                 source = USE_DOUBLE_HEADER_STRING + source;

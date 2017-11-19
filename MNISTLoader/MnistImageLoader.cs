@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -9,56 +9,56 @@ using System.Text;
 
 namespace MNISTLoader
 {
-    /// <summary>
-    /// MNIST の画像をロードするためのクラス.
-    /// http://yann.lecun.com/exdb/mnist/
-    /// </summary>
+    ///<summary>
+    ///Class for loading images of MNIST.
+    ///http://yann.lecun.com/exdb/mnist/
+    ///</summary>
     class MnistImageLoader
     {
-        /// <summary>
-        /// 0x0000 から始まるマジックナンバー.
-        /// 0x00000803 (2051) が入る.
-        /// </summary>
+        ///<summary>
+        ///Magic number starting from 0x0000.
+        ///0x00000803 (2051) is entered.
+        ///</summary>
         public int magicNumber;
 
-        /// <summary>
-        /// 画像の数.
-        /// </summary>
+        ///<summary>
+        ///Number of images.
+        ///</summary>
         public int numberOfImages;
 
-        /// <summary>
-        /// 画像の縦方向のサイズ.
-        /// </summary>
+        ///<summary>
+        ///The vertical size of the image.
+        ///</summary>
         public int numberOfRows;
 
-        /// <summary>
-        /// 画像の横方向のサイズ.
-        /// </summary>
+        ///<summary>
+        ///The horizontal size of the image.
+        ///</summary>
         public int numberOfColumns;
 
-        /// <summary>
-        /// 画像の配列.
-        /// Bitmap 形式で取得する場合は GetBitmap(index) を使用する.
-        /// </summary>
+        ///<summary>
+        ///Array of images.
+        ///To obtain in Bitmap format, use GetBitmap (index).
+        ///</summary>
         public List<byte[]> bitmapList;
 
-        /// <summary>
-        /// コンストラクタ.
-        /// </summary>
+        ///<summary>
+        ///constructor.
+        ///</summary>
         public MnistImageLoader()
         {
             this.bitmapList = new List<byte[]>();
         }
 
-        /// <summary>
-        /// MNIST のデータをロードする.
-        /// 失敗した時は null を返す.
-        /// </summary>
-        /// <param name="path">画像データのパス.</param>
-        /// <returns></returns>
+        ///<summary>
+        ///Load MNIST data.
+        ///If it fails, it returns null.
+        ///</summary>
+        ///<param name = "path"> Image data path. </param>
+        ///<returns> </returns>
         public static MnistImageLoader Load(string path)
         {
-            // ファイルが存在しない
+            //File does not exist
             if (File.Exists(path) == false)
             {
                 return null;
@@ -66,7 +66,7 @@ namespace MNISTLoader
 
             MnistImageLoader loader = new MnistImageLoader();
 
-            // バイト配列を分解する
+            //Decompose byte array
             using (FileStream inStream = new FileStream(path, FileMode.Open, FileAccess.Read))
             using (GZipStream decompStream = new GZipStream(inStream, CompressionMode.Decompress))
             {
@@ -90,21 +90,21 @@ namespace MNISTLoader
             return loader;
         }
 
-        /// <summary>
-        /// 引数で指定されたインデックス番号の画像を Bitmap 形式で取得する.
-        /// 失敗した場合は null を返す.
-        /// </summary>
-        /// <param name="index">画像のインデックス番号.</param>
-        /// <returns></returns>
+        ///<summary>
+        ///Acquires the image with the index number specified by the argument in Bitmap format.
+        ///If it fails, it returns null.
+        ///</summary>
+        ///<param name = "index"> Image index number. </param>
+        ///<returns> </returns>
         public Bitmap GetBitmap(int index)
         {
-            // 範囲チェック
+            //Range check
             if (index < 0 || index >= this.bitmapList.Count)
             {
                 return null;
             }
 
-            // Bitmap 画像を作成する
+            //Create a Bitmap image
             Bitmap bitmap = new Bitmap(
                 this.numberOfColumns,
                 this.numberOfRows,
@@ -125,7 +125,7 @@ namespace MNISTLoader
                 for (int x = 0; x < this.numberOfColumns; x++)
                 {
                     byte b = pixels[x + y * this.numberOfColumns];
-                    // 次の行をコメントアウトすると白黒反転します
+                    //Comment out the next line to invert black and white
                     b = (byte)~b;
                     int offset = x * 3 + offsetY;
                     Marshal.WriteByte(intPtr, offset + 0, b);
@@ -138,10 +138,10 @@ namespace MNISTLoader
             return bitmap;
         }
 
-        /// <summary>
-        /// デバッグ用.
-        /// </summary>
-        /// <returns></returns>
+        ///<summary>
+        ///For debugging purposes.
+        ///</summary>
+        ///<returns> </returns>
         public override string ToString()
         {
             StringBuilder stringBuilder = new StringBuilder();
