@@ -39,7 +39,7 @@ namespace KelpNet.Common.Functions.Type
             return new[] { Predict(xs[0]) };
         }
 
-        //Predict専用メソッドを持つ関数のためのオーバーライド用
+        // For overriding for functions with Predict specific methods
         public virtual NdArray Predict(NdArray input)
         {
             return SingleInputForward(input);
