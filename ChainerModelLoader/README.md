@@ -1,4 +1,4 @@
-### サンプル内にて読み込んでいるファイルの作成コード
+### Creation code of the file being read in the sample
 ```Python
 import chainer
 from chainer import serializers
