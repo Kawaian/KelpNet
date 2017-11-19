@@ -1,5 +1,5 @@
 # KelpNet
-KelpNetはC#で実装された深層学習のライブラリです
+KelpNet is a deep learning library implemented in C#
 
 ```java
 /* SampleCode */
@@ -17,39 +17,36 @@ FunctionStack nn = new FunctionStack(
 );
 ```
 
-## 特徴
-- 行列演算をライブラリに頼らないため全ソースが可読になっており、どこで何をしているかを全て観測できます
-- KerasやChainerが採用している、関数を積み重ねるように記述するコーディングスタイルを採用しています
-- 並列演算にOpenCLを採用しているため、GPUだけでなくCPUやFPGA等の様々な演算装置で処理を並列化できます
-> ※OpenCLを使用するためには対応するドライバの追加インストールが必要になることがあります
-> - Intel製 CPU GPU: https://software.intel.com/en-us/articles/opencl-drivers
-> - AMD製 CPU GPU: http://www.amd.com/ja-jp/solutions/professional/hpc/opencl
-> - Nvidia製 GPU: https://developer.nvidia.com/opencl
+## Features
+- Since the matrix operation is not dependent on the library, all sources are readable, and it is possible to observe everything as to where and what
+- We adopt a coding style which describes Keras and Chainer as stacking functions as adopted
+- Since OpenCL is adopted for parallel computation, processing can be parallelized not only by GPU but also various computing devices such as CPU and FPGA
+> * In order to use OpenCL, additional installation of the corresponding driver may be necessary
+> - Intel CPU GPU: https://software.intel.com/en-us/articles/opencl-drivers
+> - AMD made CPU GPU: http://www.amd.com/en-us/solutions/professional/hpc/opencl
+> - GPU made by Nvidia: https://developer.nvidia.com/opencl
 
-### C#で作られているメリット
-- 開発環境の構築が容易で、プログラミング初学者にも学びやすい言語です
-- WindowsFormやUnity等、処理結果を視覚的に表示するための選択肢が豊富です
-- PCや携帯、組み込み機器等、様々なプラットフォームに向けたアプリケーションの開発ができます
+### Benefits made with C#
+- Easy to build development environment, easy to learn even for beginners of programming
+- There are plenty of options for visually displaying processing results such as WindowsForm and Unity
+- Application development for various platforms such as PCs, mobile phones, embedded devices, etc. can be done
 
-## このライブラリについて
-このライブラリの基幹部分はChainerを参考に実装されています。
-その為ほとんどの関数パラメータがChainerと同じになっており、Chainer向けのサンプルを参考に開発することが可能になっています。
+## About this library
+The core part of this library is implemented with reference to Chainer.
+For that reason most function parameters are the same as Chainer and it is possible to develop with reference to samples for Chainer.
 
 
-
-## 連絡方法
-ご質問、ご要望は Issues へご登録頂くか Twitter からご連絡ください。
-細やかなことでも構いませんので、何かお気づきの点が御座いましたら、お気軽にご連絡ください。
+## Contact method
+If you have any questions or requests, please register with Issues or contact us via Twitter.
+Since it does not matter even if it is delicate, if there are any points you have noticed, please do not hesitate to contact us.
 
 Twitter: https://twitter.com/harujoh
-
-
 
 ## License
 - KelpNet [Apache License 2.0]
 - Cloo [MIT License] https://sourceforge.net/projects/cloo/
 
-## 実装済み関数
+## Implemented function
 - Activations:
 　・ELU
 　・LeakyReLU
@@ -85,4 +82,4 @@ Twitter: https://twitter.com/harujoh
 　・DropOut
 　・StochasticDepth
  
- 最後に、このライブラリが誰かの学習の助けになれば幸いです
+Finally, We hope this library will help someone learn
