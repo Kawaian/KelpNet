@@ -16,38 +16,38 @@ namespace KelpNetTester
 
         public MnistData()
         {
-            //トレーニングデータ
-            this.X = new NdArray[this.mnistDataLoader.TrainData.Length];
-            //トレーニングデータラベル
-            this.Tx = new NdArray[this.mnistDataLoader.TrainData.Length];
+            //Training data
+            X = new NdArray[mnistDataLoader.TrainData.Length];
+            //Training data label
+            Tx = new NdArray[mnistDataLoader.TrainData.Length];
 
-            for (int i = 0; i < this.mnistDataLoader.TrainData.Length; i++)
+            for (int i = 0; i < mnistDataLoader.TrainData.Length; i++)
             {
                 Real[] x = new Real[28 * 28];
-                for (int j = 0; j < this.mnistDataLoader.TrainData[i].Length; j++)
+                for (int j = 0; j < mnistDataLoader.TrainData[i].Length; j++)
                 {
-                    x[j] = this.mnistDataLoader.TrainData[i][j] / 255.0;
+                    x[j] = mnistDataLoader.TrainData[i][j] / 255.0;
                 }
-                this.X[i] = new NdArray(x, new[] { 1, 28, 28 });
+                X[i] = new NdArray(x, new[] { 1, 28, 28 });
 
-                this.Tx[i] = new NdArray(new[] { (Real)this.mnistDataLoader.TrainLabel[i] });
+                Tx[i] = new NdArray(new[] { (Real)mnistDataLoader.TrainLabel[i] });
             }
 
-            //教師データ
-            this.Y = new NdArray[this.mnistDataLoader.TeachData.Length];
-            //教師データラベル
-            this.Ty = new NdArray[this.mnistDataLoader.TeachData.Length];
+            //Teacher data
+            Y = new NdArray[mnistDataLoader.TeachData.Length];
+            //Teacher data label
+            Ty = new NdArray[mnistDataLoader.TeachData.Length];
 
-            for (int i = 0; i < this.mnistDataLoader.TeachData.Length; i++)
+            for (int i = 0; i < mnistDataLoader.TeachData.Length; i++)
             {
                 Real[] y = new Real[28 * 28];
-                for (int j = 0; j < this.mnistDataLoader.TeachData[i].Length; j++)
+                for (int j = 0; j < mnistDataLoader.TeachData[i].Length; j++)
                 {
-                    y[j] = this.mnistDataLoader.TeachData[i][j] / 255.0;
+                    y[j] = mnistDataLoader.TeachData[i][j] / 255.0;
                 }
-                this.Y[i] = new NdArray(y, new[] { 1, 28, 28 });
+                Y[i] = new NdArray(y, new[] { 1, 28, 28 });
 
-                this.Ty[i] = new NdArray(new[] { (Real)this.mnistDataLoader.TeachLabel[i] });
+                Ty[i] = new NdArray(new[] { (Real)mnistDataLoader.TeachLabel[i] });
             }
         }
 
@@ -58,10 +58,10 @@ namespace KelpNetTester
 
             for (int i = 0; i < dataCount; i++)
             {
-                int index = Mother.Dice.Next(this.Y.Length);
+                int index = Mother.Dice.Next(Y.Length);
 
-                Array.Copy(this.Y[index].Data, 0, listY.Data,i * listY.Length,listY.Length);
-                listTy.Data[i] = this.Ty[index].Data[0];
+                Array.Copy(Y[index].Data, 0, listY.Data,i * listY.Length,listY.Length);
+                listTy.Data[i] = Ty[index].Data[0];
             }
 
             return new MnistDataSet(listY, listTy);
@@ -74,10 +74,10 @@ namespace KelpNetTester
 
             for (int i = 0; i < dataCount; i++)
             {
-                int index = Mother.Dice.Next(this.X.Length);
+                int index = Mother.Dice.Next(X.Length);
 
-                Array.Copy(this.X[index].Data, 0, listX.Data, i * listX.Length, listX.Length);
-                listTx.Data[i] = this.Tx[index].Data[0];
+                Array.Copy(X[index].Data, 0, listX.Data, i * listX.Length, listX.Length);
+                listTx.Data[i] = Tx[index].Data[0];
             }
 
             return new MnistDataSet(listX, listTx);
@@ -91,8 +91,8 @@ namespace KelpNetTester
 
         public MnistDataSet(NdArray data, NdArray label)
         {
-            this.Data = data;
-            this.Label = label;
+            Data = data;
+            Label = label;
         }
     }
 }

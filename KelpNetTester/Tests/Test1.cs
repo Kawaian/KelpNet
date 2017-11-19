@@ -10,15 +10,17 @@ using KelpNet.Optimizers;
 
 namespace KelpNetTester.Tests
 {
-    //MLPによるXORの学習
+    /// <summary>
+    /// Learning XOR by MLP
+    /// </summary>
     class Test1
     {
         public static void Run()
         {
-            //訓練回数
+            //Number of exercises
             const int learningCount = 10000;
 
-            //訓練データ
+            //Training data
             Real[][] trainData =
             {
                 new Real[] { 0, 0 },
@@ -27,7 +29,7 @@ namespace KelpNetTester.Tests
                 new Real[] { 1, 1 }
             };
 
-            //訓練データラベル
+            //Training data label
             Real[][] trainLabel =
             {
                 new Real[] { 0 },
@@ -36,28 +38,27 @@ namespace KelpNetTester.Tests
                 new Real[] { 0 }
             };
 
-            //ネットワークの構成は FunctionStack に書き連ねる
+            //Network configuration is written in FunctionStack
             FunctionStack nn = new FunctionStack(
                 new Linear(2, 2, name: "l1 Linear"),
                 new Sigmoid(name: "l1 Sigmoid"),
                 new Linear(2, 2, name: "l2 Linear")
             );
 
-            //optimizerを宣言
             nn.SetOptimizer(new MomentumSGD());
 
-            //訓練ループ
+            //Training looP
             Console.WriteLine("Training...");
             for (int i = 0; i < learningCount; i++)
             {
                 for (int j = 0; j < trainData.Length; j++)
                 {
-                    //訓練実行時にロス関数を記述
+                    //Describe the loss function at training execution
                     Trainer.Train(nn, trainData[j], trainLabel[j], new SoftmaxCrossEntropy());
                 }
             }
 
-            //訓練結果を表示
+            //Show training results
             Console.WriteLine("Test Start...");
             foreach (Real[] input in trainData)
             {
@@ -66,10 +67,12 @@ namespace KelpNetTester.Tests
                 Console.WriteLine(input[0] + " xor " + input[1] + " = " + resultIndex + " " + result);
             }
 
-            //学習の終わったネットワークを保存
+            //Save network after learning
+            Console.WriteLine("Model Saveing...");
             ModelIO.Save(nn, "test.nn");
 
-            //学習の終わったネットワークを読み込み
+            //Load the network after learning
+            Console.WriteLine("Model Loading...");
             FunctionStack testnn = ModelIO.Load("test.nn");
 
             Console.WriteLine("Test Start...");
