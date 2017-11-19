@@ -27,7 +27,7 @@ namespace VocabularyMaker
 
                 string[] replace = strText.Replace("\r\n", "\n").Replace("\n", "<EOS>").Trim().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
-                //ダブリを除いて辞書に追加
+                // Add to the dictionary except for Daburi
                 this.Data.AddRange(replace);
 
                 this.Data = new List<string>(this.Data.Distinct());
