@@ -12,7 +12,19 @@ namespace KelpNet.Common.Functions
     {
         public string Name;
 
-        public bool GpuEnable { get; protected set; }
+        private bool _gpuEnable;
+        public bool GpuEnable
+        {
+            get => _gpuEnable;
+            protected set
+            {
+                if (_gpuEnable != value)
+                {
+                    _gpuEnable = value;
+                    OnGpuEnableChanged();
+                }
+            }
+        }
 
         public NdArray[] Parameters = { };
         public Optimizer[] Optimizers = { };
@@ -50,6 +62,11 @@ namespace KelpNet.Common.Functions
             {
                 optimizer.AddFunctionParameters(this.Parameters);
             }
+        }
+
+        protected virtual void OnGpuEnableChanged()
+        {
+
         }
 
         //Function to call when updating parameters

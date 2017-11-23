@@ -56,7 +56,6 @@ namespace KelpNet.Functions.Activations
             {
                 x.Grad[i] += (1 - 1 / (1 + Math.Exp(this._beta * y.Data[i]))) * y.Grad[i];
             }
-
         }
     }
 }

@@ -27,20 +27,20 @@ namespace KelpNet.Common
     {
         public const string USE_DOUBLE_HEADER_STRING =
 @"
-  #if __OPENCL__VERSION__ <= __CL_VERSION_ 1 _ 1
-  #if defined (cl_khr_fp64)
-  # pragma OPENCL EXTENSION cl_khr_fp 64: enable
-  # elif defined (cl_amd_fp 64)
-  # pragma OPENCL EXTENSION cl_amd_fp 64: enable
-  # endif
-  # endif
-  ";
+#if __OPENCL__VERSION__ <= __CL_VERSION_1_1
+#if defined(cl_khr_fp64)
+#pragma OPENCL EXTENSION cl_khr_fp64 : enable
+#elif defined(cl_amd_fp64)
+#pragma OPENCL EXTENSION cl_amd_fp64 : enable
+#endif
+#endif
+";
 
         public const string REAL_HEADER_STRING =
 @"
-  //! REAL is provided by compiler option
-  typedef REAL Real;
-  ";
+//! REAL is provided by compiler option
+typedef REAL Real;
+";
 
         public static ComputeContext Context;
         private static ComputeDevice[] Devices;

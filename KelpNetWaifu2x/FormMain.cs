@@ -125,7 +125,7 @@ namespace KelpNetWaifu2x
                         MessageBox.Show("Conversion complete");
                     });
 
-                MessageBox.Show("Conversion processing has been started. \\ N Please wait for a while until" Conversion completed "message is displayed \\ n * It will take a very long time (about three minutes with 64 x 64 images)");
+                MessageBox.Show("Conversion processing has been started. \n Please wait for a while until" Conversion completed "message is displayed \n * It will take a very long time (about three minutes with 64 x 64 images)");
             }
         }
     }

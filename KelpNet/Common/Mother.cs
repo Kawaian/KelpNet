@@ -3,7 +3,7 @@ using System;
 namespace KelpNet.Common
 {
     //Random numbers
-    //In C #, when multiple instances of Random are simultaneously instantiated, only similar values ​​are emitted
+    //In C#, when multiple instances of Random are simultaneously instantiated, only similar values ​​are emitted
     //It is necessary to manage it collectively in one place
     public class Mother
     {
