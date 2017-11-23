@@ -32,20 +32,20 @@ namespace KelpNet.Functions.Connections
 
         public Convolution2D(int inputChannels, int outputChannels, int kSize, int stride = 1, int pad = 0, bool noBias = false, Array initialW = null, Array initialb = null, CompressibleActivation activation = null, string name = FUNCTION_NAME, string[] inputNames = null, string[] outputNames = null, bool gpuEnable = false) : base(FUNCTION_NAME, activation, new[] { new KeyValuePair<string, string>(PARAM_NAME, PARAM_VALUE) }, name, inputNames, outputNames, gpuEnable)
         {
-            this._kWidth = kSize;
-            this._kHeight = kSize;
-            this._strideX = stride;
-            this._strideY = stride;
-            this._padX = pad;
-            this._padY = pad;
-            this.NoBias = noBias;
+            _kWidth = kSize;
+            _kHeight = kSize;
+            _strideX = stride;
+            _strideY = stride;
+            _padX = pad;
+            _padY = pad;
+            NoBias = noBias;
 
-            this.Parameters = new NdArray[noBias ? 1 : 2];
+            Parameters = new NdArray[noBias ? 1 : 2];
 
-            this.OutputCount = outputChannels;
-            this.InputCount = inputChannels;
+            OutputCount = outputChannels;
+            InputCount = inputChannels;
 
-            this.Initialize(initialW, initialb);
+            Initialize(initialW, initialb);
         }
 
         public Convolution2D(int inputChannels, int outputChannels, Size kSize, Size stride = new Size(), Size pad = new Size(), bool noBias = false, Array initialW = null, Array initialb = null, CompressibleActivation activation = null, string name = FUNCTION_NAME, string[] inputNames = null, string[] outputNames = null, bool gpuEnable = false) : base(FUNCTION_NAME, activation, new[] { new KeyValuePair<string, string>(PARAM_NAME, PARAM_VALUE) }, name, inputNames, outputNames, gpuEnable)
@@ -56,99 +56,99 @@ namespace KelpNet.Functions.Connections
             if (stride == Size.Empty)
                 stride = new Size(1, 1);
 
-            this._kWidth = kSize.Width;
-            this._kHeight = kSize.Height;
-            this._strideX = stride.Width;
-            this._strideY = stride.Height;
-            this._padX = pad.Width;
-            this._padY = pad.Height;
-            this.NoBias = noBias;
+            _kWidth = kSize.Width;
+            _kHeight = kSize.Height;
+            _strideX = stride.Width;
+            _strideY = stride.Height;
+            _padX = pad.Width;
+            _padY = pad.Height;
+            NoBias = noBias;
 
-            this.Parameters = new NdArray[noBias ? 1 : 2];
+            Parameters = new NdArray[noBias ? 1 : 2];
 
-            this.OutputCount = outputChannels;
-            this.InputCount = inputChannels;
+            OutputCount = outputChannels;
+            InputCount = inputChannels;
 
-            this.Initialize(initialW, initialb);
+            Initialize(initialW, initialb);
         }
 
         public Convolution2D(Linear linear) : base(FUNCTION_NAME, linear.Activator, new[] { new KeyValuePair<string, string>(PARAM_NAME, PARAM_VALUE) }, linear.Name, linear.InputNames, linear.OutputNames, linear.GpuEnable)
         {
-            this._kWidth = 1;
-            this._kHeight = 1;
-            this._strideX = 1;
-            this._strideY = 1;
-            this._padX = 0;
-            this._padY = 0;
+            _kWidth = 1;
+            _kHeight = 1;
+            _strideX = 1;
+            _strideY = 1;
+            _padX = 0;
+            _padY = 0;
 
-            this.Parameters = linear.Parameters;
+            Parameters = linear.Parameters;
 
-            this.Weight = linear.Weight;
-            this.Weight.Reshape(OutputCount, InputCount, this._kHeight, this._kWidth);
-            this.Bias = linear.Bias;
-            this.NoBias = linear.NoBias;
+            Weight = linear.Weight;
+            Weight.Reshape(OutputCount, InputCount, _kHeight, _kWidth);
+            Bias = linear.Bias;
+            NoBias = linear.NoBias;
         }
 
         void Initialize(Array initialW = null, Array initialb = null)
         {
-            this.Weight = new NdArray(OutputCount, InputCount, this._kHeight, this._kWidth);
-            this.Weight.Name = this.Name + " Weight";
+            Weight = new NdArray(OutputCount, InputCount, _kHeight, _kWidth);
+            Weight.Name = Name + " Weight";
 
             if (initialW == null)
             {
-                Initializer.InitWeight(this.Weight);
+                Initializer.InitWeight(Weight);
             }
             else
             {
-                this.Weight.Data = Real.GetArray(initialW);
+                Weight.Data = Real.GetArray(initialW);
             }
 
-            this.Parameters[0] = this.Weight;
+            Parameters[0] = Weight;
 
             if (!NoBias)
             {
-                this.Bias = new NdArray(OutputCount);
-                this.Bias.Name = this.Name + " Bias";
+                Bias = new NdArray(OutputCount);
+                Bias.Name = Name + " Bias";
 
                 if (initialb != null)
                 {
-                    this.Bias.Data = Real.GetArray(initialb);
+                    Bias.Data = Real.GetArray(initialb);
                 }
 
-                this.Parameters[1] = this.Bias;
+                Parameters[1] = Bias;
             }
         }
 
         protected override NdArray NeedPreviousForwardCpu(NdArray input)
         {
-            int outputHeight = (int)Math.Floor((input.Shape[1] - this._kHeight + this._padY * 2.0) / this._strideY) + 1;
-            int outputWidth = (int)Math.Floor((input.Shape[2] - this._kWidth + this._padX * 2.0) / this._strideX) + 1;
+            int outputHeight = (int)Math.Floor((input.Shape[1] - _kHeight + _padY * 2.0) / _strideY) + 1;
+            int outputWidth = (int)Math.Floor((input.Shape[2] - _kWidth + _padX * 2.0) / _strideX) + 1;
 
-            Real[] result = new Real[this.OutputCount * outputHeight * outputWidth * input.BatchCount];
+            Real[] result = new Real[OutputCount * outputHeight * outputWidth * input.BatchCount];
 
             for (int batchCounter = 0; batchCounter < input.BatchCount; batchCounter++)
             {
-                int resultIndex = batchCounter * this.OutputCount * outputHeight * outputWidth;
+                int resultIndex = batchCounter * OutputCount * outputHeight * outputWidth;
 
-                for (int och = 0; och < this.OutputCount; och++)
+                for (int och = 0; och < OutputCount; och++)
                 {
                     //For W index
-                    int outChOffset = och * this.InputCount * this._kHeight * this._kWidth;
+                    int outChOffset = och * InputCount * _kHeight * _kWidth;
 
-                    for (int oy = 0; oy < outputHeight * this._strideY; oy += this._strideY)
+                    for (int oy = 0; oy < outputHeight * _strideY; oy += _strideY)
                     {
-                        int kyStartIndex = oy - this._padY < 0 ? 0 : oy - this._padY;
-                        int kyLimit = this._kHeight + oy - this._padY < input.Shape[1] ? this._kHeight + oy - this._padY : input.Shape[1];
+                        int kyStartIndex = oy - _padY < 0 ? 0 : oy - _padY;
+                        int kyLimit = _kHeight + oy - _padY < input.Shape[1] ? _kHeight + oy - _padY : input.Shape[1];
 
-                        for (int ox = 0; ox < outputWidth * this._strideX; ox += this._strideX)
+                        for (int ox = 0; ox < outputWidth * _strideX; ox += _strideX)
                         {
-                            int kxStartIndex = ox - this._padX < 0 ? 0 : ox - this._padX;
-                            int kxLimit = this._kWidth + ox - this._padX < input.Shape[2] ? this._kWidth + ox - this._padX : input.Shape[2];
+                            int kxStartIndex = ox - _padX < 0 ? 0 : ox - _padX;
+                            int kxLimit = _kWidth + ox - _padX < input.Shape[2] ? _kWidth + ox - _padX : input.Shape[2];
 
-                            for (int ich = 0; ich < this.InputCount; ich++)
+                            for (int ich = 0; ich < InputCount; ich++)
                             {
                                 //For W index
-                                int inChOffset = ich * this._kHeight * this._kWidth;
+                                int inChOffset = ich * _kHeight * _kWidth;
 
                                 //For input index
                                 int inputOffset = ich * input.Shape[1] * input.Shape[2];
@@ -157,10 +157,10 @@ namespace KelpNet.Functions.Connections
                                 {
                                     for (int kx = kxStartIndex; kx < kxLimit; kx++)
                                     {
-                                        int wIndex = outChOffset + inChOffset + (ky - oy + this._padY) * this._kWidth + kx - ox + this._padX;
+                                        int wIndex = outChOffset + inChOffset + (ky - oy + _padY) * _kWidth + kx - ox + _padX;
                                         int inputIndex = inputOffset + ky * input.Shape[2] + kx + batchCounter * input.Length;
 
-                                        result[resultIndex] += input.Data[inputIndex] * this.Weight.Data[wIndex];
+                                        result[resultIndex] += input.Data[inputIndex] * Weight.Data[wIndex];
                                     }
                                 }
                             }
@@ -171,18 +171,18 @@ namespace KelpNet.Functions.Connections
                 }
             }
 
-            if (this.Activator != null && !NoBias)
+            if (Activator != null && !NoBias)
             {
                 for (int batchCounter = 0; batchCounter < input.BatchCount; batchCounter++)
                 {
-                    int resultIndex = batchCounter * this.OutputCount * outputHeight * outputWidth;
+                    int resultIndex = batchCounter * OutputCount * outputHeight * outputWidth;
 
-                    for (int och = 0; och < this.OutputCount; och++)
+                    for (int och = 0; och < OutputCount; och++)
                     {
                         for (int location = 0; location < outputHeight * outputWidth; location++)
                         {
-                            result[resultIndex] += this.Bias.Data[och];
-                            result[resultIndex] = this.Activator.ForwardActivate(result[resultIndex]);
+                            result[resultIndex] += Bias.Data[och];
+                            result[resultIndex] = Activator.ForwardActivate(result[resultIndex]);
 
                             resultIndex++;
                         }
@@ -193,48 +193,48 @@ namespace KelpNet.Functions.Connections
             {
                 for (int batchCounter = 0; batchCounter < input.BatchCount; batchCounter++)
                 {
-                    int resultIndex = batchCounter * this.OutputCount * outputHeight * outputWidth;
+                    int resultIndex = batchCounter * OutputCount * outputHeight * outputWidth;
 
-                    for (int och = 0; och < this.OutputCount; och++)
+                    for (int och = 0; och < OutputCount; och++)
                     {
                         for (int location = 0; location < outputHeight * outputWidth; location++)
                         {
-                            result[resultIndex] += this.Bias.Data[och];
+                            result[resultIndex] += Bias.Data[och];
                             resultIndex++;
                         }
                     }
                 }
             }
-            else if (this.Activator != null)
+            else if (Activator != null)
             {
                 for (int batchCounter = 0; batchCounter < input.BatchCount; batchCounter++)
                 {
-                    int resultIndex = batchCounter * this.OutputCount * outputHeight * outputWidth;
+                    int resultIndex = batchCounter * OutputCount * outputHeight * outputWidth;
 
-                    for (int och = 0; och < this.OutputCount; och++)
+                    for (int och = 0; och < OutputCount; och++)
                     {
                         for (int location = 0; location < outputHeight * outputWidth; location++)
                         {
-                            result[resultIndex] = this.Activator.ForwardActivate(result[resultIndex]);
+                            result[resultIndex] = Activator.ForwardActivate(result[resultIndex]);
                             resultIndex++;
                         }
                     }
                 }
             }
 
-            return NdArray.Convert(result, new[] { this.OutputCount, outputHeight, outputWidth }, input.BatchCount, this);
+            return NdArray.Convert(result, new[] { OutputCount, outputHeight, outputWidth }, input.BatchCount, this);
         }
 
         protected override NdArray NeedPreviousForwardGpu(NdArray input)
         {
-            int outputHeight = (int)Math.Floor((input.Shape[1] - this._kHeight + this._padY * 2.0) / this._strideY) + 1;
-            int outputWidth = (int)Math.Floor((input.Shape[2] - this._kWidth + this._padX * 2.0) / this._strideX) + 1;
+            int outputHeight = (int)Math.Floor((input.Shape[1] - _kHeight + _padY * 2.0) / _strideY) + 1;
+            int outputWidth = (int)Math.Floor((input.Shape[2] - _kWidth + _padX * 2.0) / _strideX) + 1;
 
-            Real[] result = new Real[this.OutputCount * outputHeight * outputWidth * input.BatchCount];
+            Real[] result = new Real[OutputCount * outputHeight * outputWidth * input.BatchCount];
 
             using (ComputeBuffer<Real> gpuX = new ComputeBuffer<Real>(Weaver.Context, ComputeMemoryFlags.ReadOnly | ComputeMemoryFlags.CopyHostPointer, input.Data))
-            using (ComputeBuffer<Real> gpuW = new ComputeBuffer<Real>(Weaver.Context, ComputeMemoryFlags.ReadOnly | ComputeMemoryFlags.CopyHostPointer, this.Weight.Data))
-            using (ComputeBuffer<Real> gpub = new ComputeBuffer<Real>(Weaver.Context, ComputeMemoryFlags.ReadOnly | ComputeMemoryFlags.CopyHostPointer, this.NoBias ? new Real[OutputCount] : this.Bias.Data))
+            using (ComputeBuffer<Real> gpuW = new ComputeBuffer<Real>(Weaver.Context, ComputeMemoryFlags.ReadOnly | ComputeMemoryFlags.CopyHostPointer, Weight.Data))
+            using (ComputeBuffer<Real> gpub = new ComputeBuffer<Real>(Weaver.Context, ComputeMemoryFlags.ReadOnly | ComputeMemoryFlags.CopyHostPointer, NoBias ? new Real[OutputCount] : Bias.Data))
             using (ComputeBuffer<Real> gpuY = new ComputeBuffer<Real>(Weaver.Context, ComputeMemoryFlags.WriteOnly | ComputeMemoryFlags.AllocateHostPointer, result.Length))
             {
                 ForwardKernel.SetMemoryArgument(0, gpuX);
@@ -246,14 +246,14 @@ namespace KelpNet.Functions.Connections
                 ForwardKernel.SetValueArgument(6, input.Length);
                 ForwardKernel.SetValueArgument(7, outputWidth);
                 ForwardKernel.SetValueArgument(8, outputHeight);
-                ForwardKernel.SetValueArgument(9, this._strideX);
-                ForwardKernel.SetValueArgument(10, this._strideY);
-                ForwardKernel.SetValueArgument(11, this._padX);
-                ForwardKernel.SetValueArgument(12, this._padY);
-                ForwardKernel.SetValueArgument(13, this._kHeight);
-                ForwardKernel.SetValueArgument(14, this._kWidth);
-                ForwardKernel.SetValueArgument(15, this.OutputCount);
-                ForwardKernel.SetValueArgument(16, this.InputCount);
+                ForwardKernel.SetValueArgument(9, _strideX);
+                ForwardKernel.SetValueArgument(10, _strideY);
+                ForwardKernel.SetValueArgument(11, _padX);
+                ForwardKernel.SetValueArgument(12, _padY);
+                ForwardKernel.SetValueArgument(13, _kHeight);
+                ForwardKernel.SetValueArgument(14, _kWidth);
+                ForwardKernel.SetValueArgument(15, OutputCount);
+                ForwardKernel.SetValueArgument(16, InputCount);
 
                 Weaver.CommandQueue.Execute
                 (
@@ -268,7 +268,7 @@ namespace KelpNet.Functions.Connections
                 Weaver.CommandQueue.ReadFromBuffer(gpuY, ref result, true, null);
             }
 
-            return NdArray.Convert(result, new[] { this.OutputCount, outputHeight, outputWidth }, input.BatchCount, this);
+            return NdArray.Convert(result, new[] { OutputCount, outputHeight, outputWidth }, input.BatchCount, this);
         }
 
         Real[] GetActivatedgy(NdArray y)
@@ -283,7 +283,7 @@ namespace KelpNet.Functions.Connections
                 {
                     for (int olocation = 0; olocation < y.Shape[1] * y.Shape[2]; olocation++)
                     {
-                        activatedgy[gyIndex] = this.Activator.BackwardActivate(y.Grad[gyIndex], y.Data[gyIndex]);
+                        activatedgy[gyIndex] = Activator.BackwardActivate(y.Grad[gyIndex], y.Data[gyIndex]);
                         gyIndex++;
                     }
                 }
@@ -302,7 +302,7 @@ namespace KelpNet.Functions.Connections
                 {
                     for (int olocation = 0; olocation < gyShape[1] * gyShape[2]; olocation++)
                     {
-                        this.Bias.Grad[och] += gy[gyIndex];
+                        Bias.Grad[och] += gy[gyIndex];
 
                         gyIndex++;
                     }
@@ -312,7 +312,7 @@ namespace KelpNet.Functions.Connections
 
         protected override void NeedPreviousBackwardCpu(NdArray y, NdArray x)
         {
-            Real[] activatedgy = this.Activator != null ? GetActivatedgy(y) : y.Grad;
+            Real[] activatedgy = Activator != null ? GetActivatedgy(y) : y.Grad;
             if (!NoBias) CalcBiasGrad(activatedgy, y.Shape, y.BatchCount);
 
             for (int batchCounter = 0; batchCounter < y.BatchCount; batchCounter++)
@@ -320,19 +320,19 @@ namespace KelpNet.Functions.Connections
                 for (int och = 0; och < y.Shape[0]; och++)
                 {
                     //For gW index
-                    int outChOffset = och * this.InputCount * this._kHeight * this._kWidth;
+                    int outChOffset = och * InputCount * _kHeight * _kWidth;
 
-                    for (int oy = 0; oy < y.Shape[1] * this._strideY; oy += this._strideY)
+                    for (int oy = 0; oy < y.Shape[1] * _strideY; oy += _strideY)
                     {
                         //Jump for skipping calculation
-                        int kyStartIndex = this._padY - oy < 0 ? 0 : this._padY - oy;
-                        int kyLimit = this._kHeight < x.Shape[1] - oy + this._padY ? this._kHeight : x.Shape[1] - oy + this._padY;
+                        int kyStartIndex = _padY - oy < 0 ? 0 : _padY - oy;
+                        int kyLimit = _kHeight < x.Shape[1] - oy + _padY ? _kHeight : x.Shape[1] - oy + _padY;
 
-                        for (int ox = 0; ox < y.Shape[2] * this._strideX; ox += this._strideX)
+                        for (int ox = 0; ox < y.Shape[2] * _strideX; ox += _strideX)
                         {
                             //Jump for skipping calculation
-                            int kxStartIndex = this._padX - ox < 0 ? 0 : this._padX - ox;
-                            int kxLimit = this._kWidth < x.Shape[2] - ox + this._padX ? this._kWidth : x.Shape[2] - ox + this._padX;
+                            int kxStartIndex = _padX - ox < 0 ? 0 : _padX - ox;
+                            int kxLimit = _kWidth < x.Shape[2] - ox + _padX ? _kWidth : x.Shape[2] - ox + _padX;
 
                             int gyIndex = batchCounter * y.Length + och * y.Shape[1] * y.Shape[2] + oy * y.Shape[2] + ox;
 
@@ -341,7 +341,7 @@ namespace KelpNet.Functions.Connections
                             for (int ich = 0; ich < x.Shape[0]; ich++)
                             {
                                 //For gW index
-                                int inChOffset = ich * this._kHeight * this._kWidth;
+                                int inChOffset = ich * _kHeight * _kWidth;
 
                                 //For input index
                                 int inputOffset = ich * x.Shape[1] * x.Shape[2] + batchCounter * x.Length;
@@ -351,14 +351,14 @@ namespace KelpNet.Functions.Connections
                                     for (int kx = kxStartIndex; kx < kxLimit; kx++)
                                     {
                                         //W and gW have the same shape
-                                        int wIndex = outChOffset + inChOffset + ky * this._kWidth + kx;
+                                        int wIndex = outChOffset + inChOffset + ky * _kWidth + kx;
 
                                         //The shapes of x and gx are equal
-                                        int inputIndex = inputOffset + (ky + oy - this._padY) * x.Shape[2] + kx + ox - this._padX;
+                                        int inputIndex = inputOffset + (ky + oy - _padY) * x.Shape[2] + kx + ox - _padX;
 
-                                        this.Weight.Grad[wIndex] += x.Data[inputIndex] * gyData;
+                                        Weight.Grad[wIndex] += x.Data[inputIndex] * gyData;
 
-                                        x.Grad[inputIndex] += this.Weight.Data[wIndex] * gyData;
+                                        x.Grad[inputIndex] += Weight.Data[wIndex] * gyData;
                                     }
                                 }
                             }
@@ -371,70 +371,70 @@ namespace KelpNet.Functions.Connections
         protected override void NeedPreviousBackwardGpu(NdArray y, NdArray x)
         {
             Real[] gx = new Real[x.Data.Length];
-            Real[] activatedgy = this.Activator != null ? GetActivatedgy(y) : y.Grad;
+            Real[] activatedgy = Activator != null ? GetActivatedgy(y) : y.Grad;
             if (!NoBias) CalcBiasGrad(activatedgy, y.Shape, y.BatchCount);
 
             //gy is commonly used
             using (ComputeBuffer<Real> gpugY = new ComputeBuffer<Real>(Weaver.Context, ComputeMemoryFlags.ReadOnly | ComputeMemoryFlags.CopyHostPointer, activatedgy))
             {
-                using (ComputeBuffer<Real> gpugW = new ComputeBuffer<Real>(Weaver.Context, ComputeMemoryFlags.ReadWrite | ComputeMemoryFlags.CopyHostPointer, this.Weight.Grad))
+                using (ComputeBuffer<Real> gpugW = new ComputeBuffer<Real>(Weaver.Context, ComputeMemoryFlags.ReadWrite | ComputeMemoryFlags.CopyHostPointer, Weight.Grad))
                 using (ComputeBuffer<Real> gpuX = new ComputeBuffer<Real>(Weaver.Context, ComputeMemoryFlags.ReadOnly | ComputeMemoryFlags.CopyHostPointer, x.Data))
                 {
-                    this.BackwardgWKernel.SetMemoryArgument(0, gpugY);
-                    this.BackwardgWKernel.SetMemoryArgument(1, gpuX);
-                    this.BackwardgWKernel.SetMemoryArgument(2, gpugW);
-                    this.BackwardgWKernel.SetValueArgument(3, y.BatchCount);
-                    this.BackwardgWKernel.SetValueArgument(4, this.InputCount);
-                    this.BackwardgWKernel.SetValueArgument(5, y.Shape[0]);
-                    this.BackwardgWKernel.SetValueArgument(6, y.Shape[1]);
-                    this.BackwardgWKernel.SetValueArgument(7, y.Shape[2]);
-                    this.BackwardgWKernel.SetValueArgument(8, x.Shape[1]);
-                    this.BackwardgWKernel.SetValueArgument(9, x.Shape[2]);
-                    this.BackwardgWKernel.SetValueArgument(10, x.Length);
-                    this.BackwardgWKernel.SetValueArgument(11, this._strideX);
-                    this.BackwardgWKernel.SetValueArgument(12, this._strideY);
-                    this.BackwardgWKernel.SetValueArgument(13, this._padX);
-                    this.BackwardgWKernel.SetValueArgument(14, this._padY);
-                    this.BackwardgWKernel.SetValueArgument(15, this._kHeight);
-                    this.BackwardgWKernel.SetValueArgument(16, this._kWidth);
+                    BackwardgWKernel.SetMemoryArgument(0, gpugY);
+                    BackwardgWKernel.SetMemoryArgument(1, gpuX);
+                    BackwardgWKernel.SetMemoryArgument(2, gpugW);
+                    BackwardgWKernel.SetValueArgument(3, y.BatchCount);
+                    BackwardgWKernel.SetValueArgument(4, InputCount);
+                    BackwardgWKernel.SetValueArgument(5, y.Shape[0]);
+                    BackwardgWKernel.SetValueArgument(6, y.Shape[1]);
+                    BackwardgWKernel.SetValueArgument(7, y.Shape[2]);
+                    BackwardgWKernel.SetValueArgument(8, x.Shape[1]);
+                    BackwardgWKernel.SetValueArgument(9, x.Shape[2]);
+                    BackwardgWKernel.SetValueArgument(10, x.Length);
+                    BackwardgWKernel.SetValueArgument(11, _strideX);
+                    BackwardgWKernel.SetValueArgument(12, _strideY);
+                    BackwardgWKernel.SetValueArgument(13, _padX);
+                    BackwardgWKernel.SetValueArgument(14, _padY);
+                    BackwardgWKernel.SetValueArgument(15, _kHeight);
+                    BackwardgWKernel.SetValueArgument(16, _kWidth);
 
                     Weaver.CommandQueue.Execute
                     (
-                        this.BackwardgWKernel,
+                        BackwardgWKernel,
                         null,
-                        new long[] { OutputCount * InputCount, this._kHeight, this._kWidth },
+                        new long[] { OutputCount * InputCount, _kHeight, _kWidth },
                         null,
                         null
                     );
 
                     Weaver.CommandQueue.Finish();
-                    Weaver.CommandQueue.ReadFromBuffer(gpugW, ref this.Weight.Grad, true, null);
+                    Weaver.CommandQueue.ReadFromBuffer(gpugW, ref Weight.Grad, true, null);
                 }
 
                 using (ComputeBuffer<Real> gpugX = new ComputeBuffer<Real>(Weaver.Context, ComputeMemoryFlags.WriteOnly | ComputeMemoryFlags.AllocateHostPointer, gx.Length))
-                using (ComputeBuffer<Real> gpuW = new ComputeBuffer<Real>(Weaver.Context, ComputeMemoryFlags.ReadOnly | ComputeMemoryFlags.CopyHostPointer, this.Weight.Data))
+                using (ComputeBuffer<Real> gpuW = new ComputeBuffer<Real>(Weaver.Context, ComputeMemoryFlags.ReadOnly | ComputeMemoryFlags.CopyHostPointer, Weight.Data))
                 {
-                    this.BackwardgXKernel.SetMemoryArgument(0, gpugY);
-                    this.BackwardgXKernel.SetMemoryArgument(1, gpuW);
-                    this.BackwardgXKernel.SetMemoryArgument(2, gpugX);
-                    this.BackwardgXKernel.SetValueArgument(3, this.OutputCount);
-                    this.BackwardgXKernel.SetValueArgument(4, this.InputCount);
-                    this.BackwardgXKernel.SetValueArgument(5, y.Shape[0]);
-                    this.BackwardgXKernel.SetValueArgument(6, y.Shape[1]);
-                    this.BackwardgXKernel.SetValueArgument(7, y.Shape[2]);
-                    this.BackwardgXKernel.SetValueArgument(8, x.Shape[1]);
-                    this.BackwardgXKernel.SetValueArgument(9, x.Shape[2]);
-                    this.BackwardgXKernel.SetValueArgument(10, x.Length);
-                    this.BackwardgXKernel.SetValueArgument(11, this._strideX);
-                    this.BackwardgXKernel.SetValueArgument(12, this._strideY);
-                    this.BackwardgXKernel.SetValueArgument(13, this._padX);
-                    this.BackwardgXKernel.SetValueArgument(14, this._padY);
-                    this.BackwardgXKernel.SetValueArgument(15, this._kHeight);
-                    this.BackwardgXKernel.SetValueArgument(16, this._kWidth);
+                    BackwardgXKernel.SetMemoryArgument(0, gpugY);
+                    BackwardgXKernel.SetMemoryArgument(1, gpuW);
+                    BackwardgXKernel.SetMemoryArgument(2, gpugX);
+                    BackwardgXKernel.SetValueArgument(3, OutputCount);
+                    BackwardgXKernel.SetValueArgument(4, InputCount);
+                    BackwardgXKernel.SetValueArgument(5, y.Shape[0]);
+                    BackwardgXKernel.SetValueArgument(6, y.Shape[1]);
+                    BackwardgXKernel.SetValueArgument(7, y.Shape[2]);
+                    BackwardgXKernel.SetValueArgument(8, x.Shape[1]);
+                    BackwardgXKernel.SetValueArgument(9, x.Shape[2]);
+                    BackwardgXKernel.SetValueArgument(10, x.Length);
+                    BackwardgXKernel.SetValueArgument(11, _strideX);
+                    BackwardgXKernel.SetValueArgument(12, _strideY);
+                    BackwardgXKernel.SetValueArgument(13, _padX);
+                    BackwardgXKernel.SetValueArgument(14, _padY);
+                    BackwardgXKernel.SetValueArgument(15, _kHeight);
+                    BackwardgXKernel.SetValueArgument(16, _kWidth);
 
                     Weaver.CommandQueue.Execute
                     (
-                        this.BackwardgXKernel,
+                        BackwardgXKernel,
                         null,
                         new long[] { y.BatchCount * x.Shape[0], x.Shape[1], x.Shape[2] },
                         null,

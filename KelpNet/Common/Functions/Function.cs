@@ -72,7 +72,7 @@ namespace KelpNet.Common.Functions
         //Function to call when updating parameters
         protected void BackwardCountUp()
         {
-            foreach (NdArray parameter in this.Parameters)
+            foreach (NdArray parameter in Parameters)
             {
                 parameter.CountUp();
             }
