@@ -18,7 +18,8 @@ namespace KelpNet.Common
         public static double Mu = 0;
         public static double Sigma = 1;
 
-        //Obtain normal distributed random numbers with mean mu and standard deviation sigma.   According to the Box-Muller method.
+        //Obtain normal distributed random numbers with mean mu and standard deviation sigma. According to the Box-Muller method.
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
         public static double RandomNormal()
         {
             if (!Flip)

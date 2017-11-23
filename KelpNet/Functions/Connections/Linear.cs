@@ -4,6 +4,9 @@ using Cloo;
 using KelpNet.Common;
 using KelpNet.Common.Functions;
 using KelpNet.Common.Tools;
+using System.Threading.Tasks;
+using System.Threading;
+using System.Diagnostics;
 
 namespace KelpNet.Functions.Connections
 {
@@ -58,6 +61,9 @@ namespace KelpNet.Functions.Connections
 
                 Parameters[1] = Bias;
             }
+            
+            sw = new Stopwatch();
+            sw.Start();
         }
 
         Real[] GetBiasedValue(int batchCount)
@@ -121,10 +127,29 @@ namespace KelpNet.Functions.Connections
             }
         }
 
+        private Task<ComputeBuffer<T>> CreateBufferAsync<T>(ComputeMemoryFlags flag, T[] data) where T : struct
+        {
+            var t = Task.Factory.StartNew(()=> { return new ComputeBuffer<T>(Weaver.Context, flag, data); });
+            return t;
+        }
+
+        // TODO: need to removed
+        Stopwatch sw;
+        private void ASleep(int i)
+        {
+            double start = sw.Elapsed.TotalMilliseconds;
+            while (true)
+            {
+                if (sw.Elapsed.TotalMilliseconds - start >= i - 0.9)
+                    return;
+                Thread.Sleep(1);
+            }
+        }
+
         protected override NdArray NeedPreviousForwardGpu(NdArray x)
         {
             Real[] y = NoBias ? new Real[OutputCount * x.BatchCount] : GetBiasedValue(x.BatchCount);
-
+            
             using (ComputeBuffer<Real> gpuX = new ComputeBuffer<Real>(Weaver.Context, ComputeMemoryFlags.ReadOnly | ComputeMemoryFlags.CopyHostPointer, x.Data))
             using (ComputeBuffer<Real> gpuY = new ComputeBuffer<Real>(Weaver.Context, ComputeMemoryFlags.ReadWrite | ComputeMemoryFlags.CopyHostPointer, y))
             {
@@ -143,6 +168,9 @@ namespace KelpNet.Functions.Connections
                         null
                     );
 
+                Weaver.CommandQueue.Flush();
+                //for less cpu use
+                ASleep(5);
                 Weaver.CommandQueue.Finish();
                 Weaver.CommandQueue.ReadFromBuffer(gpuY, ref y, true, null);
             }

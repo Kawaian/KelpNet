@@ -1,6 +1,7 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using KelpNet.Common.Optimizers;
 using KelpNet.Common.Tools;
 
@@ -54,6 +55,12 @@ namespace KelpNet.Common.Functions
             }
         }
 
+        [OnDeserialized]
+        private void OnDeserialized(StreamingContext context)
+        {
+            this.PrevInputs = new List<NdArray[]>();
+        }
+
         public virtual void SetOptimizer(params Optimizer[] optimizers)
         {
             this.Optimizers = optimizers;
@@ -92,9 +99,10 @@ namespace KelpNet.Common.Functions
             }
         }
 
-        //A process of returning specific data to the initial value after a certain process is executed
+        //ある処理実行後に特定のデータを初期値に戻す処理
         public virtual void ResetState()
         {
+            PrevInputs.Clear();
         }
 
         //Return name

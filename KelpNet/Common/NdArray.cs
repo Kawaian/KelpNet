@@ -27,7 +27,7 @@ namespace KelpNet.Common
 
         //Count the number of times used by the function to try the timing of the backward operation
         [NonSerialized]
-        public int UseCount = 0;
+        public int UseCount;
 
         //If it is generated from a function, save that function here
         [NonSerialized]

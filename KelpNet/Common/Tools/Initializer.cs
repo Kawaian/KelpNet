@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 
 namespace KelpNet.Common.Tools
 {
@@ -11,12 +12,13 @@ namespace KelpNet.Common.Tools
             int fanIn = GetFans(array.Shape);
             double s = localScale * Math.Sqrt(2.0 / fanIn);
 
-            for (int i = 0; i < array.Data.Length; i++)
+            Parallel.For(0, array.Data.Length, (i) =>
             {
                 array.Data[i] = Normal(s) * masterScale;
-            }
+            });
         }
 
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
         private static double Normal(double scale = 0.05)
         {
             Mother.Sigma = scale;

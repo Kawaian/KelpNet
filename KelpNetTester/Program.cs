@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using KelpNet.Common;
 using KelpNetTester.Benchmarker;
 using KelpNetTester.Tests;
@@ -68,8 +68,11 @@ namespace KelpNetTester
             //Test17.Run(Test17.ResnetModel.ResNet50);
             //Please choose an arbitrary Resnet model
 
-            //split execution of Linear
-            //TestX.Run ();
+            //CIFAR-10を5層CNNを使って学習する
+            //Test18.Run();
+
+            //Linearの分割実行
+            //TestX.Run();
 
             //benchmark
             SingleBenchmark.Run ();
