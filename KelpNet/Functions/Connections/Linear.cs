@@ -135,13 +135,15 @@ namespace KelpNet.Functions.Connections
 
         // TODO: need to removed
         Stopwatch sw;
-        private void ASleep(int i)
+        private void ASleep(double i)
         {
             double start = sw.Elapsed.TotalMilliseconds;
             while (true)
             {
                 if (sw.Elapsed.TotalMilliseconds - start >= i - 0.9)
+                {
                     return;
+                }
                 Thread.Sleep(1);
             }
         }
@@ -169,8 +171,8 @@ namespace KelpNet.Functions.Connections
                     );
 
                 Weaver.CommandQueue.Flush();
-                //for less cpu use
-                ASleep(5);
+                //for less cpu use. this is 65% of computation time (10.4ms on 1080ti).
+                ASleep(6.5);
                 Weaver.CommandQueue.Finish();
                 Weaver.CommandQueue.ReadFromBuffer(gpuY, ref y, true, null);
             }

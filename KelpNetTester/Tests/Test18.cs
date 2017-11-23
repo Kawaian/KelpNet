@@ -15,24 +15,24 @@ namespace KelpNetTester.Tests
 {
     class Test18
     {
-        //ミニバッチの数
+        //Number of mini batches
         const int BATCH_DATA_COUNT = 20;
 
-        //一世代あたりの訓練回数
+        //Number of exercises per generation
         const int TRAIN_DATA_COUNT = 3000; // = 60000 / 20
 
-        //性能評価時のデータ数
+        //Number of data at performance evaluation
         const int TEACH_DATA_COUNT = 200;
 
         public static void Run()
         {
             Stopwatch sw = new Stopwatch();
 
-            //MNISTのデータを用意する
+            //Prepare MNIST data
             Console.WriteLine("CIFAR Data Loading...");
             CifarData cifarData = new CifarData();
 
-            //ネットワークの構成を FunctionStack に書き連ねる
+            //Writing the network configuration in FunctionStack
             FunctionStack nn = new FunctionStack(
                 new Convolution2D(3, 32, 3, name: "l1 Conv2D", gpuEnable: true),
                 new ReLU(name: "l1 ReLU"),
@@ -48,51 +48,51 @@ namespace KelpNetTester.Tests
                 new Linear(512, 10, name: "l4 Linear", gpuEnable: true)
             );
 
-            //optimizerを宣言
+            //Declare optimizer
             nn.SetOptimizer(new Adam());
 
             Console.WriteLine("Training Start...");
 
-            //三世代学習
+            //Three generations learning
             for (int epoch = 1; epoch < 3; epoch++)
             {
                 Console.WriteLine("epoch " + epoch);
 
-                //全体での誤差を集計
+                //Total error in the whole
                 Real totalLoss = 0;
                 long totalLossCount = 0;
 
-                //何回バッチを実行するか
+                //How many times to run the batch
                 for (int i = 1; i < TRAIN_DATA_COUNT + 1; i++)
                 {
                     sw.Restart();
 
                     Console.WriteLine("\nbatch count " + i + "/" + TRAIN_DATA_COUNT);
 
-                    //訓練データからランダムにデータを取得
-                    TestData.TestDataSet datasetX = cifarData.GetRandomXSet(BATCH_DATA_COUNT);
+                    //Get data randomly from training data
+                    TestDataSet datasetX = cifarData.GetRandomXSet(BATCH_DATA_COUNT);
 
-                    //バッチ学習を並列実行する
+                    //Execute batch learning in parallel
                     Real sumLoss = Trainer.Train(nn, datasetX.Data, datasetX.Label, new SoftmaxCrossEntropy());
                     totalLoss += sumLoss;
                     totalLossCount++;
 
-                    //結果出力
+                    //Result output
                     Console.WriteLine("total loss " + totalLoss / totalLossCount);
                     Console.WriteLine("local loss " + sumLoss);
 
                     sw.Stop();
                     Console.WriteLine("time" + sw.Elapsed.TotalMilliseconds);
 
-                    //20回バッチを動かしたら精度をテストする
+                    //Test the accuracy if you move the batch 20 times
                     if (i % 20 == 0)
                     {
                         Console.WriteLine("\nTesting...");
 
                         //テストデータからランダムにデータを取得
-                        TestData.TestDataSet datasetY = cifarData.GetRandomYSet(TEACH_DATA_COUNT);
+                        TestDataSet datasetY = cifarData.GetRandomYSet(TEACH_DATA_COUNT);
 
-                        //テストを実行
+                        //Get data randomly from test data
                         Real accuracy = Trainer.Accuracy(nn, datasetY.Data, datasetY.Label);
                         Console.WriteLine("accuracy " + accuracy);
                     }
