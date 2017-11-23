@@ -8,6 +8,7 @@
   * https://github.com/neuecc/DynamicJson
   * -------------------------------------------------------------------   ------------------------- */
 
+using KelpNet.Common;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -253,6 +254,11 @@ namespace KelpNetWaifu2x
             if (value is DynamicJson)
             {
                 value = ((DynamicJson)value).Deserialize(elementType);
+            }
+
+            if (elementType == typeof(Real))
+            {
+                return (Real)(double)value;
             }
             return Convert.ChangeType(value, elementType);
         }

@@ -12,6 +12,7 @@ using KelpNet.Common.Functions.Container;
 using KelpNet.Common.Tools;
 using KelpNet.Functions.Activations;
 using KelpNet.Functions.Connections;
+using System.Diagnostics;
 
 namespace KelpNetWaifu2x
 {
@@ -49,6 +50,7 @@ namespace KelpNetWaifu2x
                 foreach (var data in json)
                 {
                     Real[,,,] weightData = new Real[(int)data["nOutputPlane"], (int)data["nInputPlane"], (int)data["kW"], (int)data["kH"]];
+                    var target = (double[][][][])data["weight"];
 
                     for (int i = 0; i < weightData.GetLength(0); i++)
                     {
@@ -58,7 +60,10 @@ namespace KelpNetWaifu2x
                             {
                                 for (int l = 0; l < weightData.GetLength(3); l++)
                                 {
-                                    weightData[i, j, k, l] = data["weight"][i][j][k][l];
+                                    if(weightData.GetLength(0)==target.GetLength(0))
+                                        weightData[i, j, k, l] = target[i][j][k][l];
+                                    else
+                                        weightData[i, j, k, l] = target[j][i][k][l];
                                 }
                             }
                         }
@@ -125,7 +130,7 @@ namespace KelpNetWaifu2x
                         MessageBox.Show("Conversion complete");
                     });
 
-                MessageBox.Show("Conversion processing has been started. \n Please wait for a while until" Conversion completed "message is displayed \n * It will take a very long time (about three minutes with 64 x 64 images)");
+                MessageBox.Show("Conversion processing has been started. \n Please wait for a while until \"Conversion completed\" message is displayed \n * It will take a very long time (about three minutes with 64 x 64 images)");
             }
         }
     }
