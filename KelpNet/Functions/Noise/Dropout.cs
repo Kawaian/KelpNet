@@ -27,7 +27,7 @@ namespace KelpNet.Functions.Noise
 
         public Dropout(double dropoutRatio = 0.5, string name = FUNCTION_NAME, string[] inputNames = null, string[] outputNames = null, bool gpuEnable = false) : base(name, inputNames, outputNames)
         {
-            dropoutRatio = dropoutRatio;
+            this.dropoutRatio = dropoutRatio;
 
             SetGpuEnable(gpuEnable);
         }

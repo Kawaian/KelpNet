@@ -161,19 +161,34 @@ namespace KelpNet.Common
             return data.AsArray();
         }
 
+        public static void Copy(Real[] source, RealArray target)
+        {
+            Copy(source, target, target.Length);
+        }
+
+        public static void Copy(Real[] source, RealArray target, int length)
+        {
+            Copy(source, 0, target, 0, length);
+        }
+
+        public static void Copy(Real[] source, int sourceOffset, RealArray target, int targetOffset, int length)
+        {
+            ((RealArray)source).CopyTo(sourceOffset, target, targetOffset, length);
+        }
+
         public static void Copy(RealArray source, int sourceOffset, RealArray target, int targetOffset, int length)
         {
             source.CopyTo(sourceOffset, target, targetOffset, length);
         }
 
-        public static void Copy(RealArray source, RealArray target)
-        {
-            source.CopyTo(target, target.Length);
-        }
-
         public static void Copy(RealArray source, RealArray target, int length)
         {
             source.CopyTo(target, length);
+        }
+
+        public static void Copy(RealArray source, RealArray target)
+        {
+            source.CopyTo(target, target.Length);
         }
 
         public static void Copy(RealArray source, int sourceOffset, Real[] target, int targetOffset, int length)

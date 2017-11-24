@@ -63,7 +63,8 @@ namespace KelpNetTester.Tests
             foreach (Real[] input in trainData)
             {
                 NdArray result = nn.Predict(input)[0];
-                int resultIndex = Array.IndexOf(result.Data, result.Data.Max());
+                result.ToCpu();
+                int resultIndex = Array.IndexOf(result.Data.AsArray(), result.Data.AsArray().Max());
                 Console.WriteLine(input[0] + " xor " + input[1] + " = " + resultIndex + " " + result);
             }
 
@@ -79,7 +80,8 @@ namespace KelpNetTester.Tests
             foreach (Real[] input in trainData)
             {
                 NdArray result = testnn.Predict(input)[0];
-                int resultIndex = Array.IndexOf(result.Data, result.Data.Max());
+                result.ToCpu();
+                int resultIndex = Array.IndexOf(result.Data.AsArray(), result.Data.AsArray().Max());
                 Console.WriteLine(input[0] + " xor " + input[1] + " = " + resultIndex + " " + result);
             }
         }

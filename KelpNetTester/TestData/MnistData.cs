@@ -60,7 +60,7 @@ namespace KelpNetTester.TestData
             {
                 int index = Mother.Dice.Next(Y.Length);
 
-                Array.Copy(Y[index].Data, 0, listY.Data,i * listY.Length,listY.Length);
+                RealArray.Copy(Y[index].Data, 0, listY.Data,i * listY.Length,listY.Length);
                 listTy.Data[i] = Ty[index].Data[0];
             }
 
@@ -76,7 +76,7 @@ namespace KelpNetTester.TestData
             {
                 int index = Mother.Dice.Next(X.Length);
 
-                Array.Copy(X[index].Data, 0, listX.Data, i * listX.Length, listX.Length);
+                RealArray.Copy(X[index].Data, 0, listX.Data, i * listX.Length, listX.Length);
                 listTx.Data[i] = Tx[index].Data[0];
             }
 

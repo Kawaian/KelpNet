@@ -29,22 +29,22 @@ namespace CaffemodelLoader
 
                 if (bp.Datas != null)
                 {
-                    result.Data = Real.GetArray(bp.Datas);
+                    result.Data = (RealArray)Real.GetArray(bp.Datas);
                 }
 
                 if (bp.DoubleDatas != null)
                 {
-                    result.Data = Real.GetArray(bp.DoubleDatas);
+                    result.Data = (RealArray)Real.GetArray(bp.DoubleDatas);
                 }
 
                 if (bp.Diffs != null)
                 {
-                    result.Grad = Real.GetArray(bp.Diffs);
+                    result.Grad = (RealArray)Real.GetArray(bp.Diffs);
                 }
 
                 if (bp.DoubleDiffs != null)
                 {
-                    result.Grad = Real.GetArray(bp.DoubleDiffs);
+                    result.Grad = (RealArray)Real.GetArray(bp.DoubleDiffs);
                 }
 
                 return result;

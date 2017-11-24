@@ -43,7 +43,7 @@ namespace KelpNet.Common.Functions
                 }
             }
 
-            var ret = OnForward();
+            var ret = OnForward(xs);
 
             if (GpuEnable)
             {

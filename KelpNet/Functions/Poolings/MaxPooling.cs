@@ -136,19 +136,19 @@ namespace KelpNet.Functions.Poolings
                         }
                     }
                 }
-
             }
 
             return GetForwardResult(input, outputIndices, outputWidth, outputHeight);
         }
-
+        
         private NdArray ForwardGpu(NdArray input)
         {
             int outputHeight = (int)Math.Floor((input.Shape[1] - this._kHeight + this._padY * 2.0) / this._strideY) + 1;
             int outputWidth = (int)Math.Floor((input.Shape[2] - this._kWidth + this._padX * 2.0) / this._strideX) + 1;
             int[] outputIndices = new int[input.Shape[0] * outputHeight * outputWidth * input.BatchCount];
 
-            using (ComputeBuffer<Real> gpuX = new ComputeBuffer<Real>(Weaver.Context, ComputeMemoryFlags.ReadOnly | ComputeMemoryFlags.CopyHostPointer, input.Data))
+            var gpuX = input.Data.AsBuffer();
+            
             using (ComputeBuffer<int> gpuYIndex = new ComputeBuffer<int>(Weaver.Context, ComputeMemoryFlags.WriteOnly | ComputeMemoryFlags.AllocateHostPointer, outputIndices.Length))
             {
                 ForwardKernel.SetMemoryArgument(0, gpuX);
