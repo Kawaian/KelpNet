@@ -319,7 +319,7 @@ namespace KelpNet.Common
                 bank = null;
 
                 Flag = flag;
-                bank = new GpuRealArray(buffer, flag);
+                bank = new GpuRealArray(buffer, ComputeMemoryFlags.ReadOnly | ComputeMemoryFlags.CopyHostPointer);
             }
         }
 

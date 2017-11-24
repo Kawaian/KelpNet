@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Cloo;
 using KelpNet.Properties;
+using System.Collections.ObjectModel;
 
 namespace KelpNet.Common
 {
@@ -66,9 +67,23 @@ typedef REAL Real;
             return KernelSources[functionName];
         }
 
+        public static ComputePlatform GetOptimalPlatform(ReadOnlyCollection<ComputePlatform> platforms)
+        {
+            int index = 0;
+            foreach (var platform in platforms)
+            {
+                if (platform.Name.ToLower().Contains("nvidia"))
+                    return platforms[index];
+                index++;
+            }
+
+            return platforms[0];
+        }
+
+
         public static void Initialize(ComputeDeviceTypes selectedComputeDeviceTypes, int platformId = 0, int deviceIndex = 0)
         {
-            Platform = ComputePlatform.Platforms[platformId];
+            Platform = GetOptimalPlatform(ComputePlatform.Platforms);
 
             Devices = Platform
                 .Devices
