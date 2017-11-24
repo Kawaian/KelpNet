@@ -200,12 +200,17 @@ namespace KelpNet.Functions.Connections
 
                 Weaver.CommandQueue.Flush();
 <<<<<<< HEAD
+<<<<<<< HEAD
                 //for less cpu use
                 ASleep(5);
 =======
                 //for less cpu use. this is 65% of computation time (10.4ms on 1080ti).
                 ASleep(6.5);
 >>>>>>> parent of 19034f2... add RealArray; start some opt
+=======
+                //for less cpu use
+                ASleep(5);
+>>>>>>> parent of 8f322f3... hmm
                 Weaver.CommandQueue.Finish();
                 Weaver.CommandQueue.ReadFromBuffer(gpuY, ref y, true, null);
             }
