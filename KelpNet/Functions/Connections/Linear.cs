@@ -119,15 +119,13 @@ namespace KelpNet.Functions.Connections
 
         // TODO: need to removed
         Stopwatch sw;
-        private void ASleep(double i)
+        private void ASleep(int i)
         {
             double start = sw.Elapsed.TotalMilliseconds;
             while (true)
             {
                 if (sw.Elapsed.TotalMilliseconds - start >= i - 0.9)
-                {
                     return;
-                }
                 Thread.Sleep(1);
             }
         }
@@ -137,6 +135,7 @@ namespace KelpNet.Functions.Connections
         {
             var y = NoBias ? new Real[OutputCount * x.BatchCount] : GetBiasedValue(x.BatchCount);
             
+<<<<<<< HEAD
             var gpuX = x.Data.AsBuffer();
             var gpuW = Weight.Data.AsBuffer();
             NdArray.CopyOrNew(ref outputY, y, GpuEnable);
@@ -162,6 +161,34 @@ namespace KelpNet.Functions.Connections
             Weaver.CommandQueue.Finish();
 
             return NdArray.Convert(outputY, new[] { OutputCount }, x.BatchCount, this);
+=======
+            using (ComputeBuffer<Real> gpuX = new ComputeBuffer<Real>(Weaver.Context, ComputeMemoryFlags.ReadOnly | ComputeMemoryFlags.CopyHostPointer, x.Data))
+            using (ComputeBuffer<Real> gpuY = new ComputeBuffer<Real>(Weaver.Context, ComputeMemoryFlags.ReadWrite | ComputeMemoryFlags.CopyHostPointer, y))
+            {
+                ForwardKernel.SetMemoryArgument(0, gpuX);
+                ForwardKernel.SetMemoryArgument(1, gpuW);
+                ForwardKernel.SetMemoryArgument(2, gpuY);
+                ForwardKernel.SetValueArgument(3, OutputCount);
+                ForwardKernel.SetValueArgument(4, InputCount);
+
+                Weaver.CommandQueue.Execute
+                    (
+                        ForwardKernel,
+                        null,
+                        new long[] { OutputCount, x.BatchCount },
+                        null,
+                        null
+                    );
+
+                Weaver.CommandQueue.Flush();
+                //for less cpu use
+                ASleep(5);
+                Weaver.CommandQueue.Finish();
+                Weaver.CommandQueue.ReadFromBuffer(gpuY, ref y, true, null);
+            }
+
+            return NdArray.Convert(y, new[] { OutputCount }, x.BatchCount, this);
+>>>>>>> parent of 8f322f3... hmm
         }
 
         Real[] GetActivatedgy(NdArray y)
