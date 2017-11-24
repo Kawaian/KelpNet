@@ -11,6 +11,9 @@ namespace KelpNet.Common
         public static extern void CopyMemory(IntPtr dest, IntPtr src, int count);
     }
 
+    /// <summary>
+    /// Default calculation unit. Single or Double.
+    /// </summary>
     [Serializable]
     public struct Real : IComparable<Real>
     {

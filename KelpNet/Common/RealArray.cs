@@ -227,6 +227,11 @@ namespace KelpNet.Common
             }
         }
 
+        public void CopyTo(RealArray traget)
+        {
+            CopyTo(traget, Length);
+        }
+
         public void CopyTo(RealArray target, int length)
         {
             CopyTo(0, target, 0, length);
@@ -235,6 +240,11 @@ namespace KelpNet.Common
         public void CopyTo(int sourceOffset, RealArray target, int destOffset, int length)
         {
             bank.CopyTo(sourceOffset, target.bank, destOffset, length);
+        }
+
+        public void CopyTo(Real[] target)
+        {
+            CopyTo(target, target.Length);
         }
 
         public void CopyTo(Real[] target, int length)
