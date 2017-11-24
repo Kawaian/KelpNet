@@ -12,10 +12,18 @@ namespace KelpNet.Common.Tools
             int fanIn = GetFans(array.Shape);
             double s = localScale * Math.Sqrt(2.0 / fanIn);
 
-            Parallel.For(0, array.Data.Length, (i) =>
+            //var psize = Environment.ProcessorCount;
+            //Parallel.For(0, psize, new ParallelOptions() { MaxDegreeOfParallelism=psize }, (core) =>
+            //{
+            //    for (int i = core; i < array.Data.Length; i+=psize)
+            //    {
+            //        array.Data[i] = Normal(s) * masterScale;
+            //    }
+            //});
+            for(int i = 0; i < array.Data.Length; i ++)
             {
                 array.Data[i] = Normal(s) * masterScale;
-            });
+            }
         }
 
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
