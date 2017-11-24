@@ -267,16 +267,16 @@ namespace KelpNet.Common
             return result;
         }
 
-        public static void CopyOrNew(ref NdArray arr, Real[] data, bool isGpu = false)
+        public static void CopyOrNew(ref NdArray arr, RealArray data, bool isGpu = false)
         {
             if (arr == null)
             {
-                arr = new NdArray(data);
+                arr = new NdArray(data.Length) { Data = data };
                 arr.SetGpuEnable(isGpu);
             }
             else
             {
-                ((RealArray)data).CopyTo(arr.Data, arr.Length);
+                data.CopyTo(arr.Data, arr.Length);
             }
         }
 
