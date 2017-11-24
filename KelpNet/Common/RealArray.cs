@@ -206,6 +206,8 @@ namespace KelpNet.Common
             source.CopyTo(target, target.Length);
         }
 
+        public const ComputeMemoryFlags DefaultFlag = ComputeMemoryFlags.AllocateHostPointer;
+
         public Real this[int index]
         {
             get => bank[index];

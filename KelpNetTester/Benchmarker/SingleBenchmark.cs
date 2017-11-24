@@ -22,11 +22,14 @@ namespace KelpNetTester.Benchmarker
 
             NdArray inputArrayCpu = new NdArray(BenchDataMaker.GetRealArray(INPUT_SIZE));
             NdArray inputArrayGpu = new NdArray(BenchDataMaker.GetRealArray(INPUT_SIZE));
+            inputArrayGpu.ToGpu();
             NdArray[] gradArrayCpu = null;
 
             //Linear
+            sw.Restart();
             Linear linear = new Linear(INPUT_SIZE, OUTPUT_SIZE);
-            Console.WriteLine("◆" + linear.Name);
+            sw.Stop();
+            Console.WriteLine($"◆ {linear.Name} ({sw.ElapsedMilliseconds}ms)");
             if (TestCpu)
             {
                 sw.Restart();
