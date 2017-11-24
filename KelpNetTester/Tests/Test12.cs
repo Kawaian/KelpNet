@@ -146,32 +146,32 @@ namespace KelpNetTester.Tests
                     TestDataSet datasetX = mnistData.GetRandomXSet(BATCH_DATA_COUNT);
 
                     //Run first tier
-                    NdArray[] layer1ForwardResult = Layer1.OnForward(datasetX.Data);
+                    NdArray[] layer1ForwardResult = Layer1.Forward(datasetX.Data);
                     ResultDataSet layer1ResultDataSet = new ResultDataSet(layer1ForwardResult, datasetX.Label);
 
                     //Get the inclination of the first layer
-                    NdArray[] cDNI1Result = cDNI1.OnForward(layer1ResultDataSet.GetTrainData());
+                    NdArray[] cDNI1Result = cDNI1.Forward(layer1ResultDataSet.GetTrainData());
 
                     //Apply the inclination of the first layer
                     layer1ForwardResult[0].Grad = cDNI1Result[0].Data.ToArray();
 
                     //Update first layer
-                    Layer1.OnBackward(layer1ForwardResult);
+                    Layer1.Backward(layer1ForwardResult);
                     layer1ForwardResult[0].ParentFunc = null;
                     Layer1.Update();
 
                     //Run Layer 2
-                    NdArray[] layer2ForwardResult = Layer2.OnForward(layer1ResultDataSet.Result);
+                    NdArray[] layer2ForwardResult = Layer2.Forward(layer1ResultDataSet.Result);
                     ResultDataSet layer2ResultDataSet = new ResultDataSet(layer2ForwardResult, layer1ResultDataSet.Label);
 
                     //Get inclination of second layer
-                    NdArray[] cDNI2Result = cDNI2.OnForward(layer2ResultDataSet.GetTrainData());
+                    NdArray[] cDNI2Result = cDNI2.Forward(layer2ResultDataSet.GetTrainData());
 
                     //Apply the inclination of the second layer
                     layer2ForwardResult[0].Grad = cDNI2Result[0].Data.ToArray();
 
                     //Update 2nd tier
-                    Layer2.OnBackward(layer2ForwardResult);
+                    Layer2.Backward(layer2ForwardResult);
                     layer2ForwardResult[0].ParentFunc = null;
 
 
@@ -180,24 +180,24 @@ namespace KelpNetTester.Tests
 
                     Layer2.Update();
 
-                    cDNI1.OnBackward(cDNI1Result);
+                    cDNI1.Backward(cDNI1Result);
                     cDNI1.Update();
 
                     cDNI1totalLoss += cDNI1loss;
                     cDNI1totalLossCount++;
 
                     //Run Third Tier
-                    NdArray[] layer3ForwardResult = Layer3.OnForward(layer2ResultDataSet.Result);
+                    NdArray[] layer3ForwardResult = Layer3.Forward(layer2ResultDataSet.Result);
                     ResultDataSet layer3ResultDataSet = new ResultDataSet(layer3ForwardResult, layer2ResultDataSet.Label);
 
                     //Get the inclination of the third layer
-                    NdArray[] cDNI3Result = cDNI3.OnForward(layer3ResultDataSet.GetTrainData());
+                    NdArray[] cDNI3Result = cDNI3.Forward(layer3ResultDataSet.GetTrainData());
 
                     //Apply the inclination of the third layer
                     layer3ForwardResult[0].Grad = cDNI3Result[0].Data.ToArray();
 
                     //Update third layer
-                    Layer3.OnBackward(layer3ForwardResult);
+                    Layer3.Backward(layer3ForwardResult);
                     layer3ForwardResult[0].ParentFunc = null;
 
                     //Perform learning of cDNI for layer 2
@@ -205,20 +205,20 @@ namespace KelpNetTester.Tests
 
                     Layer3.Update();
 
-                    cDNI2.OnBackward(cDNI2Result);
+                    cDNI2.Backward(cDNI2Result);
                     cDNI2.Update();
 
                     cDNI2totalLoss += cDNI2loss;
                     cDNI2totalLossCount++;
 
                     //Run Layer 4
-                    NdArray[] layer4ForwardResult = Layer4.OnForward(layer3ResultDataSet.Result);
+                    NdArray[] layer4ForwardResult = Layer4.Forward(layer3ResultDataSet.Result);
 
                     //Get inclination of the fourth layer
                     Real sumLoss = new SoftmaxCrossEntropy().Evaluate(layer4ForwardResult, layer3ResultDataSet.Label);
 
                     //Update fourth layer
-                    Layer4.OnBackward(layer4ForwardResult);
+                    Layer4.Backward(layer4ForwardResult);
                     layer4ForwardResult[0].ParentFunc = null;
 
                     totalLoss += sumLoss;
@@ -229,7 +229,7 @@ namespace KelpNetTester.Tests
 
                     Layer4.Update();
 
-                    cDNI3.OnBackward(cDNI3Result);
+                    cDNI3.Backward(cDNI3Result);
                     cDNI3.Update();
 
                     cDNI3totalLoss += cDNI3loss;

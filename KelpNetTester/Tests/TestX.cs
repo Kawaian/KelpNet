@@ -81,23 +81,23 @@ namespace KelpNetTester.Tests
             NdArray testInputValuesB = new NdArray(testValue);
 
             Console.WriteLine("l0 for");
-            NdArray[] l0Result = l0.OnForward(testInputValuesA);
+            NdArray[] l0Result = l0.Forward(testInputValuesA);
             Console.WriteLine(l0Result);
 
             Console.WriteLine("\nl1 for");
-            NdArray[] l1Result = l1.OnForward(testInputValuesB);
+            NdArray[] l1Result = l1.Forward(testInputValuesB);
             Console.WriteLine(l1Result);
 
             Console.WriteLine("\nl2 for");
-            NdArray[] l2Result = l2.OnForward(testInputValuesB);
+            NdArray[] l2Result = l2.Forward(testInputValuesB);
             Console.WriteLine(l2Result);
 
             Console.WriteLine("\nl3 for");
-            NdArray[] l3Result = l3.OnForward(testInputValuesB);
+            NdArray[] l3Result = l3.Forward(testInputValuesB);
             Console.WriteLine(l3Result);
 
             Console.WriteLine("\nl4 for");
-            NdArray[] l4Result = l4.OnForward(testInputValuesB);
+            NdArray[] l4Result = l4.Forward(testInputValuesB);
             Console.WriteLine(l4Result);
 
             Console.WriteLine();
@@ -118,12 +118,12 @@ namespace KelpNetTester.Tests
             
 
             //Run Backward
-            l0.OnBackward(l0Result);
+            l0.Backward(l0Result);
 
-            l1.OnBackward(l1Result);
-            l2.OnBackward(l2Result);
-            l3.OnBackward(l3Result);
-            l4.OnBackward(l4Result);
+            l1.Backward(l1Result);
+            l2.Backward(l2Result);
+            l3.Backward(l3Result);
+            l4.Backward(l4Result);
 
             Console.WriteLine("\nl0 back");
             Console.WriteLine(testInputValuesA.ToString("Grad"));

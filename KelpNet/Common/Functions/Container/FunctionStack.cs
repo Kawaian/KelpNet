@@ -75,7 +75,7 @@ namespace KelpNet.Common.Functions.Container
         }
 
         //Forward
-        protected override NdArray[] OnForward(params NdArray[] xs)
+        public override NdArray[] Forward(params NdArray[] xs)
         {
             NdArray[] ys = xs;
 
@@ -88,7 +88,7 @@ namespace KelpNet.Common.Functions.Container
         }
 
         //Backward
-        protected override void OnBackward(params NdArray[] ys)
+        public override void Backward(params NdArray[] ys)
         {
             NdArray.Backward(ys[0]);
         }

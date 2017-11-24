@@ -33,17 +33,8 @@ namespace KelpNet.Common.Functions
         [NonSerialized]
         public List<NdArray[]> PrevInputs = new List<NdArray[]>();
 
-        public NdArray[] Forward(params NdArray[] xs)
-        {
-            return OnForward();
-        }
-        protected abstract NdArray[] OnForward(params NdArray[] xs);
-
-        public void Backward(params NdArray[] ys)
-        {
-            OnBackward(ys);
-        }
-        protected virtual void OnBackward(params NdArray[] ys) { }
+        public abstract NdArray[] Forward(params NdArray[] xs);
+        public virtual void Backward(params NdArray[] ys){}
 
         public string[] InputNames;
         public string[] OutputNames;
@@ -97,7 +88,7 @@ namespace KelpNet.Common.Functions
         //Evaluation function
         public virtual NdArray[] Predict(params NdArray[] input)
         {
-            return this.OnForward(input);
+            return this.Forward(input);
         }
 
         public virtual void Update()

@@ -44,7 +44,7 @@ namespace KelpNet.Functions.Connections
             }
             else
             {
-                Weight.Data = (RealArray)Real.GetArray(initialW);
+                Weight.Data = Real.GetArray(initialW);
             }
 
             Parameters[0] = Weight;
@@ -56,7 +56,7 @@ namespace KelpNet.Functions.Connections
 
                 if (initialb != null)
                 {
-                    Bias.Data = (RealArray)Real.GetArray(initialb);
+                    Bias.Data = Real.GetArray(initialb);
                 }
 
                 Parameters[1] = Bias;
@@ -72,8 +72,7 @@ namespace KelpNet.Functions.Connections
 
             for (int i = 0; i < batchCount; i++)
             {
-                //realarr
-                RealArray.Copy(Bias.Data, 0, y, i * OutputCount, Bias.Data.Length);
+                Array.Copy(Bias.Data, 0, y, i * OutputCount, Bias.Data.Length);
             }
 
             return y;
@@ -104,11 +103,28 @@ namespace KelpNet.Functions.Connections
 
             return NdArray.Convert(y, new[] { OutputCount }, x.BatchCount, this);
         }
-
+        
+        ComputeBuffer<Real> gpuW;
         protected override void OnGpuEnableChanged()
         {
-            Weight.SetGpuEnable(GpuEnable);
-            outputY.SetGpuEnable(GpuEnable);
+            if (GpuEnable)
+            {
+                if(gpuW == null)
+                {
+                    //copy to gpu memory
+                    gpuW = new ComputeBuffer<Real>(Weaver.Context, ComputeMemoryFlags.ReadOnly | ComputeMemoryFlags.CopyHostPointer, Weight.Data);
+                }
+            }
+            else
+            {
+                if(gpuW != null)
+                {
+                    //copy from gpu memory
+                    Weaver.CommandQueue.ReadFromBuffer(gpuW, ref Weight.Data, true, null);
+                    gpuW.Dispose();
+                    gpuW = null;
+                }
+            }
         }
 
         private Task<ComputeBuffer<T>> CreateBufferAsync<T>(ComputeMemoryFlags flag, T[] data) where T : struct
@@ -130,11 +146,11 @@ namespace KelpNet.Functions.Connections
             }
         }
 
-        NdArray outputY = null;
         protected override NdArray NeedPreviousForwardGpu(NdArray x)
         {
-            var y = NoBias ? new Real[OutputCount * x.BatchCount] : GetBiasedValue(x.BatchCount);
+            Real[] y = NoBias ? new Real[OutputCount * x.BatchCount] : GetBiasedValue(x.BatchCount);
             
+<<<<<<< HEAD
 <<<<<<< HEAD
             var gpuX = x.Data.AsBuffer();
             var gpuW = Weight.Data.AsBuffer();
@@ -162,6 +178,8 @@ namespace KelpNet.Functions.Connections
 
             return NdArray.Convert(outputY, new[] { OutputCount }, x.BatchCount, this);
 =======
+=======
+>>>>>>> parent of 19034f2... add RealArray; start some opt
             using (ComputeBuffer<Real> gpuX = new ComputeBuffer<Real>(Weaver.Context, ComputeMemoryFlags.ReadOnly | ComputeMemoryFlags.CopyHostPointer, x.Data))
             using (ComputeBuffer<Real> gpuY = new ComputeBuffer<Real>(Weaver.Context, ComputeMemoryFlags.ReadWrite | ComputeMemoryFlags.CopyHostPointer, y))
             {
@@ -181,14 +199,22 @@ namespace KelpNet.Functions.Connections
                     );
 
                 Weaver.CommandQueue.Flush();
+<<<<<<< HEAD
                 //for less cpu use
                 ASleep(5);
+=======
+                //for less cpu use. this is 65% of computation time (10.4ms on 1080ti).
+                ASleep(6.5);
+>>>>>>> parent of 19034f2... add RealArray; start some opt
                 Weaver.CommandQueue.Finish();
                 Weaver.CommandQueue.ReadFromBuffer(gpuY, ref y, true, null);
             }
 
             return NdArray.Convert(y, new[] { OutputCount }, x.BatchCount, this);
+<<<<<<< HEAD
 >>>>>>> parent of 8f322f3... hmm
+=======
+>>>>>>> parent of 19034f2... add RealArray; start some opt
         }
 
         Real[] GetActivatedgy(NdArray y)
@@ -220,7 +246,7 @@ namespace KelpNet.Functions.Connections
 
         protected override void NeedPreviousBackwardCpu(NdArray y, NdArray x)
         {
-            Real[] activatedgy = Activator != null ? GetActivatedgy(y) : y.Grad.AsArray();
+            Real[] activatedgy = Activator != null ? GetActivatedgy(y) : y.Grad;
             if (!NoBias) CalcBiasGrad(activatedgy, y.BatchCount);
 
             for (int batchCount = 0; batchCount < y.BatchCount; batchCount++)
@@ -241,7 +267,7 @@ namespace KelpNet.Functions.Connections
         protected override void NeedPreviousBackwardGpu(NdArray y, NdArray x)
         {
             Real[] gx = new Real[x.Data.Length];
-            RealArray activatedgy = Activator != null ? (RealArray)GetActivatedgy(y) : y.Grad;
+            Real[] activatedgy = Activator != null ? GetActivatedgy(y) : y.Grad;
             if (!NoBias) CalcBiasGrad(activatedgy, y.BatchCount);
 
             using (ComputeBuffer<Real> gpugY = new ComputeBuffer<Real>(Weaver.Context, ComputeMemoryFlags.ReadOnly | ComputeMemoryFlags.CopyHostPointer, activatedgy))

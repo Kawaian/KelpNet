@@ -34,14 +34,14 @@ namespace KelpNet.Functions.Noise
             this._pl = pl;
         }
 
-        public override NdArray[] OnForward(params NdArray[] xs)
+        public override NdArray[] Forward(params NdArray[] xs)
         {
             List<NdArray> resultArray = new List<NdArray>();
             NdArray[] resResult = xs;
 
             if (_resBlock != null)
             {
-                resResult = _resBlock.OnForward(xs);
+                resResult = _resBlock.Forward(xs);
             }
 
             resultArray.AddRange(resResult);
@@ -49,7 +49,7 @@ namespace KelpNet.Functions.Noise
             if (!IsSkip())
             {
                 Real scale = 1 / (1 - this._pl);
-                NdArray[] result = _function.OnForward(xs);
+                NdArray[] result = _function.Forward(xs);
 
                 for (int i = 0; i < result.Length; i++)
                 {
@@ -76,11 +76,11 @@ namespace KelpNet.Functions.Noise
             return resultArray.ToArray();
         }
 
-        public override void OnBackward(params NdArray[] ys)
+        public override void Backward(params NdArray[] ys)
         {
             if (_resBlock != null)
             {
-                _resBlock.OnBackward(ys);
+                _resBlock.Backward(ys);
             }
 
             bool isSkip = this._skipList[this._skipList.Count - 1];
@@ -102,7 +102,7 @@ namespace KelpNet.Functions.Noise
                     }
                 }
 
-                _function.OnBackward(copyys);
+                _function.Backward(copyys);
             }
         }
 

@@ -18,11 +18,11 @@ namespace KelpNet.Common.Tools
         public static Real Train(FunctionStack functionStack, NdArray input, NdArray teach, LossFunction lossFunction, bool isUpdate = true)
         {
             //For preserving error of result
-            NdArray[] result = functionStack.OnForward(input);
+            NdArray[] result = functionStack.Forward(input);
             Real sumLoss = lossFunction.Evaluate(result, teach);
 
             //Run Backward's batch
-            functionStack.OnBackward(result);
+            functionStack.Backward(result);
 
             //update
             if (isUpdate)

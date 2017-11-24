@@ -100,7 +100,7 @@ namespace KelpNet.Functions.Connections
             }
             else
             {
-                Weight.Data = (RealArray)Real.GetArray(initialW);
+                Weight.Data = Real.GetArray(initialW);
             }
 
             Parameters[0] = Weight;
@@ -112,7 +112,7 @@ namespace KelpNet.Functions.Connections
 
                 if (initialb != null)
                 {
-                    Bias.Data = (RealArray)Real.GetArray(initialb);
+                    Bias.Data = Real.GetArray(initialb);
                 }
 
                 Parameters[1] = Bias;
