@@ -37,7 +37,7 @@ namespace KelpNet.Loss
 
                 resultLoss += sumLoss / input[k].BatchCount;
 
-                input[k].Grad = result;
+                RealArray.Copy((RealArray)result, input[k].Grad, result.Length);
             }
 
             resultLoss /= input.Length;

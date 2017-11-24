@@ -106,7 +106,7 @@ namespace KelpNet.Common.Functions.Container
         }
 
         //Forward
-        public override NdArray[] OnForward(params NdArray[] xs)
+        protected override NdArray[] OnForward(params NdArray[] xs)
         {
             NdArray[] result = xs;
 
@@ -132,7 +132,7 @@ namespace KelpNet.Common.Functions.Container
                 }
 
                 //Execute function
-                result = FunctionBlocks[i].OnForward(inputData.ToArray());
+                result = FunctionBlocks[i].Forward(inputData.ToArray());
 
                 //Register the outputted data in the dictionary
                 for (int j = 0; j < result.Length; j++)
@@ -145,7 +145,7 @@ namespace KelpNet.Common.Functions.Container
         }
 
         //Backward
-        public override void OnBackward(params NdArray[] ys)
+        protected override void OnBackward(params NdArray[] ys)
         {
             NdArray.Backward(ys[0]);
         }

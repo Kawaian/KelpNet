@@ -128,86 +128,86 @@ namespace KelpNetTester.Tests
                     TestDataSet datasetX = mnistData.GetRandomXSet(BATCH_DATA_COUNT);
 
                     //Run first tier
-                    NdArray[] layer1ForwardResult = Layer1.OnForward(datasetX.Data);
+                    NdArray[] layer1ForwardResult = Layer1.Forward(datasetX.Data);
 
                     //Get the inclination of the first layer
-                    NdArray[] DNI1Result = DNI1.OnForward(layer1ForwardResult);
+                    NdArray[] DNI1Result = DNI1.Forward(layer1ForwardResult);
 
                     //Apply the inclination of the first layer
-                    layer1ForwardResult[0].Grad = DNI1Result[0].Data.ToArray();
+                    layer1ForwardResult[0].Grad = DNI1Result[0].Data.Clone();
 
                     //Update first layer
-                    Layer1.OnBackward(layer1ForwardResult);
+                    Layer1.Backward(layer1ForwardResult);
                     layer1ForwardResult[0].ParentFunc = null; //I ran Backward, so I cut off the calculation graph
                     Layer1.Update();
 
                     //Run Layer 2
-                    NdArray[] layer2ForwardResult = Layer2.OnForward(layer1ForwardResult);
+                    NdArray[] layer2ForwardResult = Layer2.Forward(layer1ForwardResult);
 
                     //Get inclination of second layer
-                    NdArray[] DNI2Result = DNI2.OnForward(layer2ForwardResult);
+                    NdArray[] DNI2Result = DNI2.Forward(layer2ForwardResult);
 
                     //Apply the inclination of the second layer
-                    layer2ForwardResult[0].Grad = DNI2Result[0].Data.ToArray();
+                    layer2ForwardResult[0].Grad = DNI2Result[0].Data.Clone();
 
                     //Update 2nd tier
-                    Layer2.OnBackward(layer2ForwardResult);
+                    Layer2.Backward(layer2ForwardResult);
                     layer2ForwardResult[0].ParentFunc = null;
 
                     //Perform learning of first layer DNI
-                    Real DNI1loss = new MeanSquaredError().Evaluate(DNI1Result, new NdArray(layer1ForwardResult[0].Grad, DNI1Result[0].Shape, DNI1Result[0].BatchCount));
+                    Real DNI1loss = new MeanSquaredError().Evaluate(DNI1Result, new NdArray(layer1ForwardResult[0].Grad.ToArray(), DNI1Result[0].Shape, DNI1Result[0].BatchCount));
 
                     Layer2.Update();
 
-                    DNI1.OnBackward(DNI1Result);
+                    DNI1.Backward(DNI1Result);
                     DNI1.Update();
 
                     DNI1totalLoss += DNI1loss;
                     DNI1totalLossCount++;
 
                     //Run Third Tier
-                    NdArray[] layer3ForwardResult = Layer3.OnForward(layer2ForwardResult);
+                    NdArray[] layer3ForwardResult = Layer3.Forward(layer2ForwardResult);
 
                     //Get the inclination of the third layer
-                    NdArray[] DNI3Result = DNI3.OnForward(layer3ForwardResult);
+                    NdArray[] DNI3Result = DNI3.Forward(layer3ForwardResult);
 
                     //Apply the inclination of the third layer
-                    layer3ForwardResult[0].Grad = DNI3Result[0].Data.ToArray();
+                    layer3ForwardResult[0].Grad = DNI3Result[0].Data.Clone();
 
                     //Update third layer
-                    Layer3.OnBackward(layer3ForwardResult);
+                    Layer3.Backward(layer3ForwardResult);
                     layer3ForwardResult[0].ParentFunc = null;
 
                     //Perform learning of DNI for layer 2
-                    Real DNI2loss = new MeanSquaredError().Evaluate(DNI2Result, new NdArray(layer2ForwardResult[0].Grad, DNI2Result[0].Shape, DNI2Result[0].BatchCount));
+                    Real DNI2loss = new MeanSquaredError().Evaluate(DNI2Result, new NdArray(layer2ForwardResult[0].Grad.ToArray(), DNI2Result[0].Shape, DNI2Result[0].BatchCount));
 
                     Layer3.Update();
 
-                    DNI2.OnBackward(DNI2Result);
+                    DNI2.Backward(DNI2Result);
                     DNI2.Update();
 
                     DNI2totalLoss += DNI2loss;
                     DNI2totalLossCount++;
 
                     //Run Layer 4
-                    NdArray[] layer4ForwardResult = Layer4.OnForward(layer3ForwardResult);
+                    NdArray[] layer4ForwardResult = Layer4.Forward(layer3ForwardResult);
 
                     //Get inclination of the fourth layer
                     Real sumLoss = new SoftmaxCrossEntropy().Evaluate(layer4ForwardResult, datasetX.Label);
 
                     //Update fourth layer
-                    Layer4.OnBackward(layer4ForwardResult);
+                    Layer4.Backward(layer4ForwardResult);
                     layer4ForwardResult[0].ParentFunc = null;
 
                     totalLoss += sumLoss;
                     totalLossCount++;
 
                     //Perform DNI learning for layer 3
-                    Real DNI3loss = new MeanSquaredError().Evaluate(DNI3Result, new NdArray(layer3ForwardResult[0].Grad, DNI3Result[0].Shape, DNI3Result[0].BatchCount));
+                    Real DNI3loss = new MeanSquaredError().Evaluate(DNI3Result, new NdArray(layer3ForwardResult[0].Grad.ToArray(), DNI3Result[0].Shape, DNI3Result[0].BatchCount));
 
                     Layer4.Update();
 
-                    DNI3.OnBackward(DNI3Result);
+                    DNI3.Backward(DNI3Result);
                     DNI3.Update();
 
                     DNI3totalLoss += DNI3loss;

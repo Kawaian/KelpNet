@@ -30,7 +30,7 @@ namespace KelpNet.Functions.Connections
             else
             {
                 //Do not simply substitute to check the size
-                this.Weight.Data = Real.GetArray(initialW);
+                this.Weight.Data = (RealArray)Real.GetArray(initialW);
             }
 
             this.Parameters = new[] { this.Weight };

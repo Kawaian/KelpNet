@@ -166,6 +166,11 @@ namespace KelpNet.Common
             source.CopyTo(sourceOffset, target, targetOffset, length);
         }
 
+        public static void Copy(RealArray source, RealArray target)
+        {
+            source.CopyTo(target, target.Length);
+        }
+
         public static void Copy(RealArray source, RealArray target, int length)
         {
             source.CopyTo(target, length);
@@ -179,6 +184,11 @@ namespace KelpNet.Common
         public static void Copy(RealArray source, Real[] target, int length)
         {
             source.CopyTo(target, length);
+        }
+
+        public static void Copy(RealArray source, Real[] target)
+        {
+            source.CopyTo(target, target.Length);
         }
 
         public Real this[int index]

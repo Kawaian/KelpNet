@@ -61,17 +61,17 @@ namespace KelpNet.Common.Tools
         {
             if (input.Shape.Length == 2)
             {
-                return CreateMonoImage(input.Data, input.Shape[0], input.Shape[1], isNorm);
+                return CreateMonoImage(input.Data.ToArray(), input.Shape[0], input.Shape[1], isNorm);
             }
             else if (input.Shape.Length == 3)
             {
                 if (input.Shape[0] == 1)
                 {
-                    return CreateMonoImage(input.Data, input.Shape[1], input.Shape[2], isNorm);
+                    return CreateMonoImage(input.Data.ToArray(), input.Shape[1], input.Shape[2], isNorm);
                 }
                 else if (input.Shape[0] == 3)
                 {
-                    return CreateColorImage(input.Data, input.Shape[1], input.Shape[2], isNorm, isFromBgrArray);
+                    return CreateColorImage(input.Data.ToArray(), input.Shape[1], input.Shape[2], isNorm, isFromBgrArray);
                 }
             }
 

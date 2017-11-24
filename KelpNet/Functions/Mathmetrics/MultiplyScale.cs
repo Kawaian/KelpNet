@@ -40,11 +40,11 @@ namespace KelpNet.Functions.Mathmetrics
 
             if (initialW == null)
             {
-                this.Weight.Data = Enumerable.Repeat((Real) 1.0, Weight.Data.Length).ToArray();
+                this.Weight.Data = (RealArray)Enumerable.Repeat((Real) 1.0, Weight.Data.Length).ToArray();
             }
             else
             {
-                this.Weight.Data = Real.GetArray(initialW);
+                this.Weight.Data = (RealArray)Real.GetArray(initialW);
             }
 
             this.Parameters[0] = this.Weight;
@@ -55,7 +55,7 @@ namespace KelpNet.Functions.Mathmetrics
 
                 if (initialb != null)
                 {
-                    this.Bias.Data = Real.GetArray(initialb);
+                    this.Bias.Data = (RealArray)Real.GetArray(initialb);
                 }
 
                 this.Parameters[1] = this.Bias;
@@ -86,13 +86,13 @@ namespace KelpNet.Functions.Mathmetrics
 
             int[] preShape = shapeList.ToArray();
 
-            NdArray y1 = new Reshape(preShape).OnForward(this.Weight)[0];
-            NdArray y2 = new Broadcast(inputShape).OnForward(y1)[0];
+            NdArray y1 = new Reshape(preShape).Forward(this.Weight)[0];
+            NdArray y2 = new Broadcast(inputShape).Forward(y1)[0];
 
             if (BiasTerm)
             {
-                NdArray b1 = new Reshape(preShape).OnForward(this.Bias)[0];
-                NdArray b2 = new Broadcast(inputShape).OnForward(b1)[0];
+                NdArray b1 = new Reshape(preShape).Forward(this.Bias)[0];
+                NdArray b2 = new Broadcast(inputShape).Forward(b1)[0];
 
                 return x * y2 + b2;
             }

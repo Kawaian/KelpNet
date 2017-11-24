@@ -28,8 +28,7 @@ namespace KelpNet.Functions.Arrays
 
         void BackwardCpu(NdArray y, NdArray x)
         {
-            y.Grad = x.Grad.ToArray();
+            y.Grad = x.Grad.Clone();
         }
     }
-    
 }

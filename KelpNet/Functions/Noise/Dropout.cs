@@ -27,14 +27,14 @@ namespace KelpNet.Functions.Noise
 
         public Dropout(double dropoutRatio = 0.5, string name = FUNCTION_NAME, string[] inputNames = null, string[] outputNames = null, bool gpuEnable = false) : base(name, inputNames, outputNames)
         {
-            this.dropoutRatio = dropoutRatio;
+            dropoutRatio = dropoutRatio;
 
-            this.SetGpuEnable(gpuEnable);
+            SetGpuEnable(gpuEnable);
         }
 
         public bool SetGpuEnable(bool enable)
         {
-            this.GpuEnable = enable & Weaver.Enable;
+            GpuEnable = enable & Weaver.Enable;
 
             if (GpuEnable)
             {
@@ -63,14 +63,14 @@ namespace KelpNet.Functions.Noise
         private Real[] MakeMask(int xLength)
         {
             Real[] mask = new Real[xLength];
-            Real scale = 1 / (1 - this.dropoutRatio);
+            Real scale = 1 / (1 - dropoutRatio);
 
             for (int i = 0; i < mask.Length; i++)
             {
-                mask[i] = Mother.Dice.NextDouble() >= this.dropoutRatio ? scale : 0;
+                mask[i] = Mother.Dice.NextDouble() >= dropoutRatio ? scale : 0;
             }
 
-            this.maskStack.Add(mask);
+            maskStack.Add(mask);
 
             return mask;
         }
@@ -88,41 +88,61 @@ namespace KelpNet.Functions.Noise
             return NdArray.Convert(result, x.Shape, x.BatchCount, this);
         }
 
+        protected override void OnGpuEnableChanged()
+        {
+            if (!GpuEnable)
+            {
+                if (gpuResult != null)
+                {
+                    gpuResult.Dispose();
+                    gpuResult = null;
+                }
+
+                if(gpuMask != null)
+                {
+                    gpuMask.Dispose();
+                    gpuMask = null;
+                }
+            }
+        }
+
+        RealArray gpuResult = null;
+        RealArray gpuMask = null;
         public NdArray ForwardGpu(NdArray x)
         {
-            Real[] result = new Real[x.Data.Length];
             Real[] mask = MakeMask(x.Length);
 
-            using (ComputeBuffer<Real> gpuX = new ComputeBuffer<Real>(Weaver.Context, ComputeMemoryFlags.ReadOnly | ComputeMemoryFlags.CopyHostPointer, x.Data))
-            using (ComputeBuffer<Real> gpuMask = new ComputeBuffer<Real>(Weaver.Context, ComputeMemoryFlags.ReadOnly | ComputeMemoryFlags.CopyHostPointer, mask))
-            using (ComputeBuffer<Real> gpuY = new ComputeBuffer<Real>(Weaver.Context, ComputeMemoryFlags.WriteOnly | ComputeMemoryFlags.AllocateHostPointer, result.Length))
-            {
-                ForwardKernel.SetMemoryArgument(0, gpuX);
-                ForwardKernel.SetMemoryArgument(1, gpuMask);
-                ForwardKernel.SetMemoryArgument(2, gpuY);
-                ForwardKernel.SetValueArgument(3, mask.Length);
+            var gpuX = x.Data.AsBuffer();
+            NdArray.CheckLengthAndMayCreate(ref gpuResult, x.Data.Length);
+            var gpuY = gpuResult.AsBuffer();
+            NdArray.CheckLengthAndMayCreate(ref gpuMask, x.Length);
+            RealArray.Copy((RealArray)mask, gpuMask);
+            var gpuMaskBuf = gpuMask.AsBuffer();
 
-                Weaver.CommandQueue.Execute
-                (
-                    ForwardKernel,
-                    null,
-                    new long[] { x.Data.Length },
-                    null,
-                    null
-                );
+            ForwardKernel.SetMemoryArgument(0, gpuX);
+            ForwardKernel.SetMemoryArgument(1, gpuMaskBuf);
+            ForwardKernel.SetMemoryArgument(2, gpuY);
+            ForwardKernel.SetValueArgument(3, mask.Length);
 
-                Weaver.CommandQueue.Finish();
-                Weaver.CommandQueue.ReadFromBuffer(gpuY, ref result, true, null);
-            }
+            Weaver.CommandQueue.Execute
+            (
+                ForwardKernel,
+                null,
+                new long[] { x.Data.Length },
+                null,
+                null
+            );
 
-            return NdArray.Convert(result, x.Shape, x.BatchCount, this);
+            Weaver.CommandQueue.Finish();
+
+            return NdArray.Convert(gpuResult, x.Shape, x.BatchCount, this);
         }
 
         public void BackwardCpu(NdArray y, NdArray x)
         {
             Real[] result = y.Grad.ToArray();
-            Real[] mask = this.maskStack[this.maskStack.Count - 1];
-            this.maskStack.RemoveAt(this.maskStack.Count - 1);
+            Real[] mask = maskStack[maskStack.Count - 1];
+            maskStack.RemoveAt(maskStack.Count - 1);
 
             for (int b = 0; b < y.BatchCount; b++)
             {
@@ -140,33 +160,32 @@ namespace KelpNet.Functions.Noise
 
         public void BackwardGpu(NdArray y, NdArray x)
         {
-            Real[] result = y.Grad.ToArray();
-            Real[] mask = this.maskStack[this.maskStack.Count - 1];
-            this.maskStack.RemoveAt(this.maskStack.Count - 1);
+            Real[] mask = maskStack[maskStack.Count - 1];
+            maskStack.RemoveAt(maskStack.Count - 1);
 
-            using (ComputeBuffer<Real> gpuMask = new ComputeBuffer<Real>(Weaver.Context, ComputeMemoryFlags.ReadOnly | ComputeMemoryFlags.CopyHostPointer, mask))
-            using (ComputeBuffer<Real> gpugX = new ComputeBuffer<Real>(Weaver.Context, ComputeMemoryFlags.ReadWrite | ComputeMemoryFlags.CopyHostPointer, result))
-            {
-                BackwardKernel.SetMemoryArgument(0, gpuMask);
-                BackwardKernel.SetMemoryArgument(1, gpugX);
-                BackwardKernel.SetValueArgument(2, y.Length);
+            NdArray.CheckLengthAndMayCreate(ref gpuMask, x.Length);
+            RealArray.Copy((RealArray)mask, gpuMask);
+            var gpuMaskBuf = gpuMask.AsBuffer();
+            var gpugX = y.Grad.AsBuffer();
 
-                Weaver.CommandQueue.Execute
-                (
-                    BackwardKernel,
-                    null,
-                    new long[] { mask.Length, y.BatchCount },
-                    null,
-                    null
-                );
+            BackwardKernel.SetMemoryArgument(0, gpuMaskBuf);
+            BackwardKernel.SetMemoryArgument(1, gpugX);
+            BackwardKernel.SetValueArgument(2, y.Length);
 
-                Weaver.CommandQueue.Finish();
-                Weaver.CommandQueue.ReadFromBuffer(gpugX, ref result, true, null);
-            }
+            Weaver.CommandQueue.Execute
+            (
+                BackwardKernel,
+                null,
+                new long[] { mask.Length, y.BatchCount },
+                null,
+                null
+            );
+
+            Weaver.CommandQueue.Finish();
 
             for (int i = 0; i < x.Grad.Length; i++)
             {
-                x.Grad[i] += result[i];
+                x.Grad[i] += y.Grad[i];
             }
         }
 
