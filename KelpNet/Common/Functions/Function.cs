@@ -35,7 +35,30 @@ namespace KelpNet.Common.Functions
 
         public NdArray[] Forward(params NdArray[] xs)
         {
-            return OnForward();
+            if (GpuEnable)
+            {
+                foreach (var item in xs)
+                {
+                    item.ToGpu();
+                }
+            }
+
+            var ret = OnForward();
+
+            if (GpuEnable)
+            {
+                foreach (var item in xs)
+                {
+                    item.ToCpu();
+                }
+
+                foreach (var item in ret)
+                {
+                    item.ToCpu();
+                }
+            }
+
+            return ret;
         }
         protected abstract NdArray[] OnForward(params NdArray[] xs);
 

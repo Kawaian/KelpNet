@@ -142,7 +142,7 @@ namespace KelpNet.Common
         }
     }
 
-    public class RealArray
+    public class RealArray : IDisposable
     {
         public static explicit operator RealArray(Real[] data)
         {

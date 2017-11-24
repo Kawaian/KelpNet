@@ -20,65 +20,65 @@ namespace KelpNet.Common
 
         public static NdArray operator +(NdArray a, NdArray b)
         {
-            return new Add().OnForward(a, b)[0];
+            return new Add().Forward(a, b)[0];
         }
 
         public static NdArray operator +(NdArray a, Real b)
         {
-            return new AddConst().OnForward(a, b)[0];
+            return new AddConst().Forward(a, b)[0];
         }
 
         public static NdArray operator +(Real a, NdArray b)
         {
-            return new AddConst().OnForward(b, a)[0];
+            return new AddConst().Forward(b, a)[0];
         }
 
 
         public static NdArray operator *(NdArray a, NdArray b)
         {
-            return new Mul().OnForward(a, b)[0];
+            return new Mul().Forward(a, b)[0];
         }
 
         public static NdArray operator *(NdArray a, Real b)
         {
-            return new MulConst().OnForward(a, b)[0];
+            return new MulConst().Forward(a, b)[0];
         }
 
         public static NdArray operator *(Real a, NdArray b)
         {
-            return new MulConst().OnForward(b, a)[0];
+            return new MulConst().Forward(b, a)[0];
         }
 
 
         public static NdArray operator -(NdArray a, NdArray b)
         {
-            return new Sub().OnForward(a, b)[0];
+            return new Sub().Forward(a, b)[0];
         }
 
         public static NdArray operator -(NdArray a, Real b)
         {
-            return new SubConst().OnForward(a, b)[0];
+            return new SubConst().Forward(a, b)[0];
         }
 
         public static NdArray operator -(Real a, NdArray b)
         {
-            return new ConstSub().OnForward(a, b)[0];
+            return new ConstSub().Forward(a, b)[0];
         }
 
 
         public static NdArray operator /(NdArray a, NdArray b)
         {
-            return new Div().OnForward(a, b)[0];
+            return new Div().Forward(a, b)[0];
         }
 
         public static NdArray operator /(NdArray a, Real b)
         {
-            return new DivConst().OnForward(a, b)[0];
+            return new DivConst().Forward(a, b)[0];
         }
 
         public static NdArray operator /(Real a, NdArray b)
         {
-            return new ConstDiv().OnForward(a, b)[0];
+            return new ConstDiv().Forward(a, b)[0];
         }
 
         public static implicit operator NdArray(Real[] a)

@@ -214,6 +214,7 @@ namespace KelpNet.Functions.Connections
         protected override void NeedPreviousBackwardGpu(NdArray y, NdArray x)
         {
             RealArray gx = new RealArray(x.Data.Length);
+            gx.ToGpu();
             RealArray activatedgy = Activator != null ? GetActivatedgy(y) : y.Grad;
             if (!NoBias) CalcBiasGrad(activatedgy, y.BatchCount);
 
@@ -242,36 +243,32 @@ namespace KelpNet.Functions.Connections
             Weaver.CommandQueue.Finish();
             //Weaver.CommandQueue.ReadFromBuffer(gpugW, ref Weight.Grad, true, null);
 
-            var gpugX = new RealArray(gx.Length, isGpu: true, flag: ComputeMemoryFlags.WriteOnly | ComputeMemoryFlags.AllocateHostPointer);
-            using (ComputeBuffer<Real> gpugX = new ComputeBuffer<Real>(Weaver.Context, ComputeMemoryFlags.WriteOnly | ComputeMemoryFlags.AllocateHostPointer, gx.Length))
-            using (ComputeBuffer<Real> gpuW = new ComputeBuffer<Real>(Weaver.Context, ComputeMemoryFlags.ReadOnly | ComputeMemoryFlags.CopyHostPointer, Weight.Data))
-            {
-                BackwardgXKernel.SetMemoryArgument(0, gpugY);
-                BackwardgXKernel.SetMemoryArgument(1, gpuW);
-                BackwardgXKernel.SetMemoryArgument(2, gpugX);
-                BackwardgXKernel.SetValueArgument(3, y.BatchCount);
-                BackwardgXKernel.SetValueArgument(4, OutputCount);
-                BackwardgXKernel.SetValueArgument(5, InputCount);
+            var gpugX = gx.AsBuffer();
+            var gpuW = Weight.Data.AsBuffer();
 
-                Weaver.CommandQueue.Execute
-                (
-                    BackwardgXKernel,
-                    null,
-                    new long[] { InputCount, y.BatchCount },
-                    null,
-                    null
-                );
+            BackwardgXKernel.SetMemoryArgument(0, gpugY);
+            BackwardgXKernel.SetMemoryArgument(1, gpuW);
+            BackwardgXKernel.SetMemoryArgument(2, gpugX);
+            BackwardgXKernel.SetValueArgument(3, y.BatchCount);
+            BackwardgXKernel.SetValueArgument(4, OutputCount);
+            BackwardgXKernel.SetValueArgument(5, InputCount);
 
-                Weaver.CommandQueue.Finish();
-                Weaver.CommandQueue.ReadFromBuffer(gpugX, ref gx, true, null);
-            }
+            Weaver.CommandQueue.Execute
+            (
+                BackwardgXKernel,
+                null,
+                new long[] { InputCount, y.BatchCount },
+                null,
+                null
+            );
+
+            Weaver.CommandQueue.Finish();
 
             for (int i = 0; i < x.Grad.Length; i++)
             {
                 x.Grad[i] += gx[i];
             }
 
-            gpugX.Dispose();
             gx.Dispose();
             activatedgy.Dispose();
         }
