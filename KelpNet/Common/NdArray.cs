@@ -427,9 +427,9 @@ namespace KelpNet.Common
             return new NdArray(baseArray.Shape.ToArray(), baseArray.BatchCount);
         }
 
-        public void SetGpuEnable(bool gpu)
+        public void SetGpuEnable(bool isGpu)
         {
-            if (gpu)
+            if (isGpu)
             {
                 ToGpu();
             }

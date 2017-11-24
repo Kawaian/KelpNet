@@ -35,11 +35,14 @@ namespace KelpNet.Common.Functions
 
         public NdArray[] Forward(params NdArray[] xs)
         {
+            var preIsGpu = new bool[xs.Length];
             if (GpuEnable)
             {
-                foreach (var item in xs)
+                for (int i = 0; i < xs.Length; i++)
                 {
-                    item.ToGpu();
+                    preIsGpu[i] = xs[i].IsGpu;
+                    if (!xs[i].IsGpu)
+                        xs[i].ToGpu();
                 }
             }
 
@@ -47,14 +50,12 @@ namespace KelpNet.Common.Functions
 
             if (GpuEnable)
             {
-                foreach (var item in xs)
+                for (int i = 0; i < xs.Length; i++)
                 {
-                    item.ToCpu();
-                }
-
-                foreach (var item in ret)
-                {
-                    item.ToCpu();
+                    if (!preIsGpu[i])
+                    {
+                        xs[i].ToCpu();
+                    }
                 }
             }
 
