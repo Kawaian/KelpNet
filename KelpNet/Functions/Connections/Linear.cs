@@ -159,7 +159,7 @@ namespace KelpNet.Functions.Connections
             );
 
             Weaver.CommandQueue.Flush();
-            ASleep(6.5);
+            ASleep(5.5);
             Weaver.CommandQueue.Finish();
 
             return NdArray.Convert(outputY, new[] { OutputCount }, x.BatchCount, this);

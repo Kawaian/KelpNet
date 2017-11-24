@@ -206,7 +206,7 @@ namespace KelpNet.Common
             source.CopyTo(target, target.Length);
         }
 
-        public const ComputeMemoryFlags DefaultFlag = ComputeMemoryFlags.AllocateHostPointer;
+        public const ComputeMemoryFlags DefaultFlag = ComputeMemoryFlags.ReadWrite | ComputeMemoryFlags.CopyHostPointer;
 
         public Real this[int index]
         {
@@ -224,12 +224,12 @@ namespace KelpNet.Common
 
         IDeviceReal bank;
 
-        public RealArray(int length, bool isGpu = false, ComputeMemoryFlags flag = ComputeMemoryFlags.None) : this(new Real[length], isGpu, flag)
+        public RealArray(int length, bool isGpu = false, ComputeMemoryFlags flag = DefaultFlag) : this(new Real[length], isGpu, flag)
         {
 
         }
 
-        public RealArray(Real[] data, bool isGpu = false, ComputeMemoryFlags flag = ComputeMemoryFlags.None)
+        public RealArray(Real[] data, bool isGpu = false, ComputeMemoryFlags flag = DefaultFlag)
         {
             Flag = flag;
             Count = data.Length;
@@ -243,7 +243,7 @@ namespace KelpNet.Common
             }
         }
 
-        public RealArray(IDeviceReal bank, int length, ComputeMemoryFlags flags = ComputeMemoryFlags.None)
+        public RealArray(IDeviceReal bank, int length, ComputeMemoryFlags flags = DefaultFlag)
         {
             this.bank = bank;
             Count = length;
@@ -321,7 +321,7 @@ namespace KelpNet.Common
                 bank = null;
 
                 Flag = flag;
-                bank = new GpuRealArray(buffer, ComputeMemoryFlags.ReadOnly | ComputeMemoryFlags.CopyHostPointer);
+                bank = new GpuRealArray(buffer, flag);
             }
         }
 
