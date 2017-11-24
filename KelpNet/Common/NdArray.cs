@@ -54,7 +54,7 @@ namespace KelpNet.Common
             this.Data = resultData;
             this.Shape = resultShape;
             this.Length = Data.Length;
-            this.Grad = new Real[this.Length];
+            //this.Grad = new Real[this.Length];
             this.BatchCount = 1;
             this.TrainCount = 0;
             this.ParentFunc = parentFunc;
@@ -66,7 +66,7 @@ namespace KelpNet.Common
             this.Shape = shape.ToArray();
             this.Length = Data.Length;
             this.BatchCount = 1;
-            this.Grad = new Real[this.Length];
+            //this.Grad = new Real[this.Length];
             this.TrainCount = 0;
         }
 
@@ -76,7 +76,7 @@ namespace KelpNet.Common
             this.Length = ShapeToArrayLength(this.Shape);
             this.BatchCount = batchCount;
             this.Data = data.ToArray();
-            this.Grad = new Real[this.Length * batchCount];
+            //this.Grad = new Real[this.Length * batchCount];
             this.TrainCount = 0;
             this.ParentFunc = parentFunc;
         }
@@ -87,9 +87,15 @@ namespace KelpNet.Common
             this.Length = ShapeToArrayLength(this.Shape);
             this.BatchCount = batchCount;
             this.Data = new Real[this.Length * batchCount];
-            this.Grad = new Real[this.Length * batchCount];
+            //this.Grad = new Real[this.Length * batchCount];
             this.TrainCount = 0;
             this.ParentFunc = parentFunc;
+        }
+
+        public void InitGrad()
+        {
+            if (Grad == null)
+                Grad = new Real[Length];
         }
 
         //Register array array as batch
