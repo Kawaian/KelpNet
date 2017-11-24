@@ -99,7 +99,7 @@ namespace KelpNetTester.Tests
             {
                 pre_input_seq = new Real[1];
             }
-            Array.Copy(seq.Data, pre_input_seq, pre_input_seq.Length);
+            seq.Data.CopyTo(pre_input_seq, pre_input_seq.Length);
 
             List<Real> input_seq = new List<Real>();
             input_seq.AddRange(pre_input_seq);

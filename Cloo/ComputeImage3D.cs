@@ -106,7 +106,5 @@ namespace Cloo
         {
             return GetSupportedFormats(context, flags, ComputeMemoryType.Image3D);
         }
-
-        #endregion
     }
 }

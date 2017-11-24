@@ -12,7 +12,7 @@ namespace KelpNet.Common.Functions.Type
         {
         }
 
-        public override NdArray[] Forward(params NdArray[] xs)
+        public override NdArray[] OnForward(params NdArray[] xs)
         {
             PrevInputs.Add(xs);
 
@@ -24,7 +24,7 @@ namespace KelpNet.Common.Functions.Type
             return new[] { MultiInputForward(xs) };
         }
 
-        public override void Backward(params NdArray[] ys)
+        public override void OnBackward(params NdArray[] ys)
         {
             NdArray[] xs = PrevInputs[PrevInputs.Count - 1];
             PrevInputs.RemoveAt(PrevInputs.Count - 1);

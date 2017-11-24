@@ -79,7 +79,7 @@ namespace KelpNetTester.Tests
                     t.Data[j] = trainData[(int)((jump * j + i + 1) % wholeLen)];
                 }
 
-                NdArray[] result = model.Forward(x);
+                NdArray[] result = model.OnForward(x);
                 Real sumLoss = new SoftmaxCrossEntropy().Evaluate(result, t);
                 backNdArrays.Push(result);
                 Console.WriteLine("[{0}/{1}] Loss: {2}", i + 1, jump, sumLoss);
@@ -90,7 +90,7 @@ namespace KelpNetTester.Tests
                     for (int j = 0; backNdArrays.Count > 0; j++)
                     {
                         Console.WriteLine("backward" + backNdArrays.Count);
-                        model.Backward(backNdArrays.Pop());
+                        model.OnBackward(backNdArrays.Pop());
                     }
 
                     model.Update();
@@ -134,7 +134,7 @@ namespace KelpNetTester.Tests
                     t.Data[j] = dataset[j + i + 1];
                 }
 
-                Real sumLoss = new SoftmaxCrossEntropy().Evaluate(predictModel.Forward(x), t);
+                Real sumLoss = new SoftmaxCrossEntropy().Evaluate(predictModel.OnForward(x), t);
                 totalLoss += sumLoss;
                 totalLossCount++;
             }

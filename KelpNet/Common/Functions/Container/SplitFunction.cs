@@ -31,7 +31,7 @@ namespace KelpNet.Common.Functions.Container
 
             for (int i = 0; i < result.Length; i++)
             {
-                result[i] = SplitedFunctions[i].Forward(x)[0];
+                result[i] = SplitedFunctions[i].OnForward(x)[0];
             }
 
             return result;
