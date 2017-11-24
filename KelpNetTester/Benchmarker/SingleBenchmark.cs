@@ -54,14 +54,14 @@ namespace KelpNetTester.Benchmarker
                     gradArrayGpu = linear.Forward(inputArrayGpu);
                     sw.Stop();
                     Console.WriteLine("Forward [Gpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μs");
+
+                    RealArray.Copy(gradArrayGpu[0].Data, gradArrayGpu[0].Grad);
+
+                    sw.Restart();
+                    linear.Backward(gradArrayGpu);
+                    sw.Stop();
+                    Console.WriteLine("Backward[Gpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μs");
                 }
-
-                gradArrayGpu[0].Grad = gradArrayGpu[0].Data;
-
-                sw.Restart();
-                linear.Backward(gradArrayGpu);
-                sw.Stop();
-                Console.WriteLine("Backward[Gpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μs");
             }
 
 

@@ -347,11 +347,11 @@ namespace KelpNet.Common
             OnDispose();
         }
 
-        private void OnDispose(bool justDoDispose = false)
+        private void OnDispose(bool onUserDispose = false)
         {
-            if (justDoDispose || !IsDisposed)
+            if (onUserDispose || !IsDisposed)
             {
-                if (justDoDispose && IsGpu)
+                if (!onUserDispose && IsGpu)
                     Console.WriteLine($"Information: Gpu array is not disposed in code properly. RealArray[{Length}]");
                 
                 if(bank != null)

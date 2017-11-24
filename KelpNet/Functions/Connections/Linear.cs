@@ -242,7 +242,6 @@ namespace KelpNet.Functions.Connections
             );
 
             Weaver.CommandQueue.Finish();
-            //Weaver.CommandQueue.ReadFromBuffer(gpugW, ref Weight.Grad, true, null);
 
             var gpugX = gx.AsBuffer();
             var gpuW = Weight.Data.AsBuffer();
@@ -270,7 +269,8 @@ namespace KelpNet.Functions.Connections
                 x.Grad[i] += gx[i];
             }
 
-            activatedgy.Dispose();
+            if(Activator != null)
+                activatedgy.Dispose();
         }
 
         public Convolution2D AsConvolution2D()
