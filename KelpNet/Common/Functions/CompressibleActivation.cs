@@ -34,28 +34,28 @@ namespace KelpNet.Common.Functions
         protected CompressibleActivation(string functionName, KeyValuePair<string, string>[] parameters, string name = FUNCTION_NAME, string[] inputNames = null, string[] outputNames = null, bool gpuEnable = false) : base(name, inputNames, outputNames)
         {
             string kernelNameBase = functionName.Replace(" ", "");
-            this.ForwardKernelName = kernelNameBase + "Forward";
-            this.BackwardKernelName = kernelNameBase + "Backward";
+            ForwardKernelName = kernelNameBase + "Forward";
+            BackwardKernelName = kernelNameBase + "Backward";
 
-            this.ActivateKernelString = Weaver.GetKernelSource(FUNCTION_NAME).Replace("/*kernelNameBase*/", kernelNameBase);
-            this.ActivateFunctionString = Weaver.GetKernelSource(functionName);
+            ActivateKernelString = Weaver.GetKernelSource(FUNCTION_NAME).Replace("/*kernelNameBase*/", kernelNameBase);
+            ActivateFunctionString = Weaver.GetKernelSource(functionName);
 
             if (parameters != null)
             {
                 foreach (var parameter in parameters)
                 {
-                    this.ActivateFunctionString = this.ActivateFunctionString.Replace(parameter.Key, parameter.Value);
+                    ActivateFunctionString = ActivateFunctionString.Replace(parameter.Key, parameter.Value);
                 }
             }
 
-            this.SetGpuEnable(gpuEnable);
+            SetGpuEnable(gpuEnable);
         }
 
         public bool SetGpuEnable(bool enable)
         {
-            this.GpuEnable = enable & Weaver.Enable;
+            GpuEnable = enable & Weaver.Enable;
 
-            if (this.GpuEnable)
+            if (GpuEnable)
             {
                 CreateKernel();
                 SingleInputForward = NeedPreviousForwardGpu;
@@ -72,11 +72,11 @@ namespace KelpNet.Common.Functions
 
         public void CreateKernel()
         {
-            string kernelSource = this.ActivateFunctionString + this.ActivateKernelString;
+            string kernelSource = ActivateFunctionString + ActivateKernelString;
 
             ComputeProgram program = Weaver.CreateProgram(kernelSource);
-            this.ForwardKernel = program.CreateKernel(this.ForwardKernelName);
-            this.BackwardKernel = program.CreateKernel(this.BackwardKernelName);
+            ForwardKernel = program.CreateKernel(ForwardKernelName);
+            BackwardKernel = program.CreateKernel(BackwardKernelName);
         }
 
         private NdArray NeedPreviousForwardCpu(NdArray x)
@@ -85,43 +85,46 @@ namespace KelpNet.Common.Functions
 
             for (int i = 0; i < y.Length; i++)
             {
-                y[i] = this.ForwardActivate(x.Data[i]);
+                y[i] = ForwardActivate(x.Data[i]);
             }
 
             return NdArray.Convert(y, x.Shape, x.BatchCount, this);
         }
 
+        RealArray outputY;
         private NdArray NeedPreviousForwardGpu(NdArray x)
         {
-            Real[] y = new Real[x.Data.Length];
-
-            using (ComputeBuffer<Real> gpuX = new ComputeBuffer<Real>(Weaver.Context, ComputeMemoryFlags.ReadOnly | ComputeMemoryFlags.CopyHostPointer, x.Data))
-            using (ComputeBuffer<Real> gpuY = new ComputeBuffer<Real>(Weaver.Context, ComputeMemoryFlags.WriteOnly | ComputeMemoryFlags.AllocateHostPointer, y.Length))
+            if (outputY == null || outputY.Length != x.Data.Length)
             {
-                this.ForwardKernel.SetMemoryArgument(0, gpuX);
-                this.ForwardKernel.SetMemoryArgument(1, gpuY);
-
-                Weaver.CommandQueue.Execute
-                    (
-                        this.ForwardKernel,
-                        null,
-                        new long[] { x.Data.Length },
-                        null,
-                        null
-                    );
-
-                Weaver.CommandQueue.Finish();
-                Weaver.CommandQueue.ReadFromBuffer(gpuY, ref y, true, null);
+                outputY = new RealArray(x.Data.Length);
+                outputY.ToGpu();
             }
 
-            return NdArray.Convert(y, x.Shape, x.BatchCount, this);
+            var gpuX = x.Data.AsBuffer();
+            var gpuY = outputY.AsBuffer();
+
+            ForwardKernel.SetMemoryArgument(0, gpuX);
+            ForwardKernel.SetMemoryArgument(1, gpuY);
+
+            Weaver.CommandQueue.Execute
+                (
+                    ForwardKernel,
+                    null,
+                    new long[] { x.Data.Length },
+                    null,
+                    null
+                );
+
+            Weaver.CommandQueue.Finish();
+
+            return NdArray.Convert(outputY, x.Shape, x.BatchCount, this);
         }
 
         private void NeedPreviousBackwardCpu(NdArray y, NdArray x)
         {
             for (int i = 0; i < x.Grad.Length; i++)
             {
-                x.Grad[i] += this.BackwardActivate(y.Grad[i], y.Data[i]);
+                x.Grad[i] += BackwardActivate(y.Grad[i], y.Data[i]);
             }
         }
 
@@ -133,13 +136,13 @@ namespace KelpNet.Common.Functions
             using (ComputeBuffer<Real> gpuY = new ComputeBuffer<Real>(Weaver.Context, ComputeMemoryFlags.ReadOnly | ComputeMemoryFlags.CopyHostPointer, y.Data))
             using (ComputeBuffer<Real> gpugX = new ComputeBuffer<Real>(Weaver.Context, ComputeMemoryFlags.WriteOnly | ComputeMemoryFlags.AllocateHostPointer, gx.Length))
             {
-                this.BackwardKernel.SetMemoryArgument(0, gpugY);
-                this.BackwardKernel.SetMemoryArgument(1, gpuY);
-                this.BackwardKernel.SetMemoryArgument(2, gpugX);
+                BackwardKernel.SetMemoryArgument(0, gpugY);
+                BackwardKernel.SetMemoryArgument(1, gpuY);
+                BackwardKernel.SetMemoryArgument(2, gpugX);
 
                 Weaver.CommandQueue.Execute
                     (
-                        this.BackwardKernel,
+                        BackwardKernel,
                         null,
                         new long[] { y.Grad.Length },
                         null,

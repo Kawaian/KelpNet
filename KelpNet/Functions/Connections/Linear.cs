@@ -108,7 +108,8 @@ namespace KelpNet.Functions.Connections
         protected override void OnGpuEnableChanged()
         {
             Weight.SetGpuEnable(GpuEnable);
-            outputY.SetGpuEnable(GpuEnable);
+            if(outputY != null)
+                outputY.SetGpuEnable(GpuEnable);
         }
 
         private Task<ComputeBuffer<T>> CreateBufferAsync<T>(ComputeMemoryFlags flag, T[] data) where T : struct
@@ -269,7 +270,6 @@ namespace KelpNet.Functions.Connections
                 x.Grad[i] += gx[i];
             }
 
-            gx.Dispose();
             activatedgy.Dispose();
         }
 
