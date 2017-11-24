@@ -280,6 +280,19 @@ namespace KelpNet.Common
             }
         }
 
+        //TODO(ainl): fix my horrible naming sense
+        public static void CheckLengthAndMayCreate(ref RealArray arr, int length, bool isGpu = false)
+        {
+            if(arr == null || arr.Length != length)
+            {
+                if(arr != null)
+                {
+                    arr.Dispose();
+                }
+                arr = new RealArray(length, isGpu: isGpu);
+            }
+        }
+
         #endregion Static
 
         public string Name = "NdArray";

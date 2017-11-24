@@ -91,14 +91,24 @@ namespace KelpNet.Common.Functions
             return NdArray.Convert(y, x.Shape, x.BatchCount, this);
         }
 
-        RealArray outputY;
+        protected override void OnGpuEnableChanged()
+        {
+            if (!GpuEnable)
+            {
+                if (outputY != null)
+                {
+                    outputY.Dispose();
+                    outputY = null;
+                }
+
+
+            }
+        }
+
+        RealArray outputY = null;
         private NdArray NeedPreviousForwardGpu(NdArray x)
         {
-            if (outputY == null || outputY.Length != x.Data.Length)
-            {
-                outputY = new RealArray(x.Data.Length);
-                outputY.ToGpu();
-            }
+            NdArray.CheckLengthAndMayCreate(ref outputY, x.Data.Length, true);
 
             var gpuX = x.Data.AsBuffer();
             var gpuY = outputY.AsBuffer();
@@ -128,30 +138,29 @@ namespace KelpNet.Common.Functions
             }
         }
 
+        RealArray gx = null;
         private void NeedPreviousBackwardGpu(NdArray y, NdArray x)
         {
-            Real[] gx = new Real[y.Grad.Length];
+            NdArray.CheckLengthAndMayCreate(ref gx, y.Grad.Length, true);
 
-            using (ComputeBuffer<Real> gpugY = new ComputeBuffer<Real>(Weaver.Context, ComputeMemoryFlags.ReadOnly | ComputeMemoryFlags.CopyHostPointer, y.Grad))
-            using (ComputeBuffer<Real> gpuY = new ComputeBuffer<Real>(Weaver.Context, ComputeMemoryFlags.ReadOnly | ComputeMemoryFlags.CopyHostPointer, y.Data))
-            using (ComputeBuffer<Real> gpugX = new ComputeBuffer<Real>(Weaver.Context, ComputeMemoryFlags.WriteOnly | ComputeMemoryFlags.AllocateHostPointer, gx.Length))
-            {
-                BackwardKernel.SetMemoryArgument(0, gpugY);
-                BackwardKernel.SetMemoryArgument(1, gpuY);
-                BackwardKernel.SetMemoryArgument(2, gpugX);
+            var gpugX = gx.AsBuffer();
+            var gpugY = y.Grad.AsBuffer();
+            var gpuY = y.Data.AsBuffer();
 
-                Weaver.CommandQueue.Execute
-                    (
-                        BackwardKernel,
-                        null,
-                        new long[] { y.Grad.Length },
-                        null,
-                        null
-                    );
+            BackwardKernel.SetMemoryArgument(0, gpugY);
+            BackwardKernel.SetMemoryArgument(1, gpuY);
+            BackwardKernel.SetMemoryArgument(2, gpugX);
 
-                Weaver.CommandQueue.Finish();
-                Weaver.CommandQueue.ReadFromBuffer(gpugX, ref gx, true, null);
-            }
+            Weaver.CommandQueue.Execute
+            (
+                BackwardKernel,
+                null,
+                new long[] { y.Grad.Length },
+                null,
+                null
+            );
+
+            Weaver.CommandQueue.Finish();
 
             for (int i = 0; i < x.Grad.Length; i++)
             {
