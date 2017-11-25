@@ -60,36 +60,41 @@ namespace KelpNet.Common.Functions
 
         public NdArray[] Forward(params NdArray[] xs)
         {
-            var preIsGpu = new bool[xs.Length];
-            if (GpuEnable)
+            foreach (var item in xs)
             {
-                for (int i = 0; i < xs.Length; i++)
+                if (GpuEnable)
                 {
-                    preIsGpu[i] = xs[i].IsGpu;
-                    if (!xs[i].IsGpu)
-                        xs[i].ToGpu();
+                    if (!item.IsGpu)
+                        item.ToGpu();
+                }
+                else
+                {
+                    if (item.IsGpu)
+                        item.ToCpu();
                 }
             }
 
             var ret = OnForward(xs);
-
-            if (GpuEnable)
-            {
-                for (int i = 0; i < xs.Length; i++)
-                {
-                    if (!preIsGpu[i])
-                    {
-                        xs[i].ToCpu();
-                    }
-                }
-            }
-
             return ret;
         }
         protected abstract NdArray[] OnForward(params NdArray[] xs);
 
         public void Backward(params NdArray[] ys)
         {
+            foreach (var item in ys)
+            {
+                if (GpuEnable)
+                {
+                    if (!item.IsGpu)
+                        item.ToGpu();
+                }
+                else
+                {
+                    if (item.IsGpu)
+                        item.ToCpu();
+                }
+            }
+
             OnBackward(ys);
         }
         protected virtual void OnBackward(params NdArray[] ys) { }

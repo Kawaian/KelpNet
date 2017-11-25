@@ -40,9 +40,9 @@ namespace KelpNetTester.Tests
 
             //Network configuration is written in FunctionStack
             FunctionStack nn = new FunctionStack(
-                new Linear(2, 2, name: "l1 Linear"),
+                new Linear(2, 233333, name: "l1 Linear"),
                 new Sigmoid(name: "l1 Sigmoid"),
-                new Linear(2, 2, name: "l2 Linear")
+                new Linear(233333, 2, name: "l2 Linear")
             );
 
             nn.SetOptimizer(new MomentumSGD());
@@ -53,11 +53,16 @@ namespace KelpNetTester.Tests
             Console.WriteLine("Training...");
             for (int i = 0; i < learningCount; i++)
             {
+                Real loss = 0;
                 for (int j = 0; j < trainData.Length; j++)
                 {
-                    //Describe the loss function at training execution
-                    Trainer.Train(nn, trainData[j], trainLabel[j], new SoftmaxCrossEntropy());
+                    using (var output = (NdArray)trainLabel[j])
+                    using (var input = (NdArray)trainData[j])
+                    {
+                        loss = Trainer.Train(nn, input, output, new SoftmaxCrossEntropy());
+                    }
                 }
+                Console.WriteLine($"Batch {i}/{learningCount} | Loss: {loss}");
             }
 
             //Show training results

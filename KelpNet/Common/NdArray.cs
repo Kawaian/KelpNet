@@ -393,13 +393,16 @@ namespace KelpNet.Common
             ParentFunc = parentFunc;
         }
 
-        public NdArray(int[] shape, int batchCount, Function parentFunc = null)
+        public NdArray(int[] shape, int batchCount, Function parentFunc = null, bool allocData = true)
         {
             Shape = shape.ToArray();
             Length = ShapeToArrayLength(Shape);
             BatchCount = batchCount;
-            Data = (RealArray)new Real[Length * batchCount];
-            Grad = (RealArray)new Real[Length * batchCount];
+            if (allocData)
+            {
+                Data = (RealArray)new Real[Length * batchCount];
+                Grad = (RealArray)new Real[Length * batchCount];
+            }
             TrainCount = 0;
             ParentFunc = parentFunc;
         }
@@ -437,11 +440,9 @@ namespace KelpNet.Common
 
         public static NdArray Convert(RealArray data, int[] shape, int batchCount, Function parentFunc = null)
         {
-            var ret = new NdArray(shape, batchCount, parentFunc);
-            ret.Data.Dispose();
+            var ret = new NdArray(shape, batchCount, parentFunc, allocData: false);
             ret.Data = data;
-            if(ret.Data.IsGpu)
-                ret.Grad.ToGpu();
+            ret.Grad = new RealArray(data.Length, data.IsGpu);
             return ret;
         }
 
@@ -639,9 +640,7 @@ namespace KelpNet.Common
         //Initialization of slope
         public void ClearGrad()
         {
-            Grad = (RealArray)new Real[Data.Length];
-            if (Data.IsGpu)
-                Grad.ToGpu();
+            ((RealArray)new Real[Data.Length]).CopyTo(Grad);
 
             //Reset counter
             TrainCount = 0;
@@ -897,7 +896,7 @@ namespace KelpNet.Common
         {
             if (!isDisposed)
             {
-                if (!onUserDispose)
+                if (!onUserDispose && isDisposed)
                 {
                     Console.WriteLine($"NdArray is not desposed properly. NdArray[{Length}]");
                     Console.WriteLine(creationTrace);
