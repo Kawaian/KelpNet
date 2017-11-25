@@ -346,8 +346,12 @@ namespace KelpNet.Common
         
         public bool IsGpu => Data.IsGpu;
 
-        StackTrace creationTrace = new StackTrace(true);
-        
+        StackTrace creationTrace
+#if DEBUG
+            = new StackTrace(true)
+#endif
+            ;
+
         public NdArray(params int[] shape)
         {
             Data = (RealArray)new Real[ShapeToArrayLength(shape)];

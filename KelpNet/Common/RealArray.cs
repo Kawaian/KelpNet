@@ -323,40 +323,112 @@ namespace KelpNet.Common
             return bank.ToArray();
         }
 
+        IDeviceReal preBank;
+        public static bool KeepAllocation = true;
+
         public void ToGpu()
         {
-            ToGpu(Flag);
+            ToGpu(!KeepAllocation);
         }
 
-        public void ToGpu(ComputeMemoryFlags flag)
+        public void ToGpu(bool dispose)
+        {
+            ToGpu(Flag, dispose);
+        }
+
+        public void ToGpu(ComputeMemoryFlags flag, bool dispose)
         {
             if (!IsGpu)
             {
 #if DEBUG
+                Console.WriteLine("Convert To GPU");
                 toGpuStack = new StackTrace(true);
 #endif
-                Real[] buffer = ((CpuRealArray)bank).buffer;
-                bank.Dispose();
-                bank = null;
-
                 Flag = flag;
-                bank = new GpuRealArray(buffer, flag);
+                Real[] buffer = ((CpuRealArray)bank).buffer;
+                if (dispose)
+                {
+                    if (preBank != null)
+                    {
+                        preBank.Dispose();
+                        preBank = null;
+                    }
+
+                    bank.Dispose();
+                    bank = new GpuRealArray(buffer, flag);
+                }
+                else
+                {
+                    if (preBank != null)
+                    {
+                        bank.CopyTo(0, preBank, 0, Length);
+                    }
+                    else
+                    {
+                        preBank = new GpuRealArray(buffer, flag);
+                    }
+
+                    var temp = preBank;
+                    preBank = bank;
+                    bank = temp;
+                }
+#if DEBUG
+                if (!(bank is GpuRealArray))
+                {
+                    Console.WriteLine("Wrong preBank device");
+                    ShowTrace();
+                }
+#endif
             }
         }
 
         public void ToCpu()
         {
+            ToCpu(!KeepAllocation);
+        }
+
+        public void ToCpu(bool dispose)
+        {
             if (IsGpu)
             {
-                Console.WriteLine("Convert To CPU");
 #if DEBUG
+                Console.WriteLine("Convert To CPU");
                 toCpuStack = new StackTrace(true);
 #endif
-                Real[] buffer = bank.ToArray();
-                bank.Dispose();
-                bank = null;
+                if (dispose)
+                {
+                    if(preBank != null)
+                    {
+                        preBank.Dispose();
+                        preBank = null;
+                    }
 
-                bank = new CpuRealArray(buffer);
+                    Real[] buffer = bank.ToArray();
+                    bank.Dispose();
+                    bank = new CpuRealArray(buffer);
+                }
+                else
+                {
+                    if (preBank != null)
+                    {
+                        bank.CopyTo(0, preBank, 0, Length);
+                    }
+                    else
+                    {
+                        preBank = new CpuRealArray(bank.ToArray());
+                    }
+
+                    var temp = preBank;
+                    preBank = bank;
+                    bank = temp;
+                }
+#if DEBUG
+                if (!(bank is CpuRealArray))
+                {
+                    Console.WriteLine("Wrong preBank device");
+                    ShowTrace();
+                }
+#endif
             }
         }
 
@@ -374,39 +446,49 @@ namespace KelpNet.Common
         {
             if (!isDisposed)
             {
-                if(IsGpu)
+#if DEBUG
+                if (IsGpu)
+                { 
                     Console.WriteLine("Dispose Gpu Buffer");
+
+                    if (!onUserDispose)
+                    {
+                        Console.WriteLine($"Information: Gpu array is not disposed in code properly. RealArray[{Length}]");
+                        ShowTrace();
+                    }
+                }
+#endif
 
                 isDisposed = true;
 
-                if (!onUserDispose && IsGpu)
+                try
                 {
-                    Console.WriteLine($"Information: Gpu array is not disposed in code properly. RealArray[{Length}]");
-                    ShowTrace();
-                }
-
-                if (bank != null)
-                {
-                    try
+                    if (bank != null)
                     {
                         bank.Dispose();
+                        bank = null;
                     }
-                    catch(Exception ex)
+
+                    if(preBank != null)
                     {
-                        string detail;
-                        try
-                        {
-                            Show("Buffer Detail", $"Bank:{bank}, Length:{Length}");
-                        }
-                        catch(Exception dex)
-                        {
-                            detail = "Error while get detail message\n" + dex.ToString();
-                        }
-                        Show("Exception", ex);
-                        ShowTrace();
-                        throw new Exception("Dispose Error", ex);
+                        preBank.Dispose();
+                        preBank = null;
                     }
-                    bank = null;
+                }
+                catch (Exception ex)
+                {
+                    string detail;
+                    try
+                    {
+                        Show("Buffer Detail", $"Bank:{bank}, Length:{Length}");
+                    }
+                    catch (Exception dex)
+                    {
+                        detail = "Error while get detail message\n" + dex.ToString();
+                    }
+                    Show("Exception", ex);
+                    ShowTrace();
+                    throw new Exception("Dispose Error", ex);
                 }
             }
         }
