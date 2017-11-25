@@ -17,7 +17,7 @@ namespace KelpNetTester
             //Subscript required if there are multiple devices
 
             //learning XOR with MLP
-            Test1.Run ();
+            //Test1.Run ();
 
             //Learning XOR with MLP (Regression version)
             //Test2.Run ();
@@ -75,7 +75,7 @@ namespace KelpNetTester
             //TestX.Run();
 
             //benchmark
-            //SingleBenchmark.Run ();
+            SingleBenchmark.Run ();
 
             Console.WriteLine("Test Done ...");
             Console.Read();

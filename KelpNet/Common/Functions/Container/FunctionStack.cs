@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using KelpNet.Common.Optimizers;
+using KelpNet.Functions.Connections;
+using KelpNet.Functions.Poolings;
 
 namespace KelpNet.Common.Functions.Container
 {
@@ -10,6 +12,29 @@ namespace KelpNet.Common.Functions.Container
     public class FunctionStack : Function
     {
         const string FUNCTION_NAME = "FunctionStack";
+
+        public static void SwitchToGPU(FunctionStack functionStack)
+        {
+            foreach (Function function in functionStack.Functions)
+            {
+                if (function is IParallelizable)
+                {
+                    ((IParallelizable)function).SetGpuEnable(true);
+                }
+
+                if (function is SplitFunction)
+                {
+                    SplitFunction splitFunction = (SplitFunction)function;
+                    for (int i = 0; i < splitFunction.SplitedFunctions.Length; i++)
+                    {
+                        SwitchToGPU(splitFunction.SplitedFunctions[i]);
+                    }
+                }
+            }
+
+            //Perform layer compression on a block-by-block basis
+            functionStack.Compress();
+        }
 
         //All layers are stored here
         public Function[] Functions { get; private set; }

@@ -47,6 +47,8 @@ namespace KelpNetTester.Tests
 
             nn.SetOptimizer(new MomentumSGD());
 
+            FunctionStack.SwitchToGPU(nn);
+
             //Training looP
             Console.WriteLine("Training...");
             for (int i = 0; i < learningCount; i++)

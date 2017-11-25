@@ -32,6 +32,11 @@ namespace KelpNet.Common.Functions.Type
 
             xs[0].UseCount--;
             SingleOutputBackward(ys[0], xs[0]);
+
+            foreach (var item in xs)
+            {
+                item.Dispose();
+            }
         }
 
         public override NdArray[] Predict(params NdArray[] xs)
