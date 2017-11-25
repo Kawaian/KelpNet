@@ -14,7 +14,7 @@ namespace KelpNet.Common
     /// </summary>
     [Serializable]
     [DebuggerDisplay("{Name + ToString(\"Size\")}", Type = "{\"NdArray\" + ToString(\"Size\")}")]
-    public class NdArray
+    public class NdArray : IDisposable
     {
         #region Static operation
 
@@ -289,6 +289,18 @@ namespace KelpNet.Common
             }
         }
 
+        public static void CheckLengthAndMayCreate(ref NdArray arr, int[] shape, int batchCount, Function parent, bool isGpu = false)
+        {
+            if(arr == null || arr.Length != ShapeToArrayLength(shape))
+            {
+                if(arr != null)
+                {
+                    arr.Dispose();
+                }
+                arr = new NdArray(shape, batchCount, parent);
+            }
+        }
+
         //TODO(ainl): fix my horrible naming sense
         public static void CheckLengthAndMayCreate(ref RealArray arr, int length, bool isGpu = false)
         {
@@ -334,6 +346,18 @@ namespace KelpNet.Common
         
         public bool IsGpu => Data.IsGpu;
 
+        StackTrace creationTrace = new StackTrace(true);
+        
+        public NdArray(params int[] shape)
+        {
+            Data = (RealArray)new Real[ShapeToArrayLength(shape)];
+            Shape = shape.ToArray();
+            Length = Data.Length;
+            BatchCount = 1;
+            Grad = (RealArray)new Real[Length];
+            TrainCount = 0;
+        }
+
         public NdArray(Array data, Function parentFunc = null)
         {
             Real[] resultData = Real.GetArray(data);
@@ -352,16 +376,6 @@ namespace KelpNet.Common
             BatchCount = 1;
             TrainCount = 0;
             ParentFunc = parentFunc;
-        }
-
-        public NdArray(params int[] shape)
-        {
-            Data = (RealArray)new Real[ShapeToArrayLength(shape)];
-            Shape = shape.ToArray();
-            Length = Data.Length;
-            BatchCount = 1;
-            Grad = (RealArray)new Real[Length];
-            TrainCount = 0;
         }
 
         public NdArray(Real[] data, int[] shape, int batchCount = 1, Function parentFunc = null)
@@ -419,7 +433,12 @@ namespace KelpNet.Common
 
         public static NdArray Convert(RealArray data, int[] shape, int batchCount, Function parentFunc = null)
         {
-            return new NdArray(shape, batchCount, parentFunc) { Data = data };
+            var ret = new NdArray(shape, batchCount, parentFunc);
+            ret.Data.Dispose();
+            ret.Data = data;
+            if(ret.Data.IsGpu)
+                ret.Grad.ToGpu();
+            return ret;
         }
 
         public static NdArray ZerosLike(NdArray baseArray)
@@ -441,14 +460,31 @@ namespace KelpNet.Common
 
         public void ToCpu()
         {
+            CheckDeviceMatch();
+
             Grad.ToCpu();
             Data.ToCpu();
         }
 
         public void ToGpu()
         {
+            CheckDeviceMatch();
+
             Grad.ToGpu();
             Data.ToGpu();
+        }
+
+        private void CheckDeviceMatch()
+        {
+            if(Grad.IsGpu != Data.IsGpu)
+            {
+                Console.WriteLine("Error in NdArray: Data and Grad device is not matching!");
+                Console.WriteLine("Trace info of Data RealArray =========");
+                Data.ShowTrace();
+                Console.WriteLine("Trace info of Grad RealArray =========");
+                Grad.ShowTrace();
+                throw new Exception("Data device is not matching");
+            }
         }
 
         //Because the indexer is not so early, I do not recommend using it when accessing frequently. Please divide it for debugging purpose.
@@ -849,6 +885,42 @@ namespace KelpNet.Common
             }
 
             return index;
+        }
+
+        bool isDisposed = false;
+        
+        void OnDispose(bool onUserDispose)
+        {
+            if (!isDisposed)
+            {
+                if (!onUserDispose)
+                {
+                    Console.WriteLine($"NdArray is not desposed properly. NdArray[{Length}]");
+                    Console.WriteLine(creationTrace);
+                }
+
+                if (Grad != null)
+                {
+                    Grad.Dispose();
+                    Grad = null;
+                }
+
+                if (Data != null)
+                {
+                    Data.Dispose();
+                    Data = null;
+                }
+            }
+        }
+
+        ~NdArray()
+        {
+            OnDispose(false);
+        }
+
+        public void Dispose()
+        {
+            OnDispose(true);
         }
     }
 }

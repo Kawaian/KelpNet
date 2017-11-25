@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -217,12 +218,16 @@ namespace KelpNet.Common
         public int Length => Count;
         public int Count { private set; get; }
 
-        public bool IsDisposed { get; private set; } = false;
+        bool isDisposed = false;
+        public bool IsDisposed => isDisposed;
         public bool IsGpu => bank == null ? false : bank.IsGpu;
 
         public ComputeMemoryFlags Flag { get; set; }
 
         IDeviceReal bank;
+        StackTrace creationStack;
+        StackTrace toGpuStack;
+        StackTrace toCpuStack;
 
         public RealArray(int length, bool isGpu = false, ComputeMemoryFlags flag = DefaultFlag) : this(new Real[length], isGpu, flag)
         {
@@ -241,6 +246,12 @@ namespace KelpNet.Common
             {
                 bank = new CpuRealArray(data);
             }
+            
+#if DEBUG
+            if(isGpu)
+                Console.WriteLine("Create GPU Buffer");
+            creationStack = new StackTrace(true);
+#endif
         }
 
         public RealArray(IDeviceReal bank, int length, ComputeMemoryFlags flags = DefaultFlag)
@@ -252,6 +263,11 @@ namespace KelpNet.Common
             {
                 Flag = ((GpuRealArray)bank).buffer.Flags;
             }
+#if DEBUG
+            if (IsGpu)
+                Console.WriteLine("Create from GPU Buffer");
+            creationStack = new StackTrace(true);
+#endif
         }
 
         public void CopyTo(RealArray traget)
@@ -316,7 +332,10 @@ namespace KelpNet.Common
         {
             if (!IsGpu)
             {
-                Real[] buffer = bank.ToArray();
+#if DEBUG
+                toGpuStack = new StackTrace(true);
+#endif
+                Real[] buffer = ((CpuRealArray)bank).buffer;
                 bank.Dispose();
                 bank = null;
 
@@ -329,6 +348,10 @@ namespace KelpNet.Common
         {
             if (IsGpu)
             {
+                Console.WriteLine("Convert To CPU");
+#if DEBUG
+                toCpuStack = new StackTrace(true);
+#endif
                 Real[] buffer = bank.ToArray();
                 bank.Dispose();
                 bank = null;
@@ -349,19 +372,56 @@ namespace KelpNet.Common
 
         private void OnDispose(bool onUserDispose = false)
         {
-            if (onUserDispose || !IsDisposed)
+            if (!isDisposed)
             {
+                if(IsGpu)
+                    Console.WriteLine("Dispose Gpu Buffer");
+
+                isDisposed = true;
+
                 if (!onUserDispose && IsGpu)
-                    Console.WriteLine($"Information: Gpu array is not disposed in code properly. RealArray[{Length}]");
-                
-                if(bank != null)
                 {
-                    bank.Dispose();
-                    bank = null;
+                    Console.WriteLine($"Information: Gpu array is not disposed in code properly. RealArray[{Length}]");
+                    ShowTrace();
                 }
 
-                IsDisposed = true;
+                if (bank != null)
+                {
+                    try
+                    {
+                        bank.Dispose();
+                    }
+                    catch(Exception ex)
+                    {
+                        string detail;
+                        try
+                        {
+                            Show("Buffer Detail", $"Bank:{bank}, Length:{Length}");
+                        }
+                        catch(Exception dex)
+                        {
+                            detail = "Error while get detail message\n" + dex.ToString();
+                        }
+                        Show("Exception", ex);
+                        ShowTrace();
+                        throw new Exception("Dispose Error", ex);
+                    }
+                    bank = null;
+                }
             }
+        }
+
+        public void ShowTrace()
+        {
+            Show("Create Stack", creationStack);
+            Show("ToGpuStack", toGpuStack);
+            Show("ToCpuStack", toCpuStack);
+        }
+
+        private void Show(string title, object content)
+        {
+            Console.WriteLine($"========== {title} ===========");
+            Console.WriteLine(content);
         }
 
         public void Dispose()

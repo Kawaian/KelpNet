@@ -230,14 +230,14 @@ namespace KelpNet.Functions.Normalization
                 //Predict does not train
                 IsTrain = false;
 
-                result = OnForward(input);
+                result = Forward(input);
 
                 //Reset Flag
                 IsTrain = true;
             }
             else
             {
-                result = OnForward(input);
+                result = Forward(input);
             }
 
             return result;

@@ -108,8 +108,20 @@ namespace KelpNet.Functions.Connections
         protected override void OnGpuEnableChanged()
         {
             Weight.SetGpuEnable(GpuEnable);
-            if(outputY != null)
-                outputY.SetGpuEnable(GpuEnable);
+            if (!GpuEnable)
+            {
+                if (outputY != null)
+                {
+                    outputY.Dispose();
+                    outputY = null;
+                }
+
+                if(gpuGx != null)
+                {
+                    gpuGx.Dispose();
+                    gpuGx = null;
+                }
+            }
         }
 
         private Task<ComputeBuffer<T>> CreateBufferAsync<T>(ComputeMemoryFlags flag, T[] data) where T : struct
@@ -140,7 +152,9 @@ namespace KelpNet.Functions.Connections
             
             var gpuX = x.Data.AsBuffer();
             var gpuW = Weight.Data.AsBuffer();
-            NdArray.CopyOrNew(ref outputY, y, GpuEnable);
+            NdArray.CheckLengthAndMayCreate(ref outputY, new[] { OutputCount }, x.BatchCount, this, GpuEnable);
+            RealArray.Copy(y, outputY.Data);
+            outputY.ToGpu();
             var gpuY = outputY.Data.AsBuffer();
 
             ForwardKernel.SetMemoryArgument(0, gpuX);
@@ -158,11 +172,9 @@ namespace KelpNet.Functions.Connections
                 null
             );
 
-            Weaver.CommandQueue.Flush();
-            ASleep(5.5);
             Weaver.CommandQueue.Finish();
 
-            return NdArray.Convert(outputY, new[] { OutputCount }, x.BatchCount, this);
+            return outputY;
         }
 
         RealArray GetActivatedgy(NdArray y)
@@ -211,14 +223,14 @@ namespace KelpNet.Functions.Connections
                 }
             }
         }
-        
+
+        RealArray gpuGx = null;
         protected override void NeedPreviousBackwardGpu(NdArray y, NdArray x)
         {
-            RealArray gx = new RealArray(x.Data.Length);
-            gx.ToGpu();
+            NdArray.CheckLengthAndMayCreate(ref gpuGx, x.Data.Length, true);
             RealArray activatedgy = Activator != null ? GetActivatedgy(y) : y.Grad;
+            activatedgy.ToCpu();
             if (!NoBias) CalcBiasGrad(activatedgy, y.BatchCount);
-
             activatedgy.ToGpu();
             var gpugY = activatedgy.AsBuffer();
 
@@ -243,7 +255,7 @@ namespace KelpNet.Functions.Connections
 
             Weaver.CommandQueue.Finish();
 
-            var gpugX = gx.AsBuffer();
+            var gpugX = gpuGx.AsBuffer();
             var gpuW = Weight.Data.AsBuffer();
 
             BackwardgXKernel.SetMemoryArgument(0, gpugY);
@@ -264,10 +276,14 @@ namespace KelpNet.Functions.Connections
 
             Weaver.CommandQueue.Finish();
 
+            x.Grad.ToCpu();
+            gpuGx.ToCpu();
             for (int i = 0; i < x.Grad.Length; i++)
             {
-                x.Grad[i] += gx[i];
+                x.Grad[i] += gpuGx[i];
             }
+            x.Grad.ToGpu();
+            gpuGx.ToGpu();
 
             if(Activator != null)
                 activatedgy.Dispose();

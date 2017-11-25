@@ -30,8 +30,33 @@ namespace KelpNet.Common.Functions
         public NdArray[] Parameters = { };
         public Optimizer[] Optimizers = { };
 
+        public string[] InputNames;
+        public string[] OutputNames;
+
         [NonSerialized]
         public List<NdArray[]> PrevInputs = new List<NdArray[]>();
+
+        //constructor
+        protected Function(string name, string[] inputNames = null, string[] outputNames = null)
+        {
+            Name = name;
+
+            if (inputNames != null)
+            {
+                InputNames = inputNames.ToArray();
+            }
+
+            if (outputNames != null)
+            {
+                OutputNames = outputNames.ToArray();
+            }
+        }
+
+        [OnDeserialized]
+        private void OnDeserialized(StreamingContext context)
+        {
+            PrevInputs = new List<NdArray[]>();
+        }
 
         public NdArray[] Forward(params NdArray[] xs)
         {
@@ -69,45 +94,17 @@ namespace KelpNet.Common.Functions
         }
         protected virtual void OnBackward(params NdArray[] ys) { }
 
-        public string[] InputNames;
-        public string[] OutputNames;
-
-        //constructor
-        protected Function(string name, string[] inputNames = null, string[] outputNames = null)
-        {
-            this.Name = name;
-
-            if (inputNames != null)
-            {
-                this.InputNames = inputNames.ToArray();
-            }
-
-            if (outputNames != null)
-            {
-                this.OutputNames = outputNames.ToArray();
-            }
-        }
-
-        [OnDeserialized]
-        private void OnDeserialized(StreamingContext context)
-        {
-            this.PrevInputs = new List<NdArray[]>();
-        }
-
         public virtual void SetOptimizer(params Optimizer[] optimizers)
         {
-            this.Optimizers = optimizers;
+            Optimizers = optimizers;
 
             foreach (Optimizer optimizer in optimizers)
             {
-                optimizer.AddFunctionParameters(this.Parameters);
+                optimizer.AddFunctionParameters(Parameters);
             }
         }
 
-        protected virtual void OnGpuEnableChanged()
-        {
-
-        }
+        protected virtual void OnGpuEnableChanged() { }
 
         //Function to call when updating parameters
         protected void BackwardCountUp()
@@ -121,18 +118,18 @@ namespace KelpNet.Common.Functions
         //Evaluation function
         public virtual NdArray[] Predict(params NdArray[] input)
         {
-            return this.OnForward(input);
+            return OnForward(input);
         }
 
         public virtual void Update()
         {
-            foreach (Optimizer optimizer in this.Optimizers)
+            foreach (Optimizer optimizer in Optimizers)
             {
                 optimizer.Update();
             }
         }
 
-        //ある処理実行後に特定のデータを初期値に戻す処理
+        //A process of returning specific data to the initial value after a certain process is executed
         public virtual void ResetState()
         {
             PrevInputs.Clear();
@@ -141,7 +138,7 @@ namespace KelpNet.Common.Functions
         //Return name
         public override string ToString()
         {
-            return this.Name;
+            return Name;
         }
 
         //Method to create copy

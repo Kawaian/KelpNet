@@ -11,6 +11,7 @@ namespace KelpNetTester.Benchmarker
     class SingleBenchmark
     {
         //Assume the maximum memory of Linear of VGG 16
+        //const int INPUT_SIZE = 50;
         const int INPUT_SIZE = 25088;
         const int OUTPUT_SIZE = 4096;
 
